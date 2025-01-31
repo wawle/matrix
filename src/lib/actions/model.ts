@@ -1,0 +1,60 @@
+
+"use server";
+  
+import { revalidatePath } from "next/cache";
+  import { 
+    getModels,
+    getModelById,
+    createModel,
+    updateModel,
+    deleteModel
+  } from "@/lib/services/model";
+  
+  export async function fetchModels() {
+    try {
+      const models = await getModels();
+      return { data: JSON.parse(JSON.stringify(models)) };
+    } catch (error: any) {
+      return { error: error.message };
+    }
+  }
+  
+  export async function fetchModel(id: string) {
+    try {
+      const model = await getModelById(id);
+      return { data: JSON.parse(JSON.stringify(model)) };
+    } catch (error: any) {
+      return { error: error.message };
+    }
+  }
+  
+  export async function createModelAction(data: any) {
+    try {
+      const model = await createModel(data);
+      revalidatePath("/models");
+      return { data: JSON.parse(JSON.stringify(model)) };
+    } catch (error: any) {
+      return { error: error.message };
+    }
+  }
+  
+  export async function updateModelAction(id: string, data: any) {
+    try {
+      const model = await updateModel(id, data);
+      revalidatePath("/models");
+      revalidatePath("/models/[id]");
+      return { data: JSON.parse(JSON.stringify(model)) };
+    } catch (error: any) {
+      return { error: error.message };
+    }
+  }
+  
+  export async function deleteModelAction(id: string) {
+    try {
+      const model = await deleteModel(id);
+      revalidatePath("/models");
+      return { data: JSON.parse(JSON.stringify(model)) };
+    } catch (error: any) {
+      return { error: error.message };
+    }
+  }

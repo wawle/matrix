@@ -1,0 +1,60 @@
+"use server";
+
+import { revalidatePath } from "next/cache";
+import {
+  getAgents,
+  getAgentById,
+  createAgent,
+  updateAgent,
+  deleteAgent,
+} from "@/lib/services/agent";
+import { IAgent } from "../models/agent";
+
+export async function fetchAgents(): Promise<{ data: IAgent[]; error?: any }> {
+  try {
+    const agents = await getAgents();
+    return { data: JSON.parse(JSON.stringify(agents)) };
+  } catch (error: any) {
+    return { error: error.message, data: [] };
+  }
+}
+
+export async function fetchAgent(id: string) {
+  try {
+    const agent = await getAgentById(id);
+    return { data: JSON.parse(JSON.stringify(agent)) };
+  } catch (error: any) {
+    return { error: error.message };
+  }
+}
+
+export async function createAgentAction(data: any) {
+  try {
+    const agent = await createAgent(data);
+    revalidatePath("/agents");
+    return { data: JSON.parse(JSON.stringify(agent)) };
+  } catch (error: any) {
+    return { error: error.message };
+  }
+}
+
+export async function updateAgentAction(id: string, data: any) {
+  try {
+    const agent = await updateAgent(id, data);
+    revalidatePath("/agents");
+    revalidatePath("/agents/[id]");
+    return { data: JSON.parse(JSON.stringify(agent)) };
+  } catch (error: any) {
+    return { error: error.message };
+  }
+}
+
+export async function deleteAgentAction(id: string) {
+  try {
+    const agent = await deleteAgent(id);
+    revalidatePath("/agents");
+    return { data: JSON.parse(JSON.stringify(agent)) };
+  } catch (error: any) {
+    return { error: error.message };
+  }
+}
