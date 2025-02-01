@@ -32,9 +32,10 @@ import {
   deleteVersionAction,
   generatePromptForVersion,
   generateVersionAction,
+  generateVersionFromTemplate,
   setAutoSaveState,
 } from "@/lib/actions/version";
-import { convertTemplateToProject } from "@/lib/utils";
+import { convertTemplateToVersion } from "@/lib/utils";
 
 /**
  * @interface Props
@@ -110,6 +111,8 @@ export default function SchemaPlayground({
     []
   );
 
+  console.log({ defaultVersion });
+
   // ReactFlow durumları
   const [nodes, setNodes, onNodesChange] = useNodesState(
     defaultVersion.nodes.map((node) => ({
@@ -183,9 +186,34 @@ export default function SchemaPlayground({
    */
   const updateProject = useCallback(async () => {
     const selectedVersion = versions.find((t) => t.id === selectedPreset);
-    if (!selectedVersion) return;
-    const newProject = convertTemplateToProject(selectedVersion);
 
+    // If selected version is not found, generate a new version from template
+    if (!selectedVersion) {
+      // Find the selected template
+      const selectedTemplate = templates.find((t) => t.id === selectedPreset);
+
+      // If selected template is not found, show an error message
+      if (!selectedTemplate) {
+        toast.error("Seçili şablon bulunamadı.");
+        return;
+      }
+
+      // Generate a new version from the selected template
+      const result = await generateVersionFromTemplate(
+        selectedTemplate,
+        project.id
+      );
+      if (result.success) {
+        setSelectedPreset(result.version.id);
+
+        toast.success("Yeni şema oluşturuldu.");
+      } else {
+        toast.error("Yeni şema oluşturulurken bir hata oluştu.");
+      }
+      return;
+    }
+
+    const newProject = convertTemplateToVersion(selectedVersion, project.id);
     try {
       const result = await updateProjectAction(project.id, {
         version: { ...selectedVersion, models: newProject.models },
@@ -321,6 +349,13 @@ export default function SchemaPlayground({
         }));
         setNodes(nodesWithHandlers);
         setEdges(JSON.parse(JSON.stringify(defaultTemplate.edges)));
+        setSelectedPreset(value);
+      }
+
+      const selectedVersion = versions.find((t) => t.id === value);
+      if (selectedVersion) {
+        setNodes(selectedVersion.nodes);
+        setEdges(selectedVersion.edges);
         setSelectedPreset(value);
       }
     },

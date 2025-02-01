@@ -12,7 +12,7 @@ import { IField } from "@/lib/models/field";
 import { SchemaNodeMenu } from "./schema-node-menu";
 
 interface SchemaNodeData {
-  label: string;
+  name: string;
   description?: string;
   isActive: boolean;
   fields: IField[];
@@ -136,7 +136,7 @@ export const SchemaNode = React.memo(
                         <ChevronDown className="h-4 w-4" />
                       )}
                     </Button>
-                    <CardTitle className="text-lg">{data.label}</CardTitle>
+                    <CardTitle className="text-lg">{data.name}</CardTitle>
                   </div>
                   <div className="flex items-center gap-2">
                     {data.isActive && (

@@ -10,6 +10,12 @@ import {
 } from "@/lib/services/version";
 import { cookies } from "next/headers";
 import { Node } from "reactflow";
+import { IVersion } from "../models/version";
+import { convertTemplateToVersion } from "../utils";
+import { createModelAction } from "./model";
+import { createFieldAction } from "./field";
+import { createNodeAction } from "./node";
+import { createEdgeAction } from "./edge";
 
 export async function fetchVersions() {
   try {
@@ -29,13 +35,17 @@ export async function fetchVersion(id: string) {
   }
 }
 
-export async function createVersionAction(data: any) {
+export async function createVersionAction(data: any): Promise<{
+  data?: any;
+  error?: string;
+  success?: boolean;
+}> {
   try {
     const version = await createVersion(data);
     revalidatePath("/versions");
-    return { data: JSON.parse(JSON.stringify(version)) };
+    return { data: JSON.parse(JSON.stringify(version)), success: true };
   } catch (error: any) {
-    return { error: error.message };
+    return { error: error.message, success: false };
   }
 }
 
@@ -181,3 +191,92 @@ export async function generatePromptForVersion(prompt: string) {
     };
   }
 }
+
+export const generateVersionFromTemplate = async (
+  template: IVersion,
+  projectId: string
+) => {
+  try {
+    let newVersion = convertTemplateToVersion(template, projectId);
+
+    const newVersionBody = {
+      name: `${newVersion.name} - v1.0.0`,
+      description: newVersion.description,
+      is_active: true,
+      project: projectId,
+    };
+
+    const createdVersion = await createVersionAction(newVersionBody);
+
+    if (!createdVersion.success) {
+      throw new Error(createdVersion.error);
+    }
+
+    const newModelsBody = newVersion.models.map((model) => ({
+      name: model.name,
+      version: createdVersion.data.id,
+      description: model.description,
+    }));
+
+    const newNodesBody = newVersion.nodes.map((node) => ({
+      data: node.data,
+      position: node.position,
+      type: node.type,
+      version: createdVersion.data.id,
+    }));
+
+    const newEdgesBody = newVersion.edges.map((edge) => ({
+      source: edge.source,
+      target: edge.target,
+      sourceHandle: edge.sourceHandle,
+      targetHandle: edge.targetHandle,
+      version: createdVersion.data.id,
+    }));
+
+    const [createdModels, createdNodes, createdEdges] = await Promise.all([
+      Promise.all(newModelsBody.map((model) => createModelAction(model))),
+      Promise.all(newNodesBody.map((node) => createNodeAction(node))),
+      Promise.all(newEdgesBody.map((edge) => createEdgeAction(edge))),
+    ]);
+
+    const allModelsSuccess = createdModels.every((model) => model.success);
+    const allNodesSuccess = createdNodes.every((node) => node.success);
+    const allEdgesSuccess = createdEdges.every((edge) => edge.success);
+
+    if (!allModelsSuccess || !allNodesSuccess || !allEdgesSuccess) {
+      throw new Error("Model, Node veya Edge oluşturulurken bir hata oluştu");
+    }
+
+    const newFieldsBody = newVersion.models.flatMap((model) =>
+      model.fields.map((field) => ({
+        name: field.name,
+        label: field.label,
+        type: field.type,
+        validations: field?.validations,
+        model: createdModels.find((m) => m.data.name === model.name)?.data.id,
+      }))
+    );
+
+    const createdFields = await Promise.all(
+      newFieldsBody.map((field) => createFieldAction(field))
+    );
+
+    const allFieldsSuccess = createdFields.every((field) => field.success);
+
+    if (!allFieldsSuccess) {
+      throw new Error("Field oluşturulurken bir hata oluştu");
+    }
+
+    const version = await fetchVersion(createdVersion.data.id);
+
+    return { success: true, version: version.data };
+  } catch (error) {
+    return {
+      success: false,
+      error:
+        error instanceof Error
+          ? error.message
+          : "Version oluşturulurken bir hata oluştu",
+    };
+  }
+};

@@ -1,6 +1,10 @@
 import { Project, IProject } from "@/lib/models/project";
 import connectDB from "@/lib/db";
 import { Version } from "../models/version";
+import { Model } from "../models/model";
+import { Node } from "../models/node";
+import { Edge } from "../models/edge";
+import { Field } from "../models/field";
 
 export async function getProjects(): Promise<IProject[]> {
   try {
@@ -27,6 +31,22 @@ export async function getProjectById(id: string): Promise<IProject> {
       path: "versions",
       model: Version,
       select: "name is_active models nodes edges",
+      populate: [
+        {
+          path: "models",
+          model: Model,
+        },
+        {
+          path: "nodes",
+          model: Node,
+          select: "type position data",
+        },
+        {
+          path: "edges",
+          model: Edge,
+          select: "source target sourceHandle targetHandle",
+        },
+      ],
     });
     if (!project) {
       throw new Error("Project bulunamadı");

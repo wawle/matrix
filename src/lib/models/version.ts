@@ -63,5 +63,15 @@ versionSchema.virtual("edges", {
   foreignField: "version",
 });
 
+versionSchema.pre("deleteOne", async function (next) {
+  const version = this.getQuery();
+  await Promise.all([
+    Model.deleteMany({ version: version }),
+    Node.deleteMany({ version: version }),
+    Edge.deleteMany({ version: version }),
+  ]);
+  next();
+});
+
 export const Version =
   mongoose.models.Version || mongoose.model<IVersion>("Version", versionSchema);

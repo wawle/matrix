@@ -42,5 +42,11 @@ modelSchema.virtual("fields", {
   foreignField: "model",
 });
 
+modelSchema.pre("deleteOne", async function (next) {
+  const model = this.getQuery();
+  await Field.deleteMany({ model: model });
+  next();
+});
+
 export const Model =
   mongoose.models.Model || mongoose.model<IModel>("Model", modelSchema);

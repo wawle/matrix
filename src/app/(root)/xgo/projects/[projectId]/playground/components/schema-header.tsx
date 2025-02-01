@@ -143,7 +143,7 @@ export function SchemaHeader({
                   id="auto-save"
                   className={cn(
                     "mx-0.5 h-5 w-9 [&>span]:h-4 [&>span]:w-4",
-                    isAutoSaveEnabled ? "bg-xgo" : "bg-muted"
+                    isAutoSaveEnabled ? "bg-green-400" : "bg-muted"
                   )}
                 />
               </TooltipTrigger>

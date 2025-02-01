@@ -2,6 +2,8 @@ import mongoose from "mongoose";
 import { Hiring } from "./hiring";
 import { Flow } from "./flow";
 import { Project } from "./project";
+import { Session } from "./session";
+import { Key } from "./key";
 
 export interface IUser {
   id: string;
@@ -64,6 +66,30 @@ userSchema.virtual("projects", {
   ref: Project,
   localField: "_id",
   foreignField: "user",
+});
+
+userSchema.virtual("sessions", {
+  ref: Session,
+  localField: "_id",
+  foreignField: "user",
+});
+
+userSchema.virtual("keys", {
+  ref: Key,
+  localField: "_id",
+  foreignField: "user",
+});
+
+userSchema.pre("deleteOne", async function (next) {
+  const user = this.getQuery();
+  await Promise.all([
+    Hiring.deleteMany({ user: user }),
+    Flow.deleteMany({ user: user }),
+    Project.deleteMany({ user: user }),
+    Session.deleteMany({ user: user }),
+    Key.deleteMany({ user: user }),
+  ]);
+  next();
 });
 
 export const User =

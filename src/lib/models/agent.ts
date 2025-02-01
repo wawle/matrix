@@ -3,6 +3,8 @@ import { IKey } from "./key";
 import { Hiring } from "./hiring";
 import { Flow } from "./flow";
 import { FlowStep } from "./flowstep";
+import { Family } from "./family";
+import { Session } from "./session";
 
 export interface IAgent {
   id: string;
@@ -92,6 +94,31 @@ agentSchema.virtual("flowsteps", {
   ref: FlowStep,
   localField: "_id",
   foreignField: "agent",
+});
+
+agentSchema.virtual("parents", {
+  ref: Family,
+  localField: "_id",
+  foreignField: "agent",
+});
+
+agentSchema.virtual("sessions", {
+  ref: Session,
+  localField: "_id",
+  foreignField: "agent",
+});
+
+agentSchema.pre("deleteOne", async function (next) {
+  const agent = this.getQuery();
+  await Promise.all([
+    FlowStep.deleteMany({ agent: agent }),
+    Hiring.deleteMany({ agent: agent }),
+    Family.deleteMany({ agent: agent }),
+    Family.deleteMany({ parent: agent }),
+    Session.deleteMany({ agent: agent }),
+  ]);
+  console.log("FlowStep, Hiring, Family ve Session silindi");
+  next();
 });
 
 export const Agent =

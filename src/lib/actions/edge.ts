@@ -30,33 +30,48 @@ export async function fetchEdge(
   }
 }
 
-export async function createEdgeAction(data: any) {
+export async function createEdgeAction(data: any): Promise<{
+  data?: any;
+  error?: string;
+  success: boolean;
+}> {
   try {
     const edge = await createEdge(data);
     revalidatePath("/edges");
-    return { data: JSON.parse(JSON.stringify(edge)) };
+    return { data: JSON.parse(JSON.stringify(edge)), success: true };
   } catch (error: any) {
-    return { error: error.message };
+    return { error: error.message, success: false };
   }
 }
 
-export async function updateEdgeAction(id: string, data: any) {
+export async function updateEdgeAction(
+  id: string,
+  data: any
+): Promise<{
+  data?: any;
+  error?: string;
+  success: boolean;
+}> {
   try {
     const edge = await updateEdge(id, data);
     revalidatePath("/edges");
     revalidatePath("/edges/[id]");
-    return { data: JSON.parse(JSON.stringify(edge)) };
+    return { data: JSON.parse(JSON.stringify(edge)), success: true };
   } catch (error: any) {
-    return { error: error.message };
+    return { error: error.message, success: false };
   }
 }
 
-export async function deleteEdgeAction(id: string) {
+export async function deleteEdgeAction(id: string): Promise<{
+  data?: any;
+  error?: string;
+  success: boolean;
+}> {
   try {
     const edge = await deleteEdge(id);
     revalidatePath("/edges");
-    return { data: JSON.parse(JSON.stringify(edge)) };
+    return { data: JSON.parse(JSON.stringify(edge)), success: true };
   } catch (error: any) {
-    return { error: error.message };
+    return { error: error.message, success: false };
   }
 }

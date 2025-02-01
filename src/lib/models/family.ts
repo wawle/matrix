@@ -17,7 +17,6 @@ export const familySchema = new mongoose.Schema<IFamily>(
       ref: "Agent",
       required: true,
     },
-
     parent: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Parent",

@@ -19,22 +19,18 @@ export const keySchema = new mongoose.Schema<IKey>(
       type: String,
       required: true,
     },
-
     description: {
       type: String,
       required: false,
     },
-
     value: {
       type: String,
       required: true,
     },
-
     type: {
       type: String,
       required: false,
     },
-
     user: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",

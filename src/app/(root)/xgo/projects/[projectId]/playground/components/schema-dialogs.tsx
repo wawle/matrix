@@ -255,14 +255,6 @@ export function SchemaDialogs({
             </DialogDescription>
           </DialogHeader>
           <div className="grid gap-4 py-4">
-            <div className="flex items-center space-x-2 mb-4">
-              <Switch
-                id="updateExisting"
-                checked={isUpdatingExisting}
-                onCheckedChange={setIsUpdatingExisting}
-              />
-              <Label htmlFor="updateExisting">Mevcut Şemayı Güncelle</Label>
-            </div>
             <div className="space-y-2">
               <Label htmlFor="name">Şema Adı</Label>
               <Input
@@ -290,16 +282,6 @@ export function SchemaDialogs({
                   }))
                 }
               />
-            </div>
-            <div className="flex items-center space-x-2">
-              <Switch
-                id="active"
-                checked={newModule.isActive}
-                onCheckedChange={(checked) =>
-                  setNewModule((prev: any) => ({ ...prev, isActive: checked }))
-                }
-              />
-              <Label htmlFor="active">Aktif</Label>
             </div>
           </div>
           <DialogFooter>

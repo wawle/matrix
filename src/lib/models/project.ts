@@ -45,5 +45,11 @@ projectSchema.virtual("versions", {
   foreignField: "project",
 });
 
+projectSchema.pre("deleteOne", async function (next) {
+  const project = this.getQuery();
+  await Version.deleteMany({ project: project });
+  next();
+});
+
 export const Project =
   mongoose.models.Project || mongoose.model<IProject>("Project", projectSchema);

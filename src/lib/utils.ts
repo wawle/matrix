@@ -54,8 +54,32 @@ export const convertMongooseSchemaToZod = (mongooseSchema: Schema) => {
   return z.object(zodShape);
 };
 
-export function convertTemplateToProject(template: IVersion) {
+export function convertTemplateToVersion(
+  template: IVersion,
+  projectId: string
+): {
+  name: string;
+  description: string;
+  is_active: boolean;
+  project: string;
+  models: {
+    name: string;
+    description: string;
+    fields: {
+      name: string;
+      type: string;
+      label: string;
+      validations: any;
+    }[];
+  }[];
+  nodes: any[];
+  edges: any[];
+} {
   return {
+    name: template.name,
+    description: template.description || "",
+    is_active: true,
+    project: projectId,
     models: template.nodes.map((node) => ({
       name: node.data.name,
       description: node.data.description,
@@ -63,9 +87,10 @@ export function convertTemplateToProject(template: IVersion) {
         name: field.name,
         type: field.type,
         label: field.label,
-        validations: field.validations,
+        validations: field?.validations || {},
       })),
-      relationships: [],
     })),
+    nodes: template.nodes,
+    edges: template.edges,
   };
 }
