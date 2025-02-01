@@ -80,14 +80,14 @@ userSchema.virtual("keys", {
   foreignField: "user",
 });
 
-userSchema.pre("deleteOne", async function (next) {
-  const user = this.getQuery();
+userSchema.pre("findOneAndDelete", async function (next) {
+  const { _id } = this.getQuery();
   await Promise.all([
-    Hiring.deleteMany({ user: user }),
-    Flow.deleteMany({ user: user }),
-    Project.deleteMany({ user: user }),
-    Session.deleteMany({ user: user }),
-    Key.deleteMany({ user: user }),
+    Hiring.deleteMany({ user: _id }),
+    Flow.deleteMany({ user: _id }),
+    Project.deleteMany({ user: _id }),
+    Session.deleteMany({ user: _id }),
+    Key.deleteMany({ user: _id }),
   ]);
   next();
 });

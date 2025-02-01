@@ -82,12 +82,7 @@ export default function SchemaPlayground({
           updateNodeDimensions(node.id, undefined, height),
       },
     })),
-    edges: defaultVersion.edges.map((edge) => ({
-      ...edge,
-      data: {
-        ...edge.data,
-      },
-    })),
+    edges: defaultVersion.edges,
   });
 
   const updateNodeDimensions = useCallback(
@@ -111,8 +106,6 @@ export default function SchemaPlayground({
     []
   );
 
-  console.log({ defaultVersion });
-
   // ReactFlow durumları
   const [nodes, setNodes, onNodesChange] = useNodesState(
     defaultVersion.nodes.map((node) => ({
@@ -125,7 +118,14 @@ export default function SchemaPlayground({
       },
     }))
   );
-  const [edges, setEdges, onEdgesChange] = useEdgesState(defaultVersion.edges);
+  const [edges, setEdges, onEdgesChange] = useEdgesState(
+    defaultVersion.edges.map((edge) => ({
+      ...edge,
+      style: {
+        stroke: "hsl(var(--primary))",
+      },
+    }))
+  );
 
   // Seçim ve düzenleme durumları
   const [selectedNode, setSelectedNode] = useState<Node | null>(null);
@@ -348,12 +348,14 @@ export default function SchemaPlayground({
           },
         }));
         setNodes(nodesWithHandlers);
+        console.log({ defaultTemplate });
         setEdges(JSON.parse(JSON.stringify(defaultTemplate.edges)));
         setSelectedPreset(value);
       }
 
       const selectedVersion = versions.find((t) => t.id === value);
       if (selectedVersion) {
+        console.log({ selectedVersion });
         setNodes(selectedVersion.nodes);
         setEdges(selectedVersion.edges);
         setSelectedPreset(value);
@@ -379,7 +381,7 @@ export default function SchemaPlayground({
   const createConnection = useCallback(() => {
     if (!pendingConnection?.source || !pendingConnection?.target) return;
     const newEdge: Edge = {
-      id: `e${pendingConnection.source}-${pendingConnection.target}`,
+      id: `${pendingConnection.source}-${pendingConnection.target}`,
       source: pendingConnection.source,
       target: pendingConnection.target,
       animated: true,

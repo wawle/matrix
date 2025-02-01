@@ -225,26 +225,44 @@ export const generateVersionFromTemplate = async (
       version: createdVersion.data.id,
     }));
 
-    const newEdgesBody = newVersion.edges.map((edge) => ({
-      source: edge.source,
-      target: edge.target,
-      sourceHandle: edge.sourceHandle,
-      targetHandle: edge.targetHandle,
-      version: createdVersion.data.id,
-    }));
-
-    const [createdModels, createdNodes, createdEdges] = await Promise.all([
+    const [createdModels, createdNodes] = await Promise.all([
       Promise.all(newModelsBody.map((model) => createModelAction(model))),
       Promise.all(newNodesBody.map((node) => createNodeAction(node))),
-      Promise.all(newEdgesBody.map((edge) => createEdgeAction(edge))),
     ]);
 
     const allModelsSuccess = createdModels.every((model) => model.success);
     const allNodesSuccess = createdNodes.every((node) => node.success);
+
+    if (!allModelsSuccess || !allNodesSuccess) {
+      throw new Error("Model veya Node oluşturulurken bir hata oluştu");
+    }
+
+    const newEdgesBody = newVersion.edges.map((edge) => {
+      const sourceNode = createdNodes.find(
+        (n) => n.data.data.name === edge.source
+      );
+      const targetNode = createdNodes.find(
+        (n) => n.data.data.name === edge.target
+      );
+
+      return {
+        ...edge,
+        version: createdVersion.data.id,
+        source: sourceNode?.data.id,
+        target: targetNode?.data.id,
+      };
+    });
+
+    console.log({ newEdgesBody, createdNodes: createdNodes[0] });
+
+    const createdEdges = await Promise.all(
+      newEdgesBody.map((edge) => createEdgeAction(edge))
+    );
+
     const allEdgesSuccess = createdEdges.every((edge) => edge.success);
 
-    if (!allModelsSuccess || !allNodesSuccess || !allEdgesSuccess) {
-      throw new Error("Model, Node veya Edge oluşturulurken bir hata oluştu");
+    if (!allEdgesSuccess) {
+      throw new Error("Edge oluşturulurken bir hata oluştu");
     }
 
     const newFieldsBody = newVersion.models.flatMap((model) =>

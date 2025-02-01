@@ -35,6 +35,12 @@ export async function getProjectById(id: string): Promise<IProject> {
         {
           path: "models",
           model: Model,
+          select: "name description fields",
+          populate: {
+            path: "fields",
+            model: Field,
+            select: "name type label validations",
+          },
         },
         {
           path: "nodes",
@@ -44,7 +50,7 @@ export async function getProjectById(id: string): Promise<IProject> {
         {
           path: "edges",
           model: Edge,
-          select: "source target sourceHandle targetHandle",
+          select: "source target data label animated",
         },
       ],
     });

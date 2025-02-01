@@ -3,6 +3,8 @@ import { getAutoSaveState } from "@/lib/actions/version";
 import SchemaPlayground from "./components/schema-playground";
 import { templates } from "@/lib/constants/templates";
 import { IProject } from "@/lib/models/project";
+import { fetchModels } from "@/lib/actions/model";
+import { IEdge } from "@/lib/models/edge";
 
 interface Props {
   params: Promise<{
@@ -17,9 +19,20 @@ const ProjectPlaygroundPage = async ({ params }: Props) => {
     getAutoSaveState(),
   ]);
 
-  const defaultVersion =
-    project?.versions.length > 0 ? project?.versions[0] : templates[0];
-  console.log({ versions: project?.versions });
+  let defaultVersion = null;
+  if (project?.versions.length > 0) {
+    defaultVersion = project?.versions[0];
+    const { data: models } = await fetchModels({ version: defaultVersion.id });
+    defaultVersion.models = models;
+    defaultVersion.edges = defaultVersion.edges.map((edge: IEdge) => ({
+      ...edge,
+      style: {
+        stroke: "hsl(var(--primary))",
+      },
+    }));
+  } else {
+    defaultVersion = templates[0];
+  }
 
   return (
     <SchemaPlayground

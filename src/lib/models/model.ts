@@ -42,9 +42,9 @@ modelSchema.virtual("fields", {
   foreignField: "model",
 });
 
-modelSchema.pre("deleteOne", async function (next) {
-  const model = this.getQuery();
-  await Field.deleteMany({ model: model });
+modelSchema.pre("findOneAndDelete", async function (next) {
+  const { _id } = this.getQuery();
+  await Field.deleteMany({ model: _id });
   next();
 });
 

@@ -108,16 +108,15 @@ agentSchema.virtual("sessions", {
   foreignField: "agent",
 });
 
-agentSchema.pre("deleteOne", async function (next) {
-  const agent = this.getQuery();
+agentSchema.pre("findOneAndDelete", async function (next) {
+  const { _id } = this.getQuery();
   await Promise.all([
-    FlowStep.deleteMany({ agent: agent }),
-    Hiring.deleteMany({ agent: agent }),
-    Family.deleteMany({ agent: agent }),
-    Family.deleteMany({ parent: agent }),
-    Session.deleteMany({ agent: agent }),
+    FlowStep.deleteMany({ agent: _id }),
+    Hiring.deleteMany({ agent: _id }),
+    Family.deleteMany({ agent: _id }),
+    Family.deleteMany({ parent: _id }),
+    Session.deleteMany({ agent: _id }),
   ]);
-  console.log("FlowStep, Hiring, Family ve Session silindi");
   next();
 });
 

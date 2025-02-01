@@ -8,13 +8,18 @@ import {
   updateModel,
   deleteModel,
 } from "@/lib/services/model";
+import { IModel } from "../models/model";
 
-export async function fetchModels() {
+export async function fetchModels(query: any): Promise<{
+  data: IModel[];
+  error?: string;
+  success: boolean;
+}> {
   try {
-    const models = await getModels();
-    return { data: JSON.parse(JSON.stringify(models)) };
+    const models = await getModels(query);
+    return { data: JSON.parse(JSON.stringify(models)), success: true };
   } catch (error: any) {
-    return { error: error.message };
+    return { error: error.message, success: false, data: [] };
   }
 }
 

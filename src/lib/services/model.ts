@@ -2,10 +2,10 @@ import { Model, IModel } from "@/lib/models/model";
 import connectDB from "@/lib/db";
 import { Field } from "../models/field";
 
-export async function getModels(): Promise<IModel[]> {
+export async function getModels(query: any): Promise<IModel[]> {
   try {
     await connectDB();
-    const models = await Model.find()
+    const models = await Model.find(query)
       .populate({
         path: "fields",
         model: Field,

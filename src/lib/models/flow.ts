@@ -49,13 +49,12 @@ flowSchema.virtual("sessions", {
   foreignField: "flow",
 });
 
-flowSchema.pre("deleteOne", async function (next) {
-  const flow = this.getQuery();
+flowSchema.pre("findOneAndDelete", async function (next) {
+  const { _id } = this.getQuery();
   await Promise.all([
-    FlowStep.deleteMany({ flow: flow }),
-    FlowSession.deleteMany({ flow: flow }),
+    FlowStep.deleteMany({ flow: _id }),
+    FlowSession.deleteMany({ flow: _id }),
   ]);
-  console.log("FlowStep ve FlowSession silindi");
   next();
 });
 

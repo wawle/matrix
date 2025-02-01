@@ -45,9 +45,9 @@ projectSchema.virtual("versions", {
   foreignField: "project",
 });
 
-projectSchema.pre("deleteOne", async function (next) {
-  const project = this.getQuery();
-  await Version.deleteMany({ project: project });
+projectSchema.pre("findOneAndDelete", async function (next) {
+  const { _id } = this.getQuery();
+  await Version.deleteMany({ project: _id });
   next();
 });
 

@@ -1,6 +1,6 @@
-import mongoose, { Model } from "mongoose";
+import mongoose from "mongoose";
 import { IProject } from "./project";
-import { IModel } from "./model";
+import { IModel, Model } from "./model";
 import { Edge, IEdge } from "./edge";
 import { INode, Node } from "./node";
 
@@ -63,12 +63,12 @@ versionSchema.virtual("edges", {
   foreignField: "version",
 });
 
-versionSchema.pre("deleteOne", async function (next) {
-  const version = this.getQuery();
+versionSchema.pre("findOneAndDelete", async function (next) {
+  const { _id } = this.getQuery();
   await Promise.all([
-    Model.deleteMany({ version: version }),
-    Node.deleteMany({ version: version }),
-    Edge.deleteMany({ version: version }),
+    Model.deleteMany({ version: _id }),
+    Node.deleteMany({ version: _id }),
+    Edge.deleteMany({ version: _id }),
   ]);
   next();
 });

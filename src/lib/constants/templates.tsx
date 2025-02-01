@@ -191,7 +191,7 @@ export const gymTemplate: IVersion = {
       type: "schema",
       position: { x: 100, y: 100 },
       data: {
-        label: "Müşteri Şeması",
+        name: "Customer",
         description: "Müşteri bilgilerini içeren şema",
         isActive: true,
         fields: [
@@ -212,7 +212,7 @@ export const gymTemplate: IVersion = {
       type: "schema",
       position: { x: 500, y: 100 },
       data: {
-        label: "Üyelik Şeması",
+        name: "Membership",
         description: "Üyelik bilgilerini içeren şema",
         isActive: true,
         fields: [
@@ -231,7 +231,7 @@ export const gymTemplate: IVersion = {
       type: "schema",
       position: { x: 900, y: 100 },
       data: {
-        label: "Üyelik Tipi Şeması",
+        name: "MembershipType",
         description: "Üyelik paketlerini içeren şema",
         isActive: true,
         fields: [
@@ -249,7 +249,7 @@ export const gymTemplate: IVersion = {
       type: "schema",
       position: { x: 100, y: 400 },
       data: {
-        label: "Eğitmen Şeması",
+        name: "Trainer",
         description: "Eğitmen bilgilerini içeren şema",
         isActive: true,
         fields: [
@@ -274,7 +274,7 @@ export const gymTemplate: IVersion = {
       type: "schema",
       position: { x: 500, y: 400 },
       data: {
-        label: "Aktivite Şeması",
+        name: "Activity",
         description: "Grup dersleri ve aktiviteleri içeren şema",
         isActive: true,
         fields: [
@@ -292,7 +292,7 @@ export const gymTemplate: IVersion = {
       type: "schema",
       position: { x: 900, y: 400 },
       data: {
-        label: "Program Şeması",
+        name: "Schedule",
         description: "Ders ve aktivite programını içeren şema",
         isActive: true,
         fields: [
