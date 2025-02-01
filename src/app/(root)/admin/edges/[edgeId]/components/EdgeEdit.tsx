@@ -1,4 +1,3 @@
-
 import { Container } from "@/components/ui/container";
 import { FormUI } from "@/components/ui/form-ui";
 import { redirect } from "next/navigation";
@@ -16,7 +15,7 @@ interface Props {
 export async function EdgeEdit(props: Props) {
   const { edgeId } = props;
   const { data } = await fetchEdge(edgeId);
-  
+
   const schema = Object.keys(EdgeSchema.shape);
   const defaultValues = schema.reduce<Record<string, any>>((acc, key) => {
     acc[key] = (data as Record<string, any>)?.[key] || "";
@@ -24,7 +23,13 @@ export async function EdgeEdit(props: Props) {
   }, {});
 
   const inputs = schema
-    .filter((key) => key !== "id" && key !== "_id" && key !== "createdAt" && key !== "updatedAt")
+    .filter(
+      (key) =>
+        key !== "id" &&
+        key !== "_id" &&
+        key !== "createdAt" &&
+        key !== "updatedAt"
+    )
     .map((key) => ({
       name: key,
       label: key.charAt(0).toUpperCase() + key.slice(1),
@@ -37,7 +42,7 @@ export async function EdgeEdit(props: Props) {
     : "Yeni bir Edge oluşturabilirsiniz.";
 
   const onSubmit = async (data: EdgeFormData) => {
-   "use server";
+    "use server";
 
     // validate data
     const result = EdgeSchema.safeParse(data);
@@ -62,13 +67,12 @@ export async function EdgeEdit(props: Props) {
   };
 
   return (
-    <Container
-      title={title}
-      description={description}
-      className=""
-    >
-      <FormUI defaultValues={defaultValues} inputs={inputs} onSubmit={onSubmit} />
+    <Container title={title} description={description} className="">
+      <FormUI
+        defaultValues={defaultValues}
+        inputs={inputs}
+        onSubmit={onSubmit}
+      />
     </Container>
-  )
+  );
 }
-    

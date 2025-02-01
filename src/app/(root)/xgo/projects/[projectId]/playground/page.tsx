@@ -1,13 +1,13 @@
 import { fetchProject } from "@/lib/actions/project";
-import { fetchVersion, getAutoSaveState } from "@/lib/actions/version";
+import { getAutoSaveState } from "@/lib/actions/version";
 import SchemaPlayground from "./components/schema-playground";
 import { templates } from "@/lib/constants/templates";
 import { IProject } from "@/lib/models/project";
 
 interface Props {
-  params: {
+  params: Promise<{
     projectId: string;
-  };
+  }>;
 }
 
 const ProjectPlaygroundPage = async ({ params }: Props) => {

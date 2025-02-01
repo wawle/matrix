@@ -8,9 +8,7 @@ export default async function Layout({
 }) {
   return (
     <section>
-      <SidebarLayout title="v1" sidebarData={userSidebarData}>
-        {children}
-      </SidebarLayout>
+      <SidebarLayout sidebarData={userSidebarData}>{children}</SidebarLayout>
     </section>
   );
 }

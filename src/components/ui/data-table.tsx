@@ -1,4 +1,3 @@
-
 "use client";
 
 import * as React from "react";
@@ -36,13 +35,12 @@ import {
   TableRow,
 } from "@/components/ui/table";
 
-
 interface Props<TData, TValue> {
   data: TData[];
   defaultColumnVisibility?: {
     [x: string]: boolean;
   };
-  onDelete: (id: string) => Promise<{ error?: string; success?: string }>;
+  onDelete: (id: string) => Promise<{ error?: string; success?: boolean }>;
 }
 
 export function DataTable<TData, TValue>({
@@ -95,7 +93,9 @@ export function DataTable<TData, TValue>({
             </Button>
           );
         },
-        cell: ({ row }) => <div className="truncate w-52">{row.getValue(key)}</div>,
+        cell: ({ row }) => (
+          <div className="truncate w-52">{row.getValue(key)}</div>
+        ),
       };
     });
 
@@ -297,4 +297,3 @@ export function DataTable<TData, TValue>({
     </div>
   );
 }
-    

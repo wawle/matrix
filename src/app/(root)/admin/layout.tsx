@@ -14,9 +14,7 @@ export default async function Layout({
   }
   return (
     <section>
-      <SidebarLayout title="v1" sidebarData={adminSidebarData}>
-        {children}
-      </SidebarLayout>
+      <SidebarLayout sidebarData={adminSidebarData}>{children}</SidebarLayout>
     </section>
   );
 }
