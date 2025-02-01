@@ -20,8 +20,6 @@ const ProjectPlaygroundPage = async ({ params }: Props) => {
   const defaultVersion =
     project?.versions.length > 0 ? project?.versions[0] : templates[0];
 
-  console.log({ defaultVersion });
-
   return (
     <SchemaPlayground
       versions={project?.versions}

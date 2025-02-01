@@ -55,7 +55,6 @@ export const convertMongooseSchemaToZod = (mongooseSchema: Schema) => {
 };
 
 export function convertTemplateToProject(template: IVersion) {
-  console.log({ template });
   return {
     models: template.nodes.map((node) => ({
       name: node.data.name,

@@ -37,8 +37,6 @@ export async function loginAction(data: LoginFormValues): Promise<{
 
     return { success: true, token, user };
   } catch (error) {
-    console.log(error);
-
     return { success: false, error: "Login failed" };
   }
 }

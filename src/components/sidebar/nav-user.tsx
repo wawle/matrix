@@ -27,7 +27,6 @@ interface Props {
 
 export function NavUser(props: Props) {
   const { user } = props;
-  console.log(user);
   const { push } = useRouter();
 
   const onLogout = async () => {

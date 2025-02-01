@@ -24,7 +24,6 @@ export const authSession = cache(
     }
 
     const user = await encrypt(token);
-    console.log(user);
     if (!user) {
       return {
         id: "",

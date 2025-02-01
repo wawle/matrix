@@ -24,8 +24,6 @@ export async function POST(request: Request) {
       },
     });
   } catch (error) {
-    console.log(error);
-
     return NextResponse.json({ message: "Bir hata oluştu" }, { status: 500 });
   }
 }
