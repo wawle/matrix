@@ -31,7 +31,7 @@ const FlowCard = ({ flow, className, ...props }: FlowCardProps) => {
             <CardTitle>{flow.name}</CardTitle>
             <CardDescription>{flow.description}</CardDescription>
           </div>
-          <Link href={`/workflows/${flow.id}/edit`}>
+          <Link href={`/flowish/${flow.id}/edit`}>
             <Button variant="ghost" size="icon">
               <Eye className="w-2 h-2" />
             </Button>

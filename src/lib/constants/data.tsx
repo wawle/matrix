@@ -4,6 +4,7 @@ import {
   Bot,
   BotIcon,
   Box,
+  BoxIcon,
   CircleDotDashed,
   FileBox,
   FileInput,
@@ -109,8 +110,8 @@ export const adminSidebarData: ISidebarData = {
       ],
     },
     {
-      title: "Workflows",
-      url: "/admin/flows",
+      title: "Flowish",
+      url: "/admin/flowish",
       icon: <Workflow />,
       isActive: false,
       items: [
@@ -182,7 +183,7 @@ export const adminSidebarData: ISidebarData = {
   navSecondary: [
     {
       title: "Settings",
-      url: "/admin/settings",
+      url: "/settings",
       icon: <Settings2 />,
       isActive: false,
     },
@@ -192,7 +193,7 @@ export const adminSidebarData: ISidebarData = {
 export const userSidebarData = {
   navMain: [
     {
-      title: "Home",
+      title: "Matrix",
       url: "/",
       icon: <HomeIcon />,
     },
@@ -209,13 +210,13 @@ export const userSidebarData = {
           icon: <Bot />,
         },
         {
-          title: "Workflows",
-          url: "/workflows",
+          title: "Flowish",
+          url: "/flowish/flows",
           icon: <Workflow />,
         },
         {
           title: "XGO",
-          url: "/xgo",
+          url: "/xgo/projects",
           icon: <Box />,
         },
       ],
@@ -224,7 +225,7 @@ export const userSidebarData = {
   navSecondary: [
     {
       title: "Settings",
-      url: "/admin/settings",
+      url: "/settings",
       icon: <Settings2 />,
       isActive: false,
     },

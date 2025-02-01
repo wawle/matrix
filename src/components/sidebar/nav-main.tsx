@@ -15,7 +15,6 @@ export function NavMain({ items }: { items: INavItem[] }) {
         <SidebarMenuItem key={item.title}>
           <SidebarMenuButton asChild isActive={item.isActive}>
             <Link href={item.url} className="flex items-center">
-              {item.icon}
               <h2 className="text-xl font-semibold tracking-tight">
                 {item.title}
               </h2>

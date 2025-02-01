@@ -38,10 +38,12 @@ export function NavUser(props: Props) {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="ghost" className="relative h-8 w-8 rounded-full">
-          <Avatar className="h-6 w-6 p-1">
+        <Button variant="secondary" className="relative h-8 w-8 rounded-full">
+          <Avatar className="h-8 w-8">
             <AvatarImage src={user.photo} alt={user.fullname} />
-            <AvatarFallback>{user.fullname.charAt(0)}</AvatarFallback>
+            <AvatarFallback className="font-bold">
+              {user.fullname.charAt(0)}
+            </AvatarFallback>
           </Avatar>
         </Button>
       </DropdownMenuTrigger>

@@ -86,3 +86,48 @@ body {
     @apply bg-background text-foreground;
   }
 }
+
+/* React Flow Controls Dark Theme */
+.react-flow__controls {
+  background: hsl(var(--background) / 0.7);
+  backdrop-filter: blur(10px);
+  border: 1px solid hsl(var(--border) / 0.2);
+  border-radius: 12px;
+  box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+  padding: 6px;
+}
+
+.react-flow__controls-button {
+  background: transparent !important;
+  border: none !important;
+  border-radius: 6px;
+  margin: 2px 0;
+  padding: 6px;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.react-flow__controls-button svg {
+  width: 16px;
+  height: 16px;
+  fill: hsl(var(--foreground) / 0.7);
+  transition: fill 0.2s ease;
+}
+
+.react-flow__controls-button:hover {
+  background: hsl(var(--accent) / 0.3) !important;
+}
+
+.react-flow__controls-button:hover svg {
+  fill: hsl(var(--foreground));
+}
+
+.react-flow__controls-button:active {
+  background: hsl(var(--accent) / 0.4) !important;
+  transform: scale(0.97);
+}
