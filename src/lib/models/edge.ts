@@ -10,6 +10,8 @@ export interface IEdge {
   data: any;
   source: string;
   target: string;
+  sourceName: string;
+  targetName: string;
   animated: boolean;
   label: string;
 }
@@ -25,7 +27,15 @@ export const edgeSchema = new mongoose.Schema<IEdge>(
       type: String,
       required: true,
     },
+    sourceName: {
+      type: String,
+      required: true,
+    },
     target: {
+      type: String,
+      required: true,
+    },
+    targetName: {
       type: String,
       required: true,
     },

@@ -82,25 +82,13 @@ export function SchemaSidebar({
                   <div className="space-y-2">
                     <div className="flex items-center justify-between">
                       <Label>Şema Adı</Label>
-                      <div className="flex items-center space-x-2">
-                        <Switch
-                          checked={selectedNode.data.isActive}
-                          onCheckedChange={(checked: boolean) =>
-                            onUpdateNode({
-                              ...selectedNode.data,
-                              isActive: checked,
-                            })
-                          }
-                        />
-                        <Label>Aktif</Label>
-                      </div>
                     </div>
                     <Input
-                      value={selectedNode.data.label}
+                      value={selectedNode.data.name}
                       onChange={(e) =>
                         onUpdateNode({
                           ...selectedNode.data,
-                          label: e.target.value,
+                          name: e.target.value,
                         })
                       }
                     />

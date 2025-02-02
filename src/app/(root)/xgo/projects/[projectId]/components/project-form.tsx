@@ -44,9 +44,10 @@ export function ProjectForm({ defaultValues, projectId }: ProjectFormProps) {
   });
 
   async function onSubmit(data: FormValues) {
-    const action = projectId
-      ? updateProjectAction(projectId as string, data)
-      : createProjectAction(data);
+    const action =
+      projectId !== "new"
+        ? updateProjectAction(projectId as string, data)
+        : createProjectAction(data);
     const successMessage = projectId
       ? "Projeniz başarıyla güncellendi."
       : "Projeniz başarıyla oluşturuldu.";

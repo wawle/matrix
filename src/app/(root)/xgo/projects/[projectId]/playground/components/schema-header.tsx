@@ -21,6 +21,8 @@ import {
   Database,
   FileJson,
   Plus,
+  Cpu,
+  Loader2,
 } from "lucide-react";
 import {
   Tooltip,
@@ -36,6 +38,8 @@ interface SchemaHeaderProps {
   selectedPreset: string;
   versions: IVersion[];
   isAutoSaveEnabled: boolean;
+  selectedNode: any | null;
+  isGeneratingApp: boolean;
   onPresetChange: (value: string) => void;
   onAutoSaveChange: (checked: boolean) => void;
   onSave: () => void;
@@ -45,13 +49,15 @@ interface SchemaHeaderProps {
   onGenerateTypeScript: () => void;
   onNewSchema: () => void;
   onAIPrompt: () => void;
-  selectedNode: any | null;
+  onGenerateApp: () => void;
 }
 
 export function SchemaHeader({
   selectedPreset,
   versions,
   isAutoSaveEnabled,
+  selectedNode,
+  isGeneratingApp,
   onPresetChange,
   onAutoSaveChange,
   onSave,
@@ -61,7 +67,7 @@ export function SchemaHeader({
   onGenerateTypeScript,
   onNewSchema,
   onAIPrompt,
-  selectedNode,
+  onGenerateApp,
 }: SchemaHeaderProps) {
   return (
     <div className="flex items-center justify-between border-b px-6 py-3">
@@ -76,7 +82,11 @@ export function SchemaHeader({
               <SelectGroup>
                 <SelectLabel>Versiyonlar</SelectLabel>
                 {versions.map((version) => (
-                  <SelectItem key={version.id} value={version.id}>
+                  <SelectItem
+                    key={version.id}
+                    value={version.id}
+                    className="text-xs"
+                  >
                     {version.name}
                   </SelectItem>
                 ))}
@@ -86,7 +96,11 @@ export function SchemaHeader({
             <SelectGroup>
               <SelectLabel>Varsayılan Şablonlar</SelectLabel>
               {templates.map((template) => (
-                <SelectItem key={template.id} value={template.id}>
+                <SelectItem
+                  key={template.id}
+                  value={template.id}
+                  className="text-xs"
+                >
                   {template.name}
                 </SelectItem>
               ))}
@@ -158,9 +172,24 @@ export function SchemaHeader({
         <TooltipProvider>
           <Tooltip>
             <TooltipTrigger asChild>
+              <Button variant="outline" size="sm" onClick={onGenerateApp}>
+                {isGeneratingApp ? (
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                ) : (
+                  <Cpu className="mr-2 h-4 w-4" />
+                )}
+                App Builder
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent side="bottom">
+              <p>App oluştur</p>
+            </TooltipContent>
+          </Tooltip>
+          <Tooltip>
+            <TooltipTrigger asChild>
               <Button variant="outline" size="sm" onClick={onAIPrompt}>
                 <Wand2 className="mr-2 h-4 w-4" />
-                AI
+                AI Helper
               </Button>
             </TooltipTrigger>
             <TooltipContent side="bottom">

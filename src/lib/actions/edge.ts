@@ -37,7 +37,7 @@ export async function createEdgeAction(data: any): Promise<{
 }> {
   try {
     const edge = await createEdge(data);
-    revalidatePath("/edges");
+    revalidatePath("/admin/edges");
     return { data: JSON.parse(JSON.stringify(edge)), success: true };
   } catch (error: any) {
     return { error: error.message, success: false };
@@ -54,8 +54,8 @@ export async function updateEdgeAction(
 }> {
   try {
     const edge = await updateEdge(id, data);
-    revalidatePath("/edges");
-    revalidatePath("/edges/[id]");
+    revalidatePath("/admin/edges");
+    revalidatePath("/admin/edges/[id]", "page");
     return { data: JSON.parse(JSON.stringify(edge)), success: true };
   } catch (error: any) {
     return { error: error.message, success: false };

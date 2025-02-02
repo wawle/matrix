@@ -1,4 +1,3 @@
-
 // actions
 import { fetchEdges, deleteEdgeAction } from "@/lib/actions/edge";
 // components
@@ -8,9 +7,7 @@ import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { Plus } from "lucide-react";
 
-
-
-export const EdgeList = async() => {
+export const EdgeList = async () => {
   const { data } = await fetchEdges();
 
   return (
@@ -18,7 +15,7 @@ export const EdgeList = async() => {
       title="Edge Listesi"
       description="Edge bilgilerini görüntüleyebilirsiniz."
       className=""
-       actions={
+      actions={
         <Link href={"/admin/edges/new"}>
           <Button variant="outline">
             <Plus className="mr-2 h-4 w-4" />
@@ -31,11 +28,11 @@ export const EdgeList = async() => {
         data={data}
         onDelete={deleteEdgeAction}
         defaultColumnVisibility={{
-  "version": true,
-  "data": true
-}}
+          targetName: true,
+          sourceName: true,
+          label: true,
+        }}
       />
     </Container>
   );
 };
-  

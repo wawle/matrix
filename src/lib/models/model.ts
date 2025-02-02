@@ -10,7 +10,7 @@ export interface IModel {
   name: string;
   version?: IVersion;
   description?: string;
-  fields?: IField[];
+  fields: IField[];
 }
 
 export const modelSchema = new mongoose.Schema<IModel>(
@@ -43,6 +43,12 @@ modelSchema.virtual("fields", {
 });
 
 modelSchema.pre("findOneAndDelete", async function (next) {
+  const { _id } = this.getQuery();
+  await Field.deleteMany({ model: _id });
+  next();
+});
+
+modelSchema.pre("deleteMany", async function (next) {
   const { _id } = this.getQuery();
   await Field.deleteMany({ model: _id });
   next();

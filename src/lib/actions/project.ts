@@ -23,12 +23,16 @@ export async function fetchProjects(): Promise<{
   }
 }
 
-export async function fetchProject(id: string) {
+export async function fetchProject(id: string): Promise<{
+  data?: IProject;
+  success: boolean;
+  error?: string;
+}> {
   try {
     const project = await getProjectById(id);
-    return { data: JSON.parse(JSON.stringify(project)) };
+    return { data: JSON.parse(JSON.stringify(project)), success: true };
   } catch (error: any) {
-    return { error: error.message };
+    return { error: error.message, success: false };
   }
 }
 

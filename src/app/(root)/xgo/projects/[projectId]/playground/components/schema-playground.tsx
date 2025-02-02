@@ -30,12 +30,16 @@ import { updateProjectAction } from "@/lib/actions/project";
 import { templates } from "@/lib/constants/templates";
 import {
   deleteVersionAction,
+  generateAppAction,
   generatePromptForVersion,
   generateVersionAction,
   generateVersionFromTemplate,
   setAutoSaveState,
+  updateAppFromVersion,
 } from "@/lib/actions/version";
 import { convertTemplateToVersion } from "@/lib/utils";
+import { INode } from "@/lib/models/node";
+import { IEdge } from "@/lib/models/edge";
 
 /**
  * @interface Props
@@ -175,6 +179,9 @@ export default function SchemaPlayground({
   const [isDeleting, setIsDeleting] = useState(false);
   const [versionToDelete, setVersionToDelete] = useState<string | null>(null);
 
+  // App oluşturma işlemi durumları
+  const [isGeneratingApp, setIsGeneratingApp] = useState(false);
+
   const handleAutoSaveChange = useCallback(async (state: boolean) => {
     setIsAutoSaveEnabled(state);
     await setAutoSaveState(state);
@@ -203,7 +210,7 @@ export default function SchemaPlayground({
         selectedTemplate,
         project.id
       );
-      if (result.success) {
+      if (result.success && result.version) {
         setSelectedPreset(result.version.id);
 
         toast.success("Yeni şema oluşturuldu.");
@@ -213,18 +220,20 @@ export default function SchemaPlayground({
       return;
     }
 
-    const newProject = convertTemplateToVersion(selectedVersion, project.id);
     try {
-      const result = await updateProjectAction(project.id, {
-        version: { ...selectedVersion, models: newProject.models },
-      });
+      const updatedVersion = {
+        ...selectedVersion,
+        nodes: nodes as INode[],
+        edges: edges as IEdge[],
+      };
+      const result = await updateAppFromVersion(updatedVersion, project.id);
       if (result.success) {
         toast.success("Proje başarıyla güncellendi.");
       }
     } catch (error) {
       toast.error("Proje güncellenirken bir hata oluştu.");
     }
-  }, [selectedPreset, project.id, toast]);
+  }, [selectedPreset, project.id, toast, nodes, edges]);
 
   /**
    * @function hasVersionChanged
@@ -348,14 +357,12 @@ export default function SchemaPlayground({
           },
         }));
         setNodes(nodesWithHandlers);
-        console.log({ defaultTemplate });
         setEdges(JSON.parse(JSON.stringify(defaultTemplate.edges)));
         setSelectedPreset(value);
       }
 
       const selectedVersion = versions.find((t) => t.id === value);
       if (selectedVersion) {
-        console.log({ selectedVersion });
         setNodes(selectedVersion.nodes);
         setEdges(selectedVersion.edges);
         setSelectedPreset(value);
@@ -439,7 +446,7 @@ export default function SchemaPlayground({
         y: Math.random() * 500,
       },
       data: {
-        label: newModule.name,
+        name: newModule.name,
         description: newModule.description,
         isActive: newModule.isActive,
         fields: [],
@@ -851,6 +858,21 @@ ${fields}
     setSelectedEdge(edge);
   }, []);
 
+  const onGenerateApp = useCallback(async () => {
+    setIsGeneratingApp(true);
+    return await generateAppAction(selectedPreset, project.id)
+      .then((result) => {
+        if (result.success) {
+          toast.success("App oluşturuldu");
+        } else {
+          toast.error(result.error);
+        }
+      })
+      .finally(() => {
+        setIsGeneratingApp(false);
+      });
+  }, []);
+
   return (
     <div className={`flex flex-col h-[calc(100vh-65px)]`}>
       {/* Header */}
@@ -858,6 +880,7 @@ ${fields}
         selectedPreset={selectedPreset}
         versions={versions}
         isAutoSaveEnabled={isAutoSaveEnabled}
+        isGeneratingApp={isGeneratingApp}
         onPresetChange={onPresetChange}
         onAutoSaveChange={handleAutoSaveChange}
         onSave={updateProject}
@@ -870,6 +893,7 @@ ${fields}
         onGenerateTypeScript={generateTypeScriptTypes}
         onNewSchema={() => setIsDialogOpen(true)}
         onAIPrompt={() => setIsAIPromptDialogOpen(true)}
+        onGenerateApp={onGenerateApp}
         selectedNode={selectedNode}
       />
 

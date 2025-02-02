@@ -51,8 +51,8 @@ export async function updateNodeAction(
 }> {
   try {
     const node = await updateNode(id, data);
-    revalidatePath("/nodes");
-    revalidatePath("/nodes/[id]");
+    revalidatePath("/admin/nodes");
+    revalidatePath("/admin/nodes/[id]", "page");
     return { data: JSON.parse(JSON.stringify(node)), success: true };
   } catch (error: any) {
     return { error: error.message, success: false };

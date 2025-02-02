@@ -12,10 +12,14 @@ import { cookies } from "next/headers";
 import { Node } from "reactflow";
 import { IVersion } from "../models/version";
 import { convertTemplateToVersion } from "../utils";
-import { createModelAction } from "./model";
-import { createFieldAction } from "./field";
-import { createNodeAction } from "./node";
-import { createEdgeAction } from "./edge";
+import { createModelAction, updateModelAction } from "./model";
+import { createFieldAction, updateFieldAction } from "./field";
+import { createNodeAction, updateNodeAction } from "./node";
+import { createEdgeAction, updateEdgeAction } from "./edge";
+import { fetchProject } from "./project";
+import { createNextProject } from "../xgo/generators/app";
+import { updateNode } from "../services/node";
+import { updateEdge } from "../services/edge";
 
 export async function fetchVersions() {
   try {
@@ -26,12 +30,16 @@ export async function fetchVersions() {
   }
 }
 
-export async function fetchVersion(id: string) {
+export async function fetchVersion(id: string): Promise<{
+  data?: IVersion;
+  error?: string;
+  success: boolean;
+}> {
   try {
     const version = await getVersionById(id);
-    return { data: JSON.parse(JSON.stringify(version)) };
+    return { data: JSON.parse(JSON.stringify(version)), success: true };
   } catch (error: any) {
-    return { error: error.message };
+    return { error: error.message, success: false };
   }
 }
 
@@ -250,10 +258,10 @@ export const generateVersionFromTemplate = async (
         version: createdVersion.data.id,
         source: sourceNode?.data.id,
         target: targetNode?.data.id,
+        sourceName: sourceNode?.data.data.name,
+        targetName: targetNode?.data.data.name,
       };
     });
-
-    console.log({ newEdgesBody, createdNodes: createdNodes[0] });
 
     const createdEdges = await Promise.all(
       newEdgesBody.map((edge) => createEdgeAction(edge))
@@ -298,3 +306,159 @@ export const generateVersionFromTemplate = async (
     };
   }
 };
+
+export const updateAppFromVersion = async (
+  version: IVersion,
+  projectId: string
+): Promise<{
+  success: boolean;
+  error?: string;
+  projectName?: string;
+}> => {
+  try {
+    const { models, edges, nodes } = version;
+
+    const updatedNodesBody = nodes.map((node) => ({
+      id: node.id,
+      data: {
+        name: node.data.name,
+        description: node.data.description,
+        isActive: node.data.isActive,
+        fields: node.data.fields,
+      },
+      position: node.position,
+      type: node.type,
+      version: node.version,
+    }));
+
+    const updatedEdgesBody = edges.map((edge) => ({
+      id: edge.id,
+      data: edge.data,
+      source: edge.source,
+      target: edge.target,
+      sourceName: edge.sourceName,
+      targetName: edge.targetName,
+      version: edge.version,
+    }));
+
+    const updatedModelsBody = models.map((model) => ({
+      id: model.id,
+      name: model.name,
+      description: model.description,
+      version: model.version,
+    }));
+
+    const updatedFieldsBody = models.flatMap((model) =>
+      model.fields.map((field) => ({
+        id: field.id,
+        name: field.name,
+        label: field.label,
+        type: field.type,
+        validations: field.validations,
+        model: field.model,
+      }))
+    );
+
+    const [updateNodes, updateEdges, updateModels, updateFields] =
+      await Promise.all([
+        Promise.all(
+          updatedNodesBody.map((node) => updateNodeAction(node.id, node))
+        ),
+        Promise.all(
+          updatedEdgesBody.map((edge) => updateEdgeAction(edge.id, edge))
+        ),
+        Promise.all(
+          updatedModelsBody.map((model) =>
+            model.id
+              ? updateModelAction(model.id, { ...model, fields: [] })
+              : createModelAction(model)
+          )
+        ),
+        Promise.all(
+          updatedFieldsBody.map((field) =>
+            field.id
+              ? updateFieldAction(field.id, field)
+              : createFieldAction(field)
+          )
+        ),
+      ]);
+
+    const allNodesSuccess = updateNodes.every((node) => node.success);
+    const allEdgesSuccess = updateEdges.every((edge) => edge.success);
+    const allModelsSuccess = updateModels.every((model) => model.success);
+    const allFieldsSuccess = updateFields.every((field) => field.success);
+
+    if (
+      !allNodesSuccess ||
+      !allEdgesSuccess ||
+      !allModelsSuccess ||
+      !allFieldsSuccess
+    ) {
+      throw new Error(
+        "Node veya Edge veya Model veya Field güncellenirken bir hata oluştu"
+      );
+    }
+
+    return { success: true };
+  } catch (error) {
+    return {
+      success: false,
+      error:
+        error instanceof Error
+          ? error.message
+          : "Version oluşturulurken bir hata oluştu",
+    };
+  }
+};
+
+export async function generateAppAction(
+  versionId: string,
+  projectId: string
+): Promise<{
+  success: boolean;
+  error?: string;
+  projectName?: string;
+}> {
+  try {
+    const [project, version] = await Promise.all([
+      fetchProject(projectId),
+      fetchVersion(versionId),
+    ]);
+
+    if (
+      !version.success ||
+      !project.success ||
+      !version.data ||
+      !project.data
+    ) {
+      throw new Error(version.error || project.error);
+    }
+
+    const models = version.data.models;
+
+    const appData = {
+      projectName: project.data.name,
+      version: {
+        name: version.data.name,
+        models: models,
+        relations: version.data.edges,
+      },
+    };
+
+    const result = await createNextProject(appData);
+
+    if (!result.success) {
+      return { success: false, error: result.error };
+    }
+
+    return { success: true, projectName: project.data.name };
+  } catch (error) {
+    return {
+      success: false,
+      error:
+        error instanceof Error
+          ? error.message
+          : "Version oluşturulurken bir hata oluştu",
+    };
+  }
+}

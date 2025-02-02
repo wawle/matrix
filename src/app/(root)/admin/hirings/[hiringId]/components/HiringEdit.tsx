@@ -1,4 +1,3 @@
-
 import { Container } from "@/components/ui/container";
 import { FormUI } from "@/components/ui/form-ui";
 import { redirect } from "next/navigation";
@@ -8,6 +7,8 @@ import {
   fetchHiring,
   updateHiringAction,
 } from "@/lib/actions/hiring";
+import { fetchUsers } from "@/lib/actions/user";
+import { fetchAgents } from "@/lib/actions/agent";
 
 interface Props {
   hiringId: string;
@@ -15,29 +16,47 @@ interface Props {
 
 export async function HiringEdit(props: Props) {
   const { hiringId } = props;
-  const { data } = await fetchHiring(hiringId);
-  
+  const [{ data: hiring }, { data: users }, { data: agents }] =
+    await Promise.all([fetchHiring(hiringId), fetchUsers(), fetchAgents()]);
+
   const schema = Object.keys(HiringSchema.shape);
   const defaultValues = schema.reduce<Record<string, any>>((acc, key) => {
-    acc[key] = (data as Record<string, any>)?.[key] || "";
+    acc[key] = (hiring as Record<string, any>)?.[key] || "";
     return acc;
   }, {});
 
-  const inputs = schema
-    .filter((key) => key !== "id" && key !== "_id" && key !== "createdAt" && key !== "updatedAt")
-    .map((key) => ({
-      name: key,
-      label: key.charAt(0).toUpperCase() + key.slice(1),
-      type: "text",
-    }));
+  const inputs = [
+    {
+      name: "user",
+      label: "User",
+      type: "reference",
+      reference: "User",
+      placeholder: "User Seçiniz",
+      options: users?.map((user) => ({
+        label: user.fullname,
+        value: user.id,
+      })),
+    },
+    {
+      name: "agent",
+      label: "Agent",
+      type: "reference",
+      reference: "Agent",
+      placeholder: "Agent Seçiniz",
+      options: agents?.map((agent) => ({
+        label: agent.name,
+        value: agent.id,
+      })),
+    },
+  ];
 
-  const title = data?.id ? "Hiring Düzenle" : "Hiring Oluştur";
-  const description = data?.id
+  const title = hiring?.id ? "Hiring Düzenle" : "Hiring Oluştur";
+  const description = hiring?.id
     ? "Hiring bilgilerini düzenleyebilirsiniz."
     : "Yeni bir Hiring oluşturabilirsiniz.";
 
   const onSubmit = async (data: HiringFormData) => {
-   "use server";
+    "use server";
 
     // validate data
     const result = HiringSchema.safeParse(data);
@@ -62,13 +81,12 @@ export async function HiringEdit(props: Props) {
   };
 
   return (
-    <Container
-      title={title}
-      description={description}
-      className=""
-    >
-      <FormUI defaultValues={defaultValues} inputs={inputs} onSubmit={onSubmit} />
+    <Container title={title} description={description} className="">
+      <FormUI
+        defaultValues={defaultValues}
+        inputs={inputs}
+        onSubmit={onSubmit}
+      />
     </Container>
-  )
+  );
 }
-    

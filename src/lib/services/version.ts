@@ -24,6 +24,10 @@ export async function getVersionById(id: string): Promise<IVersion> {
       {
         path: "models",
         model: Model,
+        populate: {
+          path: "fields",
+          model: Field,
+        },
       },
       {
         path: "nodes",

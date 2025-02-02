@@ -1,4 +1,3 @@
-
 // actions
 import { fetchNodes, deleteNodeAction } from "@/lib/actions/node";
 // components
@@ -8,9 +7,7 @@ import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { Plus } from "lucide-react";
 
-
-
-export const NodeList = async() => {
+export const NodeList = async () => {
   const { data } = await fetchNodes();
 
   return (
@@ -18,7 +15,7 @@ export const NodeList = async() => {
       title="Node Listesi"
       description="Node bilgilerini görüntüleyebilirsiniz."
       className=""
-       actions={
+      actions={
         <Link href={"/admin/nodes/new"}>
           <Button variant="outline">
             <Plus className="mr-2 h-4 w-4" />
@@ -31,11 +28,10 @@ export const NodeList = async() => {
         data={data}
         onDelete={deleteNodeAction}
         defaultColumnVisibility={{
-  "version": true,
-  "data": true
-}}
+          version: true,
+          type: true,
+        }}
       />
     </Container>
   );
 };
-  

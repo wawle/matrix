@@ -46,23 +46,34 @@ export async function createModelAction(data: any): Promise<{
   }
 }
 
-export async function updateModelAction(id: string, data: any) {
+export async function updateModelAction(
+  id: string,
+  data: IModel
+): Promise<{
+  data?: IModel;
+  error?: string;
+  success: boolean;
+}> {
   try {
     const model = await updateModel(id, data);
     revalidatePath("/models");
     revalidatePath("/models/[id]");
-    return { data: JSON.parse(JSON.stringify(model)) };
+    return { data: JSON.parse(JSON.stringify(model)), success: true };
   } catch (error: any) {
-    return { error: error.message };
+    return { error: error.message, success: false };
   }
 }
 
-export async function deleteModelAction(id: string) {
+export async function deleteModelAction(id: string): Promise<{
+  data?: IModel;
+  error?: string;
+  success: boolean;
+}> {
   try {
     const model = await deleteModel(id);
     revalidatePath("/models");
-    return { data: JSON.parse(JSON.stringify(model)) };
+    return { data: JSON.parse(JSON.stringify(model)), success: true };
   } catch (error: any) {
-    return { error: error.message };
+    return { error: error.message, success: false };
   }
 }
