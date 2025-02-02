@@ -10,7 +10,7 @@ export async function NavActions() {
   return (
     <div className="flex items-center gap-2 text-sm">
       <ModeToggle />
-      <AdminToggle />
+      {user?.role === "admin" && <AdminToggle />}
       <NavUser user={user} />
     </div>
   );
