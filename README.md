@@ -52,8 +52,8 @@ Matrix is an innovative AI agent management platform that allows users to create
 ### 1. Clone the Repository
 
 ```bash
-git clone https://github.com/your-username/matrix-ai-platform.git
-cd matrix-ai-platform
+git clone https://github.com/your-username/matrix.git
+cd matrix
 ```
 
 ### 2. Install Dependencies
@@ -64,13 +64,7 @@ npm install
 
 ### 3. Configure Environment Variables
 
-Create a `.env.local` file with the following variables:
-
-```
-MONGODB_URI=your_mongodb_connection_string
-OPENAI_API_KEY=your_openai_api_key
-NEXTAUTH_SECRET=your_nextauth_secret
-```
+Create a `.env` file with the following variables: .env.example file
 
 ### 4. Run Development Server
 
@@ -78,58 +72,6 @@ NEXTAUTH_SECRET=your_nextauth_secret
 npm run dev
 ```
 
-## Project Structure
-
-```
-matrix/
-│
-├── src/
-│   ├── components/
-│   ├── app/
-│   ├── lib/
-│   │   ├── agents/
-│   │   │   ├── morpheus.ts
-│   │   │   └── oracle.ts
-│   │   ├── services/
-│   │   └── actions/
-│   ├── models/
-│   └── utils/
-│
-├── prisma/
-├── public/
-└── README.md
-```
-
-## Database Models
-
-### User Model
-
-- `id`: Unique identifier
-- `email`: User email
-- `password`: Hashed password
-- `agents`: Related agents
-
-### Agent Model
-
-- `id`: Unique identifier
-- `name`: Agent name
-- `title`: Agent role/specialty
-- `instructions`: Agent behavior instructions
-- `userId`: Associated user
-- `createdAt`: Creation timestamp
-
-## API Endpoints
-
-### Authentication
-
-- `POST /api/auth/register`
-- `POST /api/auth/login`
-
-### Agent Management
-
-- `POST /api/agents/create`
-- `GET /api/agents/list`
-- `POST /api/agents/chat`
 
 ## Workflow Example
 
@@ -186,15 +128,5 @@ This project is licensed under the MIT License.
 
 For questions or support, contact: [your-email@example.com]
 
-```
 
-## Recommended Next Steps
 
-1. Detailed design of database schemas
-2. Authentication flow implementation
-3. Agent creation and management logic
-4. OpenAI integration strategy
-5. Frontend component design
-
-Would you like me to elaborate on any specific section of the README or discuss the implementation strategy for any particular feature?
-```
