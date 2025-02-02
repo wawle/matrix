@@ -9,14 +9,14 @@ import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Loader2 } from "lucide-react";
 import { useState } from "react";
-import { Input } from "@/components/ui/input";
 import {
   Form,
   FormControl,
   FormField,
   FormItem,
-  FormLabel
+  FormLabel,
 } from "@/components/ui/form";
+import { DynamicInput } from "@/components/ui/dynamic-input";
 
 interface Props {
   defaultValues: any;
@@ -32,7 +32,6 @@ interface Props {
     data?: any;
   }>;
 }
-
 
 export function FormUI(props: Props) {
   const { defaultValues, inputs, submitText = "Kaydet", onSubmit } = props;
@@ -61,28 +60,19 @@ export function FormUI(props: Props) {
     setIsLoading(false);
   }
 
-
   return (
     <Form {...form}>
-      <form
-        onSubmit={form.handleSubmit(handleSubmit)}
-        className="space-y-4"
-      >
+      <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4">
         {inputs.map((input) => (
           <FormField
             key={input.name}
             control={form.control}
             name={input.name}
             render={({ field }) => (
-              <FormItem>
+              <FormItem className="flex flex-col gap-1">
                 <FormLabel htmlFor={input.name}>{input.label}</FormLabel>
                 <FormControl>
-                  <Input
-                    id={input.name}
-                    type={input.type}
-                    placeholder={input.label}
-                    {...field}
-                  />
+                  <DynamicInput {...input} {...field} />
                 </FormControl>
               </FormItem>
             )}
@@ -98,8 +88,7 @@ export function FormUI(props: Props) {
       </form>
     </Form>
   );
-}
-    
+}    
     `;
   },
 };

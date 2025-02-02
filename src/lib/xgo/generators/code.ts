@@ -194,20 +194,34 @@ export async function generateCode(
         templates.components.theme.toggle.template("", {})
       ),
 
-      // Container
+      // UI
       writeFile(
         join(outputPath, "components/ui/container.tsx"),
         templates.components.ui.container.template("", {})
       ),
-      // DataTable
       writeFile(
         join(outputPath, "components/ui/data-table.tsx"),
         templates.components.ui.dataTable.template("", {})
       ),
-      // Form
       writeFile(
         join(outputPath, "components/ui/form-ui.tsx"),
         templates.components.form.default.template("", {})
+      ),
+      writeFile(
+        join(outputPath, "components/ui/dynamic-input.tsx"),
+        templates.components.ui.dynamicInput.template("", {})
+      ),
+      writeFile(
+        join(outputPath, "components/ui/date-input.tsx"),
+        templates.components.ui.dateInput.template("", {})
+      ),
+      writeFile(
+        join(outputPath, "components/ui/reference-input.tsx"),
+        templates.components.ui.referenceInput.template("", {})
+      ),
+      writeFile(
+        join(outputPath, "components/ui/number-input.tsx"),
+        templates.components.ui.numberInput.template("", {})
       ),
 
       // Lib

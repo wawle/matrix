@@ -35,7 +35,9 @@ export const edit = {
     const inputs = fields.map((field) => {
       return `{ name: "${field.name}", label: "${field.label}", type: "${
         field.type
-      }", options: ${
+      }",
+      placeholder: "${field.name} giriniz",
+      options: ${
         field.type === "reference"
           ? `${field.name}s.map((item) => ({ label: item.name, value: item.id }))`
           : "[]"

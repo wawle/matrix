@@ -62,6 +62,10 @@ import { model } from "./models/model";
 import { middleware } from "./middlewares/default";
 import { authMiddleware } from "./middlewares/auth";
 import { postman } from "./pages/postman";
+import { dynamicInput } from "./components/inputs/dynamic-input";
+import { dateInput } from "./components/inputs/date-input";
+import { referenceInput } from "./components/inputs/reference-input";
+import { numberInput } from "./components/inputs/number-input";
 
 const templates = {
   components: {
@@ -79,6 +83,10 @@ const templates = {
       dataTable: dataTable,
       list: list,
       edit: edit,
+      dynamicInput: dynamicInput,
+      dateInput: dateInput,
+      referenceInput: referenceInput,
+      numberInput: numberInput,
     },
     // Form
     form: {
