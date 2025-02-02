@@ -63,17 +63,17 @@ export const gymTemplate: IVersion = {
           label: "Müşteri",
         },
         {
-          name: "start_date",
+          name: "startDate",
           type: "date",
           label: "Başlangıç Tarihi",
         },
         {
-          name: "end_date",
+          name: "endDate",
           type: "date",
           label: "Bitiş Tarihi",
         },
         {
-          name: "membership_type",
+          name: "membershipType",
           type: "reference",
           label: "Üyelik Tipi",
         },
@@ -128,11 +128,6 @@ export const gymTemplate: IVersion = {
           label: "Telefon",
         },
         {
-          name: "skills",
-          type: "array",
-          label: "Uzmanlıklar",
-        },
-        {
           name: "biography",
           type: "string",
           label: "Biyografi",
@@ -183,12 +178,12 @@ export const gymTemplate: IVersion = {
           label: "Eğitmen",
         },
         {
-          name: "start_date",
+          name: "startDate",
           type: "date",
           label: "Başlangıç Tarihi",
         },
         {
-          name: "end_date",
+          name: "endDate",
           type: "date",
           label: "Bitiş Tarihi",
         },
@@ -297,14 +292,14 @@ export const gymTemplate: IVersion = {
           },
           {
             id: "c8",
-            name: "emergency_contact",
+            name: "emergencyContact",
             type: "string",
             label: "Acil Durum ",
             validations: { required: false },
           },
           {
             id: "c9",
-            name: "health_status",
+            name: "healthStatus",
             type: "string",
             label: "Sağlık Durumu",
             validations: { required: false },
@@ -330,21 +325,21 @@ export const gymTemplate: IVersion = {
           },
           {
             id: "m3",
-            name: "start_date",
+            name: "startDate",
             type: "date",
             label: "Başlangıç Tarihi",
             validations: { required: true },
           },
           {
             id: "m4",
-            name: "end_date",
+            name: "endDate",
             type: "date",
             label: "Bitiş Tarihi",
             validations: { required: true },
           },
           {
             id: "m5",
-            name: "membership_type",
+            name: "membershipType",
             type: "reference",
             label: "Üyelik Tipi",
             validations: { required: true },
@@ -429,13 +424,6 @@ export const gymTemplate: IVersion = {
             label: "Telefon",
             validations: { required: true },
           },
-          {
-            id: "t5",
-            name: "skills",
-            type: "array",
-            label: "Uzmanlıklar",
-            validations: { required: true },
-          },
 
           {
             id: "t8",
@@ -500,14 +488,14 @@ export const gymTemplate: IVersion = {
           },
           {
             id: "a8",
-            name: "start_date",
+            name: "startDate",
             type: "date",
             label: "Başlangıç",
             validations: { required: true },
           },
           {
             id: "a9",
-            name: "end_date",
+            name: "endDate",
             type: "date",
             label: "Bitiş",
             validations: { required: true },
@@ -559,8 +547,8 @@ export const gymTemplate: IVersion = {
   edges: [
     {
       id: "e1",
-      source: "Membership",
-      target: "Customer",
+      source: "membership",
+      target: "customer",
       sourceName: "Membership",
       targetName: "Customer",
       animated: true,
@@ -569,8 +557,8 @@ export const gymTemplate: IVersion = {
     },
     {
       id: "e2",
-      source: "Membership",
-      target: "MembershipType",
+      source: "membership",
+      target: "membershipType",
       sourceName: "Membership",
       targetName: "MembershipType",
       animated: true,
@@ -579,8 +567,8 @@ export const gymTemplate: IVersion = {
     },
     {
       id: "e3",
-      source: "Participant",
-      target: "Customer",
+      source: "participant",
+      target: "customer",
       sourceName: "Participant",
       targetName: "Customer",
       animated: true,
@@ -589,8 +577,8 @@ export const gymTemplate: IVersion = {
     },
     {
       id: "e4",
-      source: "Activity",
-      target: "Trainer",
+      source: "activity",
+      target: "trainer",
       sourceName: "Activity",
       targetName: "Trainer",
       animated: true,
@@ -599,8 +587,8 @@ export const gymTemplate: IVersion = {
     },
     {
       id: "e5",
-      source: "Customer",
-      target: "User",
+      source: "customer",
+      target: "user",
       sourceName: "Customer",
       targetName: "User",
       animated: true,
@@ -609,8 +597,8 @@ export const gymTemplate: IVersion = {
     },
     {
       id: "e6",
-      source: "Participant",
-      target: "Activity",
+      source: "participant",
+      target: "activity",
       sourceName: "Participant",
       targetName: "Activity",
       animated: true,

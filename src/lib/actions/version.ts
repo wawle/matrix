@@ -247,10 +247,10 @@ export const generateVersionFromTemplate = async (
 
     const newEdgesBody = newVersion.edges.map((edge) => {
       const sourceNode = createdNodes.find(
-        (n) => n.data.data.name === edge.source
+        (n) => n.data.data.name === edge.sourceName
       );
       const targetNode = createdNodes.find(
-        (n) => n.data.data.name === edge.target
+        (n) => n.data.data.name === edge.targetName
       );
 
       return {

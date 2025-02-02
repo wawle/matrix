@@ -45,7 +45,7 @@ export const model = {
         const modelName =
           field.name.charAt(0).toUpperCase() + field.name.slice(1);
         if (field.type === "reference") {
-          imports += `import { I${modelName} } from "./${field.name}";\n`;
+          imports += `import { I${modelName} } from "./${field.name.toLowerCase()}";\n`;
           return `${field.name}: I${modelName}`;
         } else if (field.type === "array") {
           return `${field.name}: any[]`;

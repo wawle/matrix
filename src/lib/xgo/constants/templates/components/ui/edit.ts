@@ -1,11 +1,47 @@
+import { IField } from "@/lib/models/field";
+
 export const edit = {
   template: (name: string, props: Record<string, any>): string => {
     const className = props.className || "";
     const modelName = props.modelName;
     const routeName = modelName.toLowerCase();
+    const fields = props.fields as IField[];
     const title = props.title || `${modelName} Düzenle`;
     const description =
       props.description || `${modelName} bilgilerini düzenleyebilirsiniz.`;
+
+    const fetchlist = fields.filter((field) => field.type === "reference");
+    const actions = fetchlist.map((field) => {
+      const fieldName = `${
+        field.name.charAt(0).toUpperCase() + field.name.slice(1)
+      }`;
+
+      return `fetch${fieldName}s()`;
+    });
+    const dataList = fetchlist.map((field) => {
+      return `{ data: ${field.name}s }`;
+    });
+    const fetchStr = `const [${dataList.join(
+      ","
+    )}] = await Promise.all([${actions.join(",")}])`;
+
+    const fetchStrImports = fetchlist.map((field) => {
+      const fieldName = `${
+        field.name.charAt(0).toUpperCase() + field.name.slice(1)
+      }`;
+      return `import { fetch${fieldName}s } from "@/lib/actions/${field.name.toLowerCase()}";`;
+    });
+
+    const inputs = fields.map((field) => {
+      return `{ name: "${field.name}", label: "${field.label}", type: "${
+        field.type
+      }", options: ${
+        field.type === "reference"
+          ? `${field.name}s.map((item) => ({ label: item.name, value: item.id }))`
+          : "[]"
+      } }`;
+    });
+
     return `
 import { Container } from "@/components/ui/container";
 import { FormUI } from "@/components/ui/form-ui";
@@ -16,6 +52,8 @@ import {
   fetch${modelName},
   update${modelName}Action,
 } from "@/lib/actions/${routeName}";
+${fetchStrImports.join("\n")}
+
 
 interface Props {
   ${routeName}Id: string;
@@ -24,20 +62,26 @@ interface Props {
 export async function ${name}(props: Props) {
   const { ${routeName}Id } = props;
   const { data } = await fetch${modelName}(${routeName}Id);
-  
-  const schema = Object.keys(${modelName}Schema.shape);
-  const defaultValues = schema.reduce<Record<string, any>>((acc, key) => {
-    acc[key] = (data as Record<string, any>)?.[key] || "";
-    return acc;
-  }, {});
+  ${fetchStr}
 
-  const inputs = schema
-    .filter((key) => key !== "id" && key !== "_id" && key !== "createdAt" && key !== "updatedAt")
-    .map((key) => ({
-      name: key,
-      label: key.charAt(0).toUpperCase() + key.slice(1),
-      type: "text",
-    }));
+  
+  const defaultValues = {
+    ${fields
+      .map((field) => {
+        switch (field.type) {
+          case "date":
+            return `${field.name}: data?.${field.name} || new Date()`;
+          case "number":
+            return `${field.name}: data?.${field.name} || 0`;
+          default:
+            return `${field.name}: data?.${field.name} || ""`;
+        }
+      })
+      .join(",\n")}
+  };
+
+  const inputs = [${inputs}]
+ 
 
   const title = data?.id ? "${title}" : "${modelName} Oluştur";
   const description = data?.id

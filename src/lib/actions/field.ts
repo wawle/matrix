@@ -34,7 +34,7 @@ export async function createFieldAction(data: any): Promise<{
 }> {
   try {
     const field = await createField(data);
-    revalidatePath("/fields");
+    revalidatePath("/admin/fields");
     return { data: JSON.parse(JSON.stringify(field)), success: true };
   } catch (error: any) {
     return { error: error.message, success: false };
@@ -51,8 +51,8 @@ export async function updateFieldAction(
 }> {
   try {
     const field = await updateField(id, data);
-    revalidatePath("/fields");
-    revalidatePath("/fields/[id]");
+    revalidatePath("/admin/fields");
+    revalidatePath("/admin/fields/[id]", "page");
     return { data: JSON.parse(JSON.stringify(field)), success: true };
   } catch (error: any) {
     return { error: error.message, success: false };
@@ -66,7 +66,7 @@ export async function deleteFieldAction(id: string): Promise<{
 }> {
   try {
     const field = await deleteField(id);
-    revalidatePath("/fields");
+    revalidatePath("/admin/fields");
     return { data: JSON.parse(JSON.stringify(field)), success: true };
   } catch (error: any) {
     return { error: error.message, success: false };

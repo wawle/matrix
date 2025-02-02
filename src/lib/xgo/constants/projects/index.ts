@@ -84,6 +84,7 @@ export const templateBuilder = {
                           [`${routeName}Id`]: `params.${routeName}Id`,
                         },
                         modelName: model.name,
+                        fields: model.fields,
                       },
                     },
                   ],

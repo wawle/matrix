@@ -13,6 +13,7 @@ import { revalidatePath } from "next/cache";
     delete${modelName}
   } from "@/lib/services/${routeName}";
    import { I${modelName} } from "@/lib/models/${routeName}";
+   import { ${modelName}FormData } from "@/lib/schemas/${routeName}";
   
   export async function fetch${modelName}s(): Promise<{
     data: I${modelName}[];
@@ -40,7 +41,7 @@ import { revalidatePath } from "next/cache";
     }
   }
   
-  export async function create${modelName}Action(data: I${modelName}): Promise<{
+  export async function create${modelName}Action(data: ${modelName}FormData): Promise<{
     data?: I${modelName};
     success: boolean;
     error?: string;
@@ -54,7 +55,7 @@ import { revalidatePath } from "next/cache";
     }
   }
   
-  export async function update${modelName}Action(id: string, data: I${modelName}): Promise<{
+  export async function update${modelName}Action(id: string, data: ${modelName}FormData): Promise<{
     data?: I${modelName};
     success: boolean;
     error?: string;
