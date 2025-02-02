@@ -9,9 +9,9 @@ const JWT_SECRET = new TextEncoder().encode(
 
 const JWT_EXPIRES_IN = process.env.JWT_EXPIRES_IN || "1d";
 
-export async function decrypt(session: string | undefined = "") {
+export async function decrypt(token: string | undefined = "") {
   try {
-    const { payload } = await jose.jwtVerify(session, JWT_SECRET, {
+    const { payload } = await jose.jwtVerify(token, JWT_SECRET, {
       algorithms: ["HS256"],
     });
     return payload;
