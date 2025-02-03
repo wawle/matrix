@@ -1,31 +1,16 @@
-import { NextResponse } from "next/server";
-  import { 
-    createFlowStep, 
-    getFlowSteps 
-  } from "@/lib/services/flowstep";
-  
-  export async function POST(request: Request) {
-    try {
-      const body = await request.json();
-      const flowstep = await createFlowStep(body);
-  
-      return NextResponse.json(flowstep, { status: 201 });
-    } catch (error: any) {
-      return NextResponse.json(
-        { error: error.message || "Bir hata oluştu" },
-        { status: 500 }
-      );
-    }
-  }
-  
-  export async function GET() {
-    try {
-      const flowsteps = await getFlowSteps();
-      return NextResponse.json(flowsteps);
-    } catch (error: any) {
-      return NextResponse.json(
-        { error: error.message || "Bir hata oluştu" },
-        { status: 500 }
-      );
-    }
-  }
+import { asyncFn } from "@/lib/middlewares/async";
+import { listing } from "@/lib/middlewares/listing";
+import { FlowStep } from "@/lib/models/flowstep";
+import { createFlowStep } from "@/lib/services/flowstep";
+import { NextRequest, NextResponse } from "next/server";
+
+export const GET = asyncFn(async (req: NextRequest) => {
+  const data = await listing(FlowStep, req);
+  return NextResponse.json(data);
+});
+
+export const POST = asyncFn(async (req: NextRequest) => {
+  const body = await req.json();
+  const flowstep = await createFlowStep(body);
+  return NextResponse.json(flowstep, { status: 201 });
+});

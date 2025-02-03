@@ -3,7 +3,11 @@ import type { NextRequest } from "next/server";
 import { authorize, protect } from "./lib/middlewares/auth";
 
 export async function middleware(request: NextRequest) {
-  return await protect(request, NextResponse.next(), authorize("user"));
+  return await protect(
+    request,
+    NextResponse.next(),
+    authorize("admin", "user")
+  );
 }
 
 export const config = {

@@ -1,31 +1,16 @@
-import { NextResponse } from "next/server";
-  import { 
-    createEdge, 
-    getEdges 
-  } from "@/lib/services/edge";
-  
-  export async function POST(request: Request) {
-    try {
-      const body = await request.json();
-      const edge = await createEdge(body);
-  
-      return NextResponse.json(edge, { status: 201 });
-    } catch (error: any) {
-      return NextResponse.json(
-        { error: error.message || "Bir hata oluştu" },
-        { status: 500 }
-      );
-    }
-  }
-  
-  export async function GET() {
-    try {
-      const edges = await getEdges();
-      return NextResponse.json(edges);
-    } catch (error: any) {
-      return NextResponse.json(
-        { error: error.message || "Bir hata oluştu" },
-        { status: 500 }
-      );
-    }
-  }
+import { NextRequest, NextResponse } from "next/server";
+import { createEdge } from "@/lib/services/edge";
+import { listing } from "@/lib/middlewares/listing";
+import { Edge } from "@/lib/models/edge";
+import { asyncFn } from "@/lib/middlewares/async";
+
+export const POST = asyncFn(async (req: NextRequest) => {
+  const body = await req.json();
+  const edge = await createEdge(body);
+  return NextResponse.json(edge, { status: 201 });
+});
+
+export const GET = asyncFn(async (req: NextRequest) => {
+  const data = await listing(Edge, req);
+  return NextResponse.json(data);
+});

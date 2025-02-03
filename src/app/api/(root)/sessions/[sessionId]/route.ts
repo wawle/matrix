@@ -1,50 +1,36 @@
-import { NextResponse } from "next/server";
-  import { 
-    getSessionById,
-    updateSession,
-    deleteSession
-  } from "@/lib/services/session";
-  
-  type RouteParams = Promise<{
-    sessionId: string;
-  }>;
-  
-  export async function GET(request: Request, { params }: { params: RouteParams }) {
-    try {
-      const resolvedParams = await params;
-      const session = await getSessionById(resolvedParams.sessionId);
-      return NextResponse.json(session);
-    } catch (error: any) {
-      return NextResponse.json(
-        { error: error.message || "Bir hata oluştu" },
-        { status: 500 }
-      );
-    }
+import { NextRequest, NextResponse } from "next/server";
+import {
+  getSessionById,
+  updateSession,
+  deleteSession,
+} from "@/lib/services/session";
+import { asyncFn } from "@/lib/middlewares/async";
+
+type RouteParams = Promise<{
+  sessionId: string;
+}>;
+
+export const GET = asyncFn(
+  async (req: NextRequest, { params }: { params: RouteParams }) => {
+    const { sessionId } = await params;
+    const session = await getSessionById(sessionId);
+    return NextResponse.json(session);
   }
-  
-  export async function PUT(request: Request, { params }: { params: RouteParams }) {
-    try {
-      const resolvedParams = await params;
-      const body = await request.json();
-      const session = await updateSession(resolvedParams.sessionId, body);
-      return NextResponse.json(session);
-    } catch (error: any) {
-      return NextResponse.json(
-        { error: error.message || "Bir hata oluştu" },
-        { status: 500 }
-      );
-    }
+);
+
+export const PUT = asyncFn(
+  async (req: NextRequest, { params }: { params: RouteParams }) => {
+    const { sessionId } = await params;
+    const body = await req.json();
+    const session = await updateSession(sessionId, body);
+    return NextResponse.json(session);
   }
-  
-  export async function DELETE(request: Request, { params }: { params: RouteParams }) {
-    try {
-      const resolvedParams = await params;
-      await deleteSession(resolvedParams.sessionId);
-      return NextResponse.json({ message: "Session başarıyla silindi" });
-    } catch (error: any) {
-      return NextResponse.json(
-        { error: error.message || "Bir hata oluştu" },
-        { status: 500 }
-      );
-    }
+);
+
+export const DELETE = asyncFn(
+  async (req: NextRequest, { params }: { params: RouteParams }) => {
+    const { sessionId } = await params;
+    const session = await deleteSession(sessionId);
+    return NextResponse.json(session);
   }
+);

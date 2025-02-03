@@ -1,31 +1,16 @@
-import { NextResponse } from "next/server";
-  import { 
-    createHiring, 
-    getHirings 
-  } from "@/lib/services/hiring";
-  
-  export async function POST(request: Request) {
-    try {
-      const body = await request.json();
-      const hiring = await createHiring(body);
-  
-      return NextResponse.json(hiring, { status: 201 });
-    } catch (error: any) {
-      return NextResponse.json(
-        { error: error.message || "Bir hata oluştu" },
-        { status: 500 }
-      );
-    }
-  }
-  
-  export async function GET() {
-    try {
-      const hirings = await getHirings();
-      return NextResponse.json(hirings);
-    } catch (error: any) {
-      return NextResponse.json(
-        { error: error.message || "Bir hata oluştu" },
-        { status: 500 }
-      );
-    }
-  }
+import { NextRequest, NextResponse } from "next/server";
+import { createHiring } from "@/lib/services/hiring";
+import { asyncFn } from "@/lib/middlewares/async";
+import { listing } from "@/lib/middlewares/listing";
+import { Hiring } from "@/lib/models/hiring";
+
+export const GET = asyncFn(async (req: NextRequest) => {
+  const data = await listing(Hiring, req);
+  return NextResponse.json(data);
+});
+
+export const POST = asyncFn(async (req: NextRequest) => {
+  const body = await req.json();
+  const hiring = await createHiring(body);
+  return NextResponse.json(hiring, { status: 201 });
+});

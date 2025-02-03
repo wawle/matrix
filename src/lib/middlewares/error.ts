@@ -2,23 +2,24 @@ import { NextResponse } from "next/server";
 
 export const errorHandler = (err: any) => {
   let error = { ...err };
-
   error.message = err.message;
 
+  console.log({ err });
+
   // Mongoose bad ObjectId
-  if (err.name === "CastError") {
+  if (err.message.includes("Cast to ObjectId")) {
     const message = `Resource not found`;
     error = new ErrorResponse(message, 404);
   }
 
   // Mongoose duplicate key
-  if (err.code === 11000) {
+  if (err.message.includes("duplicate key value")) {
     const message = "Duplicate field value entered";
     error = new ErrorResponse(message, 400);
   }
 
   // Mongoose validation error
-  if (err.name === "ValidationError") {
+  if (err.message.includes("validation failed")) {
     const message = Object.values(err.errors).map((val: any) => val.message);
     error = new ErrorResponse(message, 400);
   }

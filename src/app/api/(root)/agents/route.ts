@@ -1,31 +1,16 @@
 import { NextRequest, NextResponse } from "next/server";
-  import { 
-    createAgent, 
-    getAgents 
-  } from "@/lib/services/agent";
-  
-  export async function POST(request: NextRequest) {
-    try {
-      const body = await request.json();
-      const agent = await createAgent(body);
-  
-      return NextResponse.json(agent, { status: 201 });
-    } catch (error: any) {
-      return NextResponse.json(
-        { error: error.message || "Bir hata oluştu" },
-        { status: 500 }
-      );
-    }
-  }
-  
-  export async function GET() {
-    try {
-      const agents = await getAgents();
-      return NextResponse.json(agents);
-    } catch (error: any) {
-      return NextResponse.json(
-        { error: error.message || "Bir hata oluştu" },
-        { status: 500 }
-      );
-    }
-  }
+import { createAgent } from "@/lib/services/agent";
+import { asyncFn } from "@/lib/middlewares/async";
+import { listing } from "@/lib/middlewares/listing";
+import { Agent } from "@/lib/models/agent";
+
+export const POST = asyncFn(async (req: NextRequest) => {
+  const body = await req.json();
+  const agent = await createAgent(body);
+  return NextResponse.json(agent, { status: 201 });
+});
+
+export const GET = asyncFn(async (req: NextRequest) => {
+  const data = await listing(Agent, req);
+  return NextResponse.json(data);
+});

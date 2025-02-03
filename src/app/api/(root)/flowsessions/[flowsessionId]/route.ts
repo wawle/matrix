@@ -1,50 +1,36 @@
-import { NextResponse } from "next/server";
-  import { 
-    getFlowSessionById,
-    updateFlowSession,
-    deleteFlowSession
-  } from "@/lib/services/flowsession";
-  
-  type RouteParams = Promise<{
-    flowsessionId: string;
-  }>;
-  
-  export async function GET(request: Request, { params }: { params: RouteParams }) {
-    try {
-      const resolvedParams = await params;
-      const flowsession = await getFlowSessionById(resolvedParams.flowsessionId);
-      return NextResponse.json(flowsession);
-    } catch (error: any) {
-      return NextResponse.json(
-        { error: error.message || "Bir hata oluştu" },
-        { status: 500 }
-      );
-    }
+import { NextRequest, NextResponse } from "next/server";
+import {
+  getFlowSessionById,
+  updateFlowSession,
+  deleteFlowSession,
+} from "@/lib/services/flowsession";
+import { asyncFn } from "@/lib/middlewares/async";
+
+type RouteParams = Promise<{
+  flowsessionId: string;
+}>;
+
+export const GET = asyncFn(
+  async (req: NextRequest, { params }: { params: RouteParams }) => {
+    const { flowsessionId } = await params;
+    const flowsession = await getFlowSessionById(flowsessionId);
+    return NextResponse.json(flowsession);
   }
-  
-  export async function PUT(request: Request, { params }: { params: RouteParams }) {
-    try {
-      const resolvedParams = await params;
-      const body = await request.json();
-      const flowsession = await updateFlowSession(resolvedParams.flowsessionId, body);
-      return NextResponse.json(flowsession);
-    } catch (error: any) {
-      return NextResponse.json(
-        { error: error.message || "Bir hata oluştu" },
-        { status: 500 }
-      );
-    }
+);
+
+export const PUT = asyncFn(
+  async (req: NextRequest, { params }: { params: RouteParams }) => {
+    const { flowsessionId } = await params;
+    const body = await req.json();
+    const flowsession = await updateFlowSession(flowsessionId, body);
+    return NextResponse.json(flowsession);
   }
-  
-  export async function DELETE(request: Request, { params }: { params: RouteParams }) {
-    try {
-      const resolvedParams = await params;
-      await deleteFlowSession(resolvedParams.flowsessionId);
-      return NextResponse.json({ message: "FlowSession başarıyla silindi" });
-    } catch (error: any) {
-      return NextResponse.json(
-        { error: error.message || "Bir hata oluştu" },
-        { status: 500 }
-      );
-    }
+);
+
+export const DELETE = asyncFn(
+  async (req: NextRequest, { params }: { params: RouteParams }) => {
+    const { flowsessionId } = await params;
+    const flowsession = await deleteFlowSession(flowsessionId);
+    return NextResponse.json(flowsession);
   }
+);
