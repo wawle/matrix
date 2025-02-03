@@ -1,4 +1,3 @@
-
 import {
   Card,
   CardContent,
@@ -24,7 +23,7 @@ export function Container({
   children,
 }: Props) {
   return (
-    <Card className={cn("p-2 shadow-none", className)}>
+    <Card className={cn("p-2 shadow-none max-w-[80.8vw] m-4", className)}>
       <CardHeader>
         <div className="flex items-center justify-between">
           <div>
@@ -36,5 +35,5 @@ export function Container({
       </CardHeader>
       <CardContent>{children}</CardContent>
     </Card>
-  )
+  );
 }

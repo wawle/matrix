@@ -1,7 +1,7 @@
-import { AgentList } from './components/AgentList';
+import { AgentList } from "./components/AgentList";
 
 interface Props {
- searchParams: Promise<{
+  searchParams: Promise<{
     [key: string]: any;
   }>;
   params: Promise<{
@@ -16,8 +16,6 @@ export default async function Page(props: Props) {
   return (
     <div>
       <AgentList />
-
     </div>
-  )
+  );
 }
-    

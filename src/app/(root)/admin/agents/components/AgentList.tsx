@@ -1,4 +1,3 @@
-
 // actions
 import { fetchAgents, deleteAgentAction } from "@/lib/actions/agent";
 // components
@@ -8,9 +7,7 @@ import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { Plus } from "lucide-react";
 
-
-
-export const AgentList = async() => {
+export const AgentList = async () => {
   const { data } = await fetchAgents();
 
   return (
@@ -18,7 +15,7 @@ export const AgentList = async() => {
       title="Agent Listesi"
       description="Agent bilgilerini görüntüleyebilirsiniz."
       className=""
-       actions={
+      actions={
         <Link href={"/admin/agents/new"}>
           <Button variant="outline">
             <Plus className="mr-2 h-4 w-4" />
@@ -31,21 +28,20 @@ export const AgentList = async() => {
         data={data}
         onDelete={deleteAgentAction}
         defaultColumnVisibility={{
-  "instructions": true,
-  "stream": true,
-  "model_provider": true,
-  "model_name": true,
-  "max_tokens": true,
-  "temperature": true,
-  "seed": true,
-  "name": true,
-  "title": true,
-  "is_public": true,
-  "photo": true,
-  "key": true
-}}
+          instructions: true,
+          stream: true,
+          model_provider: true,
+          model_name: true,
+          max_tokens: true,
+          temperature: true,
+          seed: true,
+          name: true,
+          title: true,
+          is_public: true,
+          photo: true,
+          key: true,
+        }}
       />
     </Container>
   );
 };
-  
