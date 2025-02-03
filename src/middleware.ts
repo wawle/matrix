@@ -1,64 +1,29 @@
-
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
-import { decrypt } from "@/lib/session";
-
-const PUBLIC_PATHS = ["/login", "/register", "/api/login", "/api/register"];
+import { authorize, protect } from "./lib/middlewares/auth";
+import { logger } from "./lib/middlewares/logger";
+import { errorHandler } from "./lib/middlewares/error";
 
 export async function middleware(request: NextRequest) {
-  const { pathname } = request.nextUrl;
-  const isPublicPath = PUBLIC_PATHS.includes(pathname);
-  // 3. Decrypt the session from the cookie
-
-  // get token from request headers or cookies
-  const token =
-    request.headers.get("Authorization")?.split(" ")[1] ||
-    request.cookies.get("token")?.value;
-  const user = await decrypt(token);
-  const isAuth = Boolean(user?.id);
-
-  // API rotaları için özel işlem
-  if (pathname.startsWith("/api/")) {
-    if (isPublicPath) {
-      return NextResponse.next();
-    }
-
-    if (!isAuth) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
-
-    const requestHeaders = new Headers(request.headers);
-    requestHeaders.set("user", JSON.stringify(user));
-
-    return NextResponse.next({
-      request: {
-        headers: requestHeaders,
-      },
-    });
-  }
-
-  // Web sayfaları için yönlendirmeler
-  if (isAuth && isPublicPath) {
-    return NextResponse.redirect(new URL("/", request.url));
-  }
-
-  if (isPublicPath) {
-    return NextResponse.next();
-  }
-
-  if (!isAuth) {
-    return NextResponse.redirect(new URL("/login", request.url));
-  }
-
-  const requestHeaders = new Headers(request.headers);
-  requestHeaders.set("user", JSON.stringify(user));
-
-  return NextResponse.next({
-    request: {
-      headers: requestHeaders,
-    },
-  });
+  const chain = chainMiddleware([protect, authorize("admin", "user"), logger]);
+  return chain(request);
 }
+
+const chainMiddleware = (middlewares: any[]) => {
+  return async (request: NextRequest) => {
+    let response = NextResponse.next();
+
+    for (const middleware of middlewares) {
+      try {
+        response = (await middleware(request, response)) || response;
+      } catch (error) {
+        return errorHandler(error);
+      }
+    }
+
+    return response;
+  };
+};
 
 export const config = {
   matcher: [
@@ -71,4 +36,3 @@ export const config = {
     "/((?!_next/static|_next/image|favicon.ico).*)",
   ],
 };
-    

@@ -28,7 +28,7 @@ export const errorHandler = (err: any) => {
 
   return NextResponse.json(
     {
-      status: false,
+      success: false,
       error: error.message || "Server Error",
     },
     { status: error.statusCode || 500 }
