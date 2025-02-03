@@ -1,6 +1,6 @@
 import { asyncHandler } from "./async";
 import { NextRequest, NextResponse } from "next/server";
-import { errorHandler } from "./error";
+import { ErrorResponse } from "./error";
 import { decrypt } from "../session";
 
 const PUBLIC_PATHS = ["/login", "/register", "/api/login", "/api/register"];
@@ -29,53 +29,41 @@ export const protect = asyncHandler(
       token = req.cookies.get("token")?.value;
     }
 
-    // Make sure token exists
-    if (!token && !isPublicPath) {
-      return errorHandler({
-        message: "Not authorized to access this route",
-        statusCode: 401,
-      });
-    }
-
     try {
       // Verify token
       const decoded = await decrypt(token);
       const isAuth = Boolean(decoded?.id);
+
+      if (isAuth && isPublicPath) {
+        return NextResponse.redirect(new URL("/", req.url));
+      }
 
       if (!isAuth && !isApiPath) {
         return NextResponse.redirect(new URL("/login", req.url));
       }
 
       if (!decoded) {
-        return errorHandler({
-          message: "Not authorized to access this route",
-          statusCode: 401,
-        });
-      }
-
-      if (isAuth && isPublicPath) {
-        return NextResponse.redirect(new URL("/", req.url));
+        throw new ErrorResponse("Not authorized to access this route", 401);
       }
 
       req.headers.set("user", JSON.stringify(decoded));
+      return next(req);
     } catch (err) {
-      return errorHandler({
-        message: "Not authorized to access this route",
-        statusCode: 401,
-      });
+      throw new ErrorResponse("Not authorized to access this route", 401);
     }
   }
 );
 
 // Grant access to specific roles
 export const authorize = (...roles: string[]) => {
-  return (req: any, res: NextResponse, next: any) => {
+  return asyncHandler(async (req: any) => {
     const user = JSON.parse(req.headers?.get("user") || "{}");
     if (!roles.includes(user.role)) {
-      return errorHandler({
-        message: `User role ${user.role} is not authorized to access this route`,
-        statusCode: 403,
-      });
+      throw new ErrorResponse(
+        `User role ${user.role} is not authorized to access this route`,
+        403
+      );
     }
-  };
+    return NextResponse.next();
+  });
 };
