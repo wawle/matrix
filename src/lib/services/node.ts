@@ -1,41 +1,36 @@
 import { Node, INode } from "@/lib/models/node";
 import connectDB from "@/lib/db";
+import { asyncFnService } from "../middlewares/async";
+import { ErrorResponse } from "../middlewares/error";
 
-export async function getNodes(): Promise<INode[]> {
-  try {
-    await connectDB();
-    const nodes = await Node.find().sort({ createdAt: -1 });
-    return nodes;
-  } catch (error: any) {
-    throw new Error(error.message || "Node listesi alınırken bir hata oluştu");
-  }
-}
+export const getNodes = asyncFnService(async (): Promise<INode[]> => {
+  await connectDB();
+  const nodes = await Node.find().sort({ createdAt: -1 });
+  return nodes;
+});
 
-export async function getNodeById(id: string): Promise<INode> {
-  try {
+export const getNodeById = asyncFnService(
+  async (id: string): Promise<INode> => {
     await connectDB();
     const node = await Node.findById(id);
     if (!node) {
-      throw new Error("Node bulunamadı");
+      throw new ErrorResponse("Node bulunamadı", 404);
     }
     return node;
-  } catch (error: any) {
-    throw new Error(error.message || "Node alınırken bir hata oluştu");
   }
-}
+);
 
-export async function createNode(data: any): Promise<INode> {
-  try {
-    await connectDB();
-    const node = await Node.create(data);
-    return node;
-  } catch (error: any) {
-    throw new Error(error.message || "Node oluşturulurken bir hata oluştu");
+export const createNode = asyncFnService(async (data: any): Promise<INode> => {
+  await connectDB();
+  const node = await Node.create(data);
+  if (!node) {
+    throw new ErrorResponse("Node oluşturulurken bir hata oluştu", 400);
   }
-}
+  return node;
+});
 
-export async function updateNode(id: string, data: INode): Promise<INode> {
-  try {
+export const updateNode = asyncFnService(
+  async (id: string, data: INode): Promise<INode> => {
     await connectDB();
     const node = await Node.findByIdAndUpdate(
       id,
@@ -44,23 +39,17 @@ export async function updateNode(id: string, data: INode): Promise<INode> {
     );
 
     if (!node) {
-      throw new Error("Node bulunamadı");
+      throw new ErrorResponse("Node bulunamadı", 404);
     }
     return node;
-  } catch (error: any) {
-    throw new Error(error.message || "Node güncellenirken bir hata oluştu");
   }
-}
+);
 
-export async function deleteNode(id: string): Promise<INode> {
-  try {
-    await connectDB();
-    const node = await Node.findByIdAndDelete(id);
-    if (!node) {
-      throw new Error("Node bulunamadı");
-    }
-    return node;
-  } catch (error: any) {
-    throw new Error(error.message || "Node silinirken bir hata oluştu");
+export const deleteNode = asyncFnService(async (id: string): Promise<INode> => {
+  await connectDB();
+  const node = await Node.findByIdAndDelete(id);
+  if (!node) {
+    throw new ErrorResponse("Node bulunamadı", 404);
   }
-}
+  return node;
+});

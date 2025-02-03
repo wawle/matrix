@@ -1,67 +1,58 @@
+import { Hiring, IHiring } from "@/lib/models/hiring";
+import connectDB from "@/lib/db";
+import { asyncFnService } from "../middlewares/async";
+import { ErrorResponse } from "../middlewares/error";
 
-    import { Hiring, IHiring } from "@/lib/models/hiring";
-    import connectDB from "@/lib/db";
-    
-    export async function getHirings(): Promise<IHiring[]> {
-      try {
-        await connectDB();
-        const hirings = await Hiring.find().sort({ createdAt: -1 });
-        return hirings;
-      } catch (error: any) {
-        throw new Error(error.message || "Hiring listesi alınırken bir hata oluştu");
-      }
+export const getHirings = asyncFnService(async (): Promise<IHiring[]> => {
+  await connectDB();
+  const hirings = await Hiring.find().sort({ createdAt: -1 });
+  return hirings;
+});
+
+export const getHiringById = asyncFnService(
+  async (id: string): Promise<IHiring> => {
+    await connectDB();
+    const hiring = await Hiring.findById(id);
+    if (!hiring) {
+      throw new ErrorResponse("Hiring bulunamadı", 404);
     }
-    
-      export async function getHiringById(id: string): Promise<IHiring> {
-        try {
-        await connectDB();
-        const hiring = await Hiring.findById(id);
-        if (!hiring) {
-          throw new Error("Hiring bulunamadı");
-        }
-        return hiring;
-      } catch (error: any) {
-        throw new Error(error.message || "Hiring alınırken bir hata oluştu");
-      }
+    return hiring;
+  }
+);
+
+export const createHiring = asyncFnService(
+  async (data: any): Promise<IHiring> => {
+    await connectDB();
+    const hiring = await Hiring.create(data);
+    if (!hiring) {
+      throw new ErrorResponse("Hiring oluşturulurken bir hata oluştu", 500);
     }
-    
-    export async function createHiring(data: any): Promise<IHiring> {
-      try {
-        await connectDB();
-        const hiring = await Hiring.create(data);
-        return hiring;
-      } catch (error: any) {
-        throw new Error(error.message || "Hiring oluşturulurken bir hata oluştu");
-      }
+    return hiring;
+  }
+);
+
+export const updateHiring = asyncFnService(
+  async (id: string, data: any): Promise<IHiring> => {
+    await connectDB();
+    const hiring = await Hiring.findByIdAndUpdate(
+      id,
+      { $set: data },
+      { new: true, runValidators: true }
+    );
+    if (!hiring) {
+      throw new ErrorResponse("Hiring bulunamadı", 404);
     }
-    
-    export async function updateHiring(id: string, data: any): Promise<IHiring> {
-      try {
-        await connectDB();
-        const hiring = await Hiring.findByIdAndUpdate(
-          id,
-          { $set: data },
-          { new: true, runValidators: true }
-        );
-        if (!hiring) {
-          throw new Error("Hiring bulunamadı");
-        }
-        return hiring;
-      } catch (error: any) {
-        throw new Error(error.message || "Hiring güncellenirken bir hata oluştu");
-      }
+    return hiring;
+  }
+);
+
+export const deleteHiring = asyncFnService(
+  async (id: string): Promise<IHiring> => {
+    await connectDB();
+    const hiring = await Hiring.findByIdAndDelete(id);
+    if (!hiring) {
+      throw new ErrorResponse("Hiring bulunamadı", 404);
     }
-    
-    export async function deleteHiring(id: string): Promise<IHiring> {
-      try {
-        await connectDB();
-        const hiring = await Hiring.findByIdAndDelete(id);
-        if (!hiring) {
-          throw new Error("Hiring bulunamadı");
-        }
-        return hiring;
-      } catch (error: any) {
-        throw new Error(error.message || "Hiring silinirken bir hata oluştu");
-      }
-    }
-    
+    return hiring;
+  }
+);

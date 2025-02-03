@@ -4,21 +4,17 @@ import { Model } from "../models/model";
 import { Field } from "../models/field";
 import { Edge } from "../models/edge";
 import { Node } from "../models/node";
+import { ErrorResponse } from "../middlewares/error";
+import { asyncFnService } from "../middlewares/async";
 
-export async function getVersions(): Promise<IVersion[]> {
-  try {
-    await connectDB();
-    const versions = await Version.find().sort({ createdAt: -1 });
-    return versions;
-  } catch (error: any) {
-    throw new Error(
-      error.message || "Version listesi alınırken bir hata oluştu"
-    );
-  }
-}
+export const getVersions = asyncFnService(async (): Promise<IVersion[]> => {
+  await connectDB();
+  const versions = await Version.find().sort({ createdAt: -1 });
+  return versions;
+});
 
-export async function getVersionById(id: string): Promise<IVersion> {
-  try {
+export const getVersionById = asyncFnService(
+  async (id: string): Promise<IVersion> => {
     await connectDB();
     const version = await Version.findById(id).populate([
       {
@@ -39,26 +35,25 @@ export async function getVersionById(id: string): Promise<IVersion> {
       },
     ]);
     if (!version) {
-      throw new Error("Version bulunamadı");
+      throw new ErrorResponse("Version bulunamadı", 404);
     }
     return version;
-  } catch (error: any) {
-    throw new Error(error.message || "Version alınırken bir hata oluştu");
   }
-}
+);
 
-export async function createVersion(data: any): Promise<IVersion> {
-  try {
+export const createVersion = asyncFnService(
+  async (data: any): Promise<IVersion> => {
     await connectDB();
     const version = await Version.create(data);
+    if (!version) {
+      throw new ErrorResponse("Version oluşturulurken bir hata oluştu", 400);
+    }
     return version;
-  } catch (error: any) {
-    throw new Error(error.message || "Version oluşturulurken bir hata oluştu");
   }
-}
+);
 
-export async function updateVersion(id: string, data: any): Promise<IVersion> {
-  try {
+export const updateVersion = asyncFnService(
+  async (id: string, data: any): Promise<IVersion> => {
     await connectDB();
     const version = await Version.findByIdAndUpdate(
       id,
@@ -66,23 +61,19 @@ export async function updateVersion(id: string, data: any): Promise<IVersion> {
       { new: true, runValidators: true }
     );
     if (!version) {
-      throw new Error("Version bulunamadı");
+      throw new ErrorResponse("Version bulunamadı", 404);
     }
     return version;
-  } catch (error: any) {
-    throw new Error(error.message || "Version güncellenirken bir hata oluştu");
   }
-}
+);
 
-export async function deleteVersion(id: string): Promise<IVersion> {
-  try {
+export const deleteVersion = asyncFnService(
+  async (id: string): Promise<IVersion> => {
     await connectDB();
     const version = await Version.findByIdAndDelete(id);
     if (!version) {
-      throw new Error("Version bulunamadı");
+      throw new ErrorResponse("Version bulunamadı", 404);
     }
     return version;
-  } catch (error: any) {
-    throw new Error(error.message || "Version silinirken bir hata oluştu");
   }
-}
+);

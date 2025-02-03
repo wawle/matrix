@@ -1,67 +1,63 @@
+import { FlowSession, IFlowSession } from "@/lib/models/flowsession";
+import connectDB from "@/lib/db";
+import { asyncFnService } from "../middlewares/async";
+import { ErrorResponse } from "../middlewares/error";
 
-    import { FlowSession, IFlowSession } from "@/lib/models/flowsession";
-    import connectDB from "@/lib/db";
-    
-    export async function getFlowSessions(): Promise<IFlowSession[]> {
-      try {
-        await connectDB();
-        const flowsessions = await FlowSession.find().sort({ createdAt: -1 });
-        return flowsessions;
-      } catch (error: any) {
-        throw new Error(error.message || "FlowSession listesi alınırken bir hata oluştu");
-      }
+export const getFlowSessions = asyncFnService(
+  async (): Promise<IFlowSession[]> => {
+    await connectDB();
+    const flowsessions = await FlowSession.find().sort({ createdAt: -1 });
+    return flowsessions;
+  }
+);
+
+export const getFlowSessionById = asyncFnService(
+  async (id: string): Promise<IFlowSession> => {
+    await connectDB();
+    const flowsession = await FlowSession.findById(id);
+    if (!flowsession) {
+      throw new ErrorResponse("FlowSession bulunamadı", 404);
     }
-    
-      export async function getFlowSessionById(id: string): Promise<IFlowSession> {
-        try {
-        await connectDB();
-        const flowsession = await FlowSession.findById(id);
-        if (!flowsession) {
-          throw new Error("FlowSession bulunamadı");
-        }
-        return flowsession;
-      } catch (error: any) {
-        throw new Error(error.message || "FlowSession alınırken bir hata oluştu");
-      }
+    return flowsession;
+  }
+);
+
+export const createFlowSession = asyncFnService(
+  async (data: any): Promise<IFlowSession> => {
+    await connectDB();
+    const flowsession = await FlowSession.create(data);
+    if (!flowsession) {
+      throw new ErrorResponse(
+        "FlowSession oluşturulurken bir hata oluştu",
+        500
+      );
     }
-    
-    export async function createFlowSession(data: any): Promise<IFlowSession> {
-      try {
-        await connectDB();
-        const flowsession = await FlowSession.create(data);
-        return flowsession;
-      } catch (error: any) {
-        throw new Error(error.message || "FlowSession oluşturulurken bir hata oluştu");
-      }
+    return flowsession;
+  }
+);
+
+export const updateFlowSession = asyncFnService(
+  async (id: string, data: any): Promise<IFlowSession> => {
+    await connectDB();
+    const flowsession = await FlowSession.findByIdAndUpdate(
+      id,
+      { $set: data },
+      { new: true, runValidators: true }
+    );
+    if (!flowsession) {
+      throw new ErrorResponse("FlowSession bulunamadı", 404);
     }
-    
-    export async function updateFlowSession(id: string, data: any): Promise<IFlowSession> {
-      try {
-        await connectDB();
-        const flowsession = await FlowSession.findByIdAndUpdate(
-          id,
-          { $set: data },
-          { new: true, runValidators: true }
-        );
-        if (!flowsession) {
-          throw new Error("FlowSession bulunamadı");
-        }
-        return flowsession;
-      } catch (error: any) {
-        throw new Error(error.message || "FlowSession güncellenirken bir hata oluştu");
-      }
+    return flowsession;
+  }
+);
+
+export const deleteFlowSession = asyncFnService(
+  async (id: string): Promise<IFlowSession> => {
+    await connectDB();
+    const flowsession = await FlowSession.findByIdAndDelete(id);
+    if (!flowsession) {
+      throw new ErrorResponse("FlowSession bulunamadı", 404);
     }
-    
-    export async function deleteFlowSession(id: string): Promise<IFlowSession> {
-      try {
-        await connectDB();
-        const flowsession = await FlowSession.findByIdAndDelete(id);
-        if (!flowsession) {
-          throw new Error("FlowSession bulunamadı");
-        }
-        return flowsession;
-      } catch (error: any) {
-        throw new Error(error.message || "FlowSession silinirken bir hata oluştu");
-      }
-    }
-    
+    return flowsession;
+  }
+);

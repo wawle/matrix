@@ -64,6 +64,6 @@ export const authorize = (...roles: string[]) => {
         403
       );
     }
-    return NextResponse.next();
+    return NextResponse.next({ request: req });
   });
 };
