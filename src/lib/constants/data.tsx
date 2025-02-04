@@ -32,6 +32,7 @@ export interface INavItem {
   icon: React.JSX.Element;
   isActive?: boolean;
   items?: INavItem[];
+  hasMore?: boolean;
 }
 
 export interface ISidebarData {
@@ -191,13 +192,7 @@ export const adminSidebarData: ISidebarData = {
 };
 
 export const userSidebarData = {
-  navMain: [
-    {
-      title: "Matrix",
-      url: "/",
-      icon: <HomeIcon />,
-    },
-  ],
+  navMain: [],
   navPrimary: [
     {
       title: "Discover",

@@ -10,7 +10,6 @@ import ReactFlow, {
   Panel,
 } from "reactflow";
 import { useHotkeys } from "react-hotkeys-hook";
-import { SchemaContextMenu } from "./schema-context-menu";
 import { EdgeContextMenu } from "./edge-context-menu";
 import { SchemaActionButtons } from "./schema-action-buttons";
 

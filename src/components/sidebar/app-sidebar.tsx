@@ -20,13 +20,17 @@ interface Props extends React.ComponentProps<typeof Sidebar> {
 export function AppSidebar({ data, ...props }: Props) {
   const { navMain, navPrimary, navSecondary } = data;
   return (
-    <Sidebar className="border-r-0 space-y-4" {...props}>
-      <SidebarHeader>
-        <NavMain items={navMain} />
-      </SidebarHeader>
+    <Sidebar variant="floating" {...props}>
+      {navMain.length > 0 && (
+        <SidebarHeader>
+          <NavMain items={navMain} />
+        </SidebarHeader>
+      )}
       <SidebarContent>
-        <NavPrimary items={navPrimary} />
-        <NavSecondary items={navSecondary} className="mt-auto" />
+        {navPrimary.length > 0 && <NavPrimary items={navPrimary} />}
+        {navSecondary.length > 0 && (
+          <NavSecondary items={navSecondary} className="mt-auto" />
+        )}
       </SidebarContent>
       <SidebarRail />
     </Sidebar>

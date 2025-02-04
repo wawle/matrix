@@ -1,7 +1,7 @@
 import mongoose from "mongoose";
 import { IAgent } from "./agent";
 import { IUser } from "./user";
-import { Chat } from "./chat";
+import { Chat, IChat } from "./chat";
 import { FlowSession } from "./flowsession";
 
 export interface ISession {
@@ -11,6 +11,7 @@ export interface ISession {
   updatedAt?: Date;
   agent: IAgent;
   user: IUser;
+  chats: IChat[];
 }
 
 export const sessionSchema = new mongoose.Schema<ISession>(

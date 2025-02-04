@@ -56,3 +56,15 @@ export const deleteAgent = asyncFnService(
     return agent;
   }
 );
+
+export const executeAgent = asyncFnService(
+  async (
+    agentId: string,
+    sessionId: string,
+    message: string,
+    attachments: File[]
+  ) => {
+    const agent = await Agent.findById(agentId);
+    return await agent.execute(sessionId, message, attachments);
+  }
+);
