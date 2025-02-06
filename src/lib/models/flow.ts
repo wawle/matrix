@@ -1,9 +1,7 @@
 import mongoose from "mongoose";
-import { IUser } from "./user";
 import { FlowStep, IFlowStep } from "./flowstep";
 import { FlowSession } from "./flowsession";
-import { INode, Node } from "./node";
-import { Edge, IEdge } from "./edge";
+import { IProject } from "./project";
 
 export interface IFlow {
   id: string;
@@ -12,10 +10,8 @@ export interface IFlow {
   updatedAt?: Date;
   name: string;
   description: string;
-  user: IUser;
+  project: IProject;
   steps: IFlowStep[];
-  nodes: INode[];
-  edges: IEdge[];
 }
 
 export const flowSchema = new mongoose.Schema<IFlow>(
@@ -28,9 +24,9 @@ export const flowSchema = new mongoose.Schema<IFlow>(
       type: String,
       required: false,
     },
-    user: {
+    project: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "User",
+      ref: "Project",
       required: true,
     },
   },
@@ -53,25 +49,11 @@ flowSchema.virtual("sessions", {
   foreignField: "flow",
 });
 
-flowSchema.virtual("nodes", {
-  ref: Node,
-  localField: "_id",
-  foreignField: "flow",
-});
-
-flowSchema.virtual("edges", {
-  ref: Edge,
-  localField: "_id",
-  foreignField: "flow",
-});
-
 flowSchema.pre("findOneAndDelete", async function (next) {
   const { _id } = this.getQuery();
   await Promise.all([
     FlowStep.deleteMany({ flow: _id }),
     FlowSession.deleteMany({ flow: _id }),
-    Node.deleteMany({ flow: _id }),
-    Edge.deleteMany({ flow: _id }),
   ]);
   next();
 });

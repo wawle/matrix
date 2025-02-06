@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
-import { IVersion } from "./version";
 import { Field, IField } from "./field";
+import { IProject } from "./project";
 
 export interface IModel {
   id?: string;
@@ -8,7 +8,7 @@ export interface IModel {
   createdAt?: Date;
   updatedAt?: Date;
   name: string;
-  version?: IVersion;
+  project?: IProject;
   description?: string;
   fields: IField[];
 }
@@ -19,9 +19,9 @@ export const modelSchema = new mongoose.Schema<IModel>(
       type: String,
       required: true,
     },
-    version: {
+    project: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "Version",
+      ref: "Project",
       required: true,
     },
     description: {

@@ -18,8 +18,6 @@ import { createNodeAction, updateNodeAction } from "./node";
 import { createEdgeAction, updateEdgeAction } from "./edge";
 import { fetchProject } from "./project";
 import { createNextProject } from "../xgo/generators/app";
-import { updateNode } from "../services/node";
-import { updateEdge } from "../services/edge";
 
 export async function fetchVersions() {
   try {
@@ -57,14 +55,21 @@ export async function createVersionAction(data: any): Promise<{
   }
 }
 
-export async function updateVersionAction(id: string, data: any) {
+export async function updateVersionAction(
+  id: string,
+  data: any
+): Promise<{
+  data?: any;
+  error?: string;
+  success?: boolean;
+}> {
   try {
     const version = await updateVersion(id, data);
     revalidatePath("/versions");
-    revalidatePath("/versions/[id]");
-    return { data: JSON.parse(JSON.stringify(version)) };
+    revalidatePath(`/xgo/projects/${version.project}/versions/${version.id}`);
+    return { data: JSON.parse(JSON.stringify(version)), success: true };
   } catch (error: any) {
-    return { error: error.message };
+    return { error: error.message, success: false };
   }
 }
 

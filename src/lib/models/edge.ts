@@ -1,6 +1,5 @@
 import mongoose from "mongoose";
 import { IVersion } from "./version";
-import { IFlow } from "./flow";
 
 export interface IEdge {
   id: string;
@@ -11,11 +10,8 @@ export interface IEdge {
   data: any;
   source: string;
   target: string;
-  sourceName: string;
-  targetName: string;
   animated: boolean;
   label: string;
-  flow?: IFlow;
 }
 
 export const edgeSchema = new mongoose.Schema<IEdge>(
@@ -25,24 +21,11 @@ export const edgeSchema = new mongoose.Schema<IEdge>(
       ref: "Version",
       required: true,
     },
-    flow: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Flow",
-      required: false,
-    },
     source: {
       type: String,
       required: true,
     },
-    sourceName: {
-      type: String,
-      required: true,
-    },
     target: {
-      type: String,
-      required: true,
-    },
-    targetName: {
       type: String,
       required: true,
     },

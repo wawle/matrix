@@ -1,8 +1,8 @@
 import mongoose from "mongoose";
-import { IProject } from "./project";
-import { IModel, Model } from "./model";
+import { Model } from "./model";
 import { Edge, IEdge } from "./edge";
 import { INode, Node } from "./node";
+import { IProject } from "./project";
 
 export interface IVersion {
   id: string;
@@ -11,9 +11,9 @@ export interface IVersion {
   updatedAt?: Date;
   name: string;
   description?: string;
-  project?: IProject;
   is_active: boolean;
-  models: IModel[];
+  project?: IProject;
+  type: "model" | "flow" | "page" | "screen";
   nodes: INode[];
   edges: IEdge[];
 }
@@ -28,14 +28,19 @@ export const versionSchema = new mongoose.Schema<IVersion>(
       type: String,
       required: false,
     },
+    is_active: {
+      type: Boolean,
+      required: false,
+    },
+    type: {
+      type: String,
+      required: true,
+      enum: ["model", "flow", "page", "screen"],
+    },
     project: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Project",
       required: true,
-    },
-    is_active: {
-      type: Boolean,
-      required: false,
     },
   },
   {
@@ -44,12 +49,6 @@ export const versionSchema = new mongoose.Schema<IVersion>(
     toObject: { virtuals: true },
   }
 );
-
-versionSchema.virtual("models", {
-  ref: Model,
-  localField: "_id",
-  foreignField: "version",
-});
 
 versionSchema.virtual("nodes", {
   ref: Node,
@@ -66,7 +65,6 @@ versionSchema.virtual("edges", {
 versionSchema.pre("findOneAndDelete", async function (next) {
   const { _id } = this.getQuery();
   await Promise.all([
-    Model.deleteMany({ version: _id }),
     Node.deleteMany({ version: _id }),
     Edge.deleteMany({ version: _id }),
   ]);

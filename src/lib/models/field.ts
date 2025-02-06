@@ -9,6 +9,7 @@ export interface IField {
   name: string;
   label: string;
   type: string;
+  model: IModel;
   validations?: {
     unique?: boolean;
     required?: boolean;
@@ -29,7 +30,6 @@ export interface IField {
     maxLength?: number;
     default?: any;
   };
-  model?: IModel;
 }
 
 export const fieldSchema = new mongoose.Schema<IField>(

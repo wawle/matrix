@@ -44,5 +44,11 @@ export const keySchema = new mongoose.Schema<IKey>(
   }
 );
 
+keySchema.virtual("agents", {
+  ref: "Agent",
+  localField: "_id",
+  foreignField: "key",
+});
+
 export const Key =
   mongoose.models.Key || mongoose.model<IKey>("Key", keySchema);

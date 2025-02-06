@@ -7,208 +7,10 @@ export const gymTemplate: IVersion = {
   name: "Spor Salonu Şemaları",
   description: "Spor salonu yönetimi için temel veritabanı şemaları",
   is_active: false,
-  models: [
-    {
-      name: "User",
-      fields: [
-        {
-          name: "fullname",
-          type: "string",
-          label: "Adı Soyadı",
-        },
-        {
-          name: "email",
-          type: "string",
-          label: "Email",
-        },
-        {
-          name: "password",
-          type: "string",
-          label: "Şifre",
-        },
-        {
-          name: "role",
-          type: "string",
-          label: "Rol",
-        },
-      ],
-    },
-    {
-      name: "Customer",
-      fields: [
-        {
-          name: "fullname",
-          type: "string",
-          label: "Adı Soyadı",
-        },
-
-        {
-          name: "email",
-          type: "string",
-          label: "Email",
-        },
-        {
-          name: "phone",
-          type: "string",
-          label: "Telefon",
-        },
-      ],
-    },
-    {
-      name: "Membership",
-      fields: [
-        {
-          name: "customer",
-          type: "reference",
-          label: "Müşteri",
-        },
-        {
-          name: "startDate",
-          type: "date",
-          label: "Başlangıç Tarihi",
-        },
-        {
-          name: "endDate",
-          type: "date",
-          label: "Bitiş Tarihi",
-        },
-        {
-          name: "membershipType",
-          type: "reference",
-          label: "Üyelik Tipi",
-        },
-        {
-          name: "status",
-          type: "string",
-          label: "Durum",
-        },
-      ],
-    },
-    {
-      name: "MembershipType",
-      fields: [
-        {
-          name: "name",
-          type: "string",
-          label: "Adı",
-        },
-        {
-          name: "duration",
-          type: "number",
-          label: "Süre",
-        },
-        {
-          name: "price",
-          type: "number",
-          label: "Fiyat",
-        },
-        {
-          name: "description",
-          type: "string",
-          label: "Açıklama",
-        },
-      ],
-    },
-    {
-      name: "Trainer",
-      fields: [
-        {
-          name: "fullname",
-          type: "string",
-          label: "Adı Soyadı",
-        },
-        {
-          name: "email",
-          type: "string",
-          label: "Email",
-        },
-        {
-          name: "phone",
-          type: "string",
-          label: "Telefon",
-        },
-        {
-          name: "biography",
-          type: "string",
-          label: "Biyografi",
-        },
-      ],
-    },
-    {
-      name: "Activity",
-      fields: [
-        {
-          name: "name",
-          type: "string",
-          label: "Adı",
-        },
-        {
-          name: "açıklama",
-          type: "string",
-          label: "Açıklama",
-        },
-        {
-          name: "capacity",
-          type: "number",
-          label: "Kapasite",
-        },
-        {
-          name: "level",
-          type: "string",
-          label: "Seviye",
-        },
-        {
-          name: "duration",
-          type: "number",
-          label: "Süre",
-        },
-      ],
-    },
-    {
-      name: "Schedule",
-      fields: [
-        {
-          name: "activity",
-          type: "reference",
-          label: "Aktivite",
-        },
-        {
-          name: "trainer",
-          type: "reference",
-          label: "Eğitmen",
-        },
-        {
-          name: "startDate",
-          type: "date",
-          label: "Başlangıç Tarihi",
-        },
-        {
-          name: "endDate",
-          type: "date",
-          label: "Bitiş Tarihi",
-        },
-        {
-          name: "participants",
-          type: "array",
-          label: "Katılımcılar",
-        },
-        {
-          name: "status",
-          type: "string",
-          label: "Durum",
-        },
-        {
-          name: "notes",
-          type: "string",
-          label: "Notlar",
-        },
-      ],
-    },
-  ],
+  type: "model",
   nodes: [
     {
       id: "user",
-      type: "schema",
       position: { x: 100, y: 100 },
       data: {
         name: "User",
@@ -248,7 +50,6 @@ export const gymTemplate: IVersion = {
     },
     {
       id: "customer",
-      type: "schema",
       position: { x: 100, y: 100 },
       data: {
         name: "Customer",
@@ -309,7 +110,6 @@ export const gymTemplate: IVersion = {
     },
     {
       id: "membership",
-      type: "schema",
       position: { x: 500, y: 100 },
       data: {
         name: "Membership",
@@ -356,7 +156,6 @@ export const gymTemplate: IVersion = {
     },
     {
       id: "membershipType",
-      type: "schema",
       position: { x: 900, y: 100 },
       data: {
         name: "MembershipType",
@@ -396,7 +195,6 @@ export const gymTemplate: IVersion = {
     },
     {
       id: "trainer",
-      type: "schema",
       position: { x: 100, y: 400 },
       data: {
         name: "Trainer",
@@ -437,7 +235,6 @@ export const gymTemplate: IVersion = {
     },
     {
       id: "activity",
-      type: "schema",
       position: { x: 500, y: 400 },
       data: {
         name: "Activity",
@@ -519,7 +316,6 @@ export const gymTemplate: IVersion = {
     },
     {
       id: "participant",
-      type: "schema",
       position: { x: 900, y: 400 },
       data: {
         name: "Participant",
@@ -549,8 +345,6 @@ export const gymTemplate: IVersion = {
       id: "e1",
       source: "membership",
       target: "customer",
-      sourceName: "Membership",
-      targetName: "Customer",
       animated: true,
       label: "N:1",
       data: { relationType: "oneToMany" },
@@ -559,8 +353,6 @@ export const gymTemplate: IVersion = {
       id: "e2",
       source: "membership",
       target: "membershipType",
-      sourceName: "Membership",
-      targetName: "MembershipType",
       animated: true,
       label: "N:1",
       data: { relationType: "oneToMany" },
@@ -569,8 +361,6 @@ export const gymTemplate: IVersion = {
       id: "e3",
       source: "participant",
       target: "customer",
-      sourceName: "Participant",
-      targetName: "Customer",
       animated: true,
       label: "N:1",
       data: { relationType: "oneToMany" },
@@ -579,8 +369,6 @@ export const gymTemplate: IVersion = {
       id: "e4",
       source: "activity",
       target: "trainer",
-      sourceName: "Activity",
-      targetName: "Trainer",
       animated: true,
       label: "N:1",
       data: { relationType: "oneToMany" },
@@ -589,8 +377,6 @@ export const gymTemplate: IVersion = {
       id: "e5",
       source: "customer",
       target: "user",
-      sourceName: "Customer",
-      targetName: "User",
       animated: true,
       label: "N:1",
       data: { relationType: "oneToMany" },
@@ -599,8 +385,6 @@ export const gymTemplate: IVersion = {
       id: "e6",
       source: "participant",
       target: "activity",
-      sourceName: "Participant",
-      targetName: "Activity",
       animated: true,
       label: "N:1",
       data: { relationType: "oneToMany" },
@@ -614,151 +398,10 @@ const eCommerceTemplate: IVersion = {
   name: "E-Ticaret Şemaları",
   description: "E-ticaret sistemi için temel veritabanı şemaları",
   is_active: true,
-  models: [
-    {
-      name: "Product",
-      fields: [
-        {
-          id: "p2",
-          name: "name",
-          type: "string",
-          label: "Name",
-          validations: { required: true },
-        },
-        {
-          id: "p3",
-          name: "description",
-          type: "string",
-          label: "Description",
-          validations: { required: false },
-        },
-        {
-          id: "p4",
-          name: "price",
-          type: "number",
-          label: "Price",
-          validations: { required: true },
-        },
-        {
-          id: "p5",
-          name: "stock",
-          type: "number",
-          label: "Stock",
-          validations: { required: true },
-        },
-        {
-          id: "p6",
-          name: "category",
-          type: "reference",
-          label: "Category",
-          validations: { required: true },
-        },
-        {
-          id: "p7",
-          name: "images",
-          type: "array",
-          label: "Images",
-          validations: { required: false },
-        },
-      ],
-    },
-    {
-      name: "Category",
-      fields: [
-        {
-          id: "c2",
-          name: "name",
-          type: "string",
-          label: "Name",
-          validations: { required: true },
-        },
-        {
-          id: "c3",
-          name: "description",
-          type: "string",
-          label: "Description",
-          validations: { required: false },
-        },
-        {
-          id: "c4",
-          name: "parent",
-          type: "reference",
-          label: "Parent",
-          validations: { required: false },
-        },
-      ],
-    },
-    {
-      name: "Customer",
-      fields: [
-        {
-          id: "u1",
-          name: "fullname",
-          type: "string",
-          label: "Full Name",
-          validations: { required: true },
-        },
-        {
-          id: "u2",
-          name: "email",
-          type: "string",
-          label: "Email",
-          validations: { required: true },
-        },
-        {
-          id: "u3",
-          name: "phone",
-          type: "string",
-          label: "Phone",
-          validations: { required: false },
-        },
-      ],
-    },
-    {
-      name: "Order",
-      fields: [
-        {
-          id: "o1",
-          name: "customer",
-          type: "reference",
-          label: "Customer",
-          validations: { required: true },
-        },
-        {
-          id: "o2",
-          name: "products",
-          type: "array",
-          label: "Products",
-          validations: { required: true },
-        },
-        {
-          id: "o3",
-          name: "total",
-          type: "number",
-          label: "Total",
-          validations: { required: true },
-        },
-        {
-          id: "o4",
-          name: "status",
-          type: "string",
-          label: "Status",
-          validations: { required: true },
-        },
-        {
-          id: "o5",
-          name: "date",
-          type: "date",
-          label: "Date",
-          validations: { required: true },
-        },
-      ],
-    },
-  ],
+  type: "model",
   nodes: [
     {
       id: "product",
-      type: "schema",
       position: { x: 100, y: 100 },
       data: {
         name: "Product",
@@ -777,7 +420,6 @@ const eCommerceTemplate: IVersion = {
     },
     {
       id: "category",
-      type: "schema",
       position: { x: 500, y: 100 },
       data: {
         name: "Category",
@@ -798,7 +440,6 @@ const eCommerceTemplate: IVersion = {
     },
     {
       id: "customer",
-      type: "schema",
       position: { x: 100, y: 400 },
       data: {
         name: "Customer",
@@ -831,7 +472,6 @@ const eCommerceTemplate: IVersion = {
     },
     {
       id: "order",
-      type: "schema",
       position: { x: 500, y: 400 },
       data: {
         name: "Order",
@@ -882,8 +522,7 @@ const eCommerceTemplate: IVersion = {
       id: "e1",
       source: "product",
       target: "category",
-      sourceName: "product",
-      targetName: "category",
+
       animated: true,
       label: "N:1",
       data: { relationType: "oneToMany" },
@@ -892,8 +531,7 @@ const eCommerceTemplate: IVersion = {
       id: "e2",
       source: "order",
       target: "customer",
-      sourceName: "order",
-      targetName: "customer",
+
       animated: true,
       label: "N:1",
       data: { relationType: "oneToMany" },
@@ -902,8 +540,7 @@ const eCommerceTemplate: IVersion = {
       id: "e3",
       source: "order",
       target: "product",
-      sourceName: "order",
-      targetName: "product",
+
       animated: true,
       label: "N:N",
       data: { relationType: "manyToMany" },
@@ -917,146 +554,10 @@ const crmTemplate: IVersion = {
   name: "CRM Şemaları",
   description: "Müşteri ilişkileri yönetimi için temel veritabanı şemaları",
   is_active: false,
-  models: [
-    {
-      name: "User",
-      fields: [
-        {
-          id: "c1",
-          name: "fullname",
-          type: "string",
-          label: "Full Name",
-          validations: { required: true },
-        },
-        {
-          id: "c2",
-          name: "email",
-          type: "string",
-          label: "Email",
-          validations: { required: true },
-        },
-        {
-          id: "c4",
-          name: "role",
-          type: "string",
-          label: "Role",
-          validations: { required: true },
-        },
-        {
-          id: "c5",
-          name: "password",
-          type: "string",
-          label: "Password",
-          validations: { required: true },
-        },
-      ],
-    },
-    {
-      name: "Customer",
-      fields: [
-        {
-          id: "co2",
-          name: "fullname",
-          type: "string",
-          label: "Full Name",
-          validations: { required: true },
-        },
-        {
-          id: "co3",
-          name: "email",
-          type: "string",
-          label: "Email",
-          validations: { required: true },
-        },
-        {
-          id: "co4",
-          name: "phone",
-          type: "string",
-          label: "Phone",
-          validations: { required: false },
-        },
-        {
-          id: "co5",
-          name: "address",
-          type: "object",
-          label: "Address",
-          validations: { required: false },
-        },
-        {
-          id: "co6",
-          name: "user",
-          type: "reference",
-          label: "User",
-          validations: { required: true },
-        },
-      ],
-    },
-    {
-      name: "Activity",
-      fields: [
-        {
-          id: "o2",
-          name: "title",
-          type: "string",
-          label: "Title",
-          validations: { required: true },
-        },
-        {
-          id: "o3",
-          name: "user",
-          type: "reference",
-          label: "User",
-          validations: { required: true },
-        },
-        {
-          id: "o4",
-          name: "customer",
-          type: "reference",
-          label: "Customer",
-          validations: { required: true },
-        },
-        {
-          id: "o5",
-          name: "status",
-          type: "string",
-          label: "Status",
-          validations: { required: true },
-        },
-        {
-          id: "o6",
-          name: "description",
-          type: "string",
-          label: "Description",
-          validations: { required: false },
-        },
-        {
-          id: "o7",
-          name: "date",
-          type: "date",
-          label: "Date",
-          validations: { required: true },
-        },
-        {
-          id: "o8",
-          name: "type",
-          type: "string",
-          label: "Type",
-          validations: { required: true },
-        },
-        {
-          id: "o9",
-          name: "priority",
-          type: "string",
-          label: "Priority",
-          validations: { required: true },
-        },
-      ],
-    },
-  ],
+  type: "model",
   nodes: [
     {
       id: "User",
-      type: "schema",
       position: { x: 100, y: 100 },
       data: {
         name: "User",
@@ -1095,7 +596,6 @@ const crmTemplate: IVersion = {
     },
     {
       id: "Customer",
-      type: "schema",
       position: { x: 500, y: 100 },
       data: {
         name: "Customer",
@@ -1141,7 +641,6 @@ const crmTemplate: IVersion = {
     },
     {
       id: "Activity",
-      type: "schema",
       position: { x: 100, y: 400 },
       data: {
         name: "Activity",
@@ -1212,8 +711,7 @@ const crmTemplate: IVersion = {
       id: "e1",
       source: "Customer",
       target: "User",
-      sourceName: "Customer",
-      targetName: "User",
+
       animated: true,
       label: "N:1",
       data: { relationType: "oneToMany" },
@@ -1222,8 +720,7 @@ const crmTemplate: IVersion = {
       id: "e2",
       source: "Activity",
       target: "User",
-      sourceName: "Activity",
-      targetName: "User",
+
       animated: true,
       label: "N:1",
       data: { relationType: "oneToMany" },
@@ -1232,8 +729,7 @@ const crmTemplate: IVersion = {
       id: "e3",
       source: "Activity",
       target: "Customer",
-      sourceName: "Activity",
-      targetName: "Customer",
+
       animated: true,
       label: "N:1",
       data: { relationType: "oneToMany" },
@@ -1247,165 +743,10 @@ const hrmTemplate: IVersion = {
   name: "İK Şemaları",
   description: "İnsan kaynakları yönetimi için temel veritabanı şemaları",
   is_active: false,
-  models: [
-    {
-      name: "Employee",
-      fields: [
-        {
-          id: "e2",
-          name: "ad",
-          type: "string",
-          label: "Ad",
-          validations: { required: true },
-        },
-        {
-          id: "e3",
-          name: "soyad",
-          type: "string",
-          label: "Soyad",
-          validations: { required: true },
-        },
-        {
-          id: "e4",
-          name: "email",
-          type: "string",
-          label: "Email",
-          validations: { required: true },
-        },
-        {
-          id: "e5",
-          name: "telefon",
-          type: "string",
-          label: "Telefon",
-          validations: { required: false },
-        },
-        {
-          id: "e6",
-          name: "departman",
-          type: "reference",
-          label: "Departman",
-          validations: { required: true },
-        },
-        {
-          id: "e7",
-          name: "pozisyon",
-          type: "reference",
-          label: "Pozisyon",
-          validations: { required: true },
-        },
-        {
-          id: "e8",
-          name: "işeGiriş",
-          type: "date",
-          label: "İşe Giriş",
-          validations: { required: true },
-        },
-      ],
-    },
-    {
-      name: "Department",
-      fields: [
-        {
-          id: "d2",
-          name: "ad",
-          type: "string",
-          label: "Ad",
-          validations: { required: true },
-        },
-        {
-          id: "d3",
-          name: "yönetici",
-          type: "reference",
-          label: "Yönetici",
-          validations: { required: false },
-        },
-        {
-          id: "d4",
-          name: "açıklama",
-          type: "string",
-          label: "Açıklama",
-          validations: { required: false },
-        },
-      ],
-    },
-    {
-      name: "Position",
-      fields: [
-        {
-          id: "p2",
-          name: "ad",
-          type: "string",
-          label: "Ad",
-          validations: { required: true },
-        },
-        {
-          id: "p3",
-          name: "seviye",
-          type: "string",
-          label: "Seviye",
-          validations: { required: true },
-        },
-        {
-          id: "p4",
-          name: "departman",
-          type: "reference",
-          label: "Departman",
-          validations: { required: true },
-        },
-      ],
-    },
-    {
-      name: "Leave",
-      fields: [
-        {
-          id: "l2",
-          name: "çalışan",
-          type: "reference",
-          label: "Çalışan",
-          validations: { required: true },
-        },
-        {
-          id: "l3",
-          name: "başlangıç",
-          type: "date",
-          label: "Başlangıç",
-          validations: { required: true },
-        },
-        {
-          id: "l4",
-          name: "bitiş",
-          type: "date",
-          label: "Bitiş",
-          validations: { required: true },
-        },
-        {
-          id: "l5",
-          name: "tip",
-          type: "string",
-          label: "Tip",
-          validations: { required: true },
-        },
-        {
-          id: "l6",
-          name: "durum",
-          type: "string",
-          label: "Durum",
-          validations: { required: true },
-        },
-        {
-          id: "l7",
-          name: "açıklama",
-          type: "string",
-          label: "Açıklama",
-          validations: { required: false },
-        },
-      ],
-    },
-  ],
+  type: "model",
   nodes: [
     {
       id: "employee",
-      type: "schema",
       position: { x: 100, y: 100 },
       data: {
         name: "Employee",
@@ -1424,7 +765,6 @@ const hrmTemplate: IVersion = {
     },
     {
       id: "department",
-      type: "schema",
       position: { x: 500, y: 100 },
       data: {
         name: "Department",
@@ -1439,7 +779,6 @@ const hrmTemplate: IVersion = {
     },
     {
       id: "position",
-      type: "schema",
       position: { x: 100, y: 400 },
       data: {
         name: "Position",
@@ -1454,7 +793,6 @@ const hrmTemplate: IVersion = {
     },
     {
       id: "leave",
-      type: "schema",
       position: { x: 500, y: 400 },
       data: {
         name: "Leave",
@@ -1476,8 +814,7 @@ const hrmTemplate: IVersion = {
       id: "e1",
       source: "employee",
       target: "department",
-      sourceName: "employee",
-      targetName: "department",
+
       animated: true,
       label: "N:1",
       data: { relationType: "oneToMany" },
@@ -1486,8 +823,7 @@ const hrmTemplate: IVersion = {
       id: "e2",
       source: "employee",
       target: "position",
-      sourceName: "employee",
-      targetName: "position",
+
       animated: true,
       label: "N:1",
       data: { relationType: "oneToMany" },
@@ -1496,8 +832,7 @@ const hrmTemplate: IVersion = {
       id: "e3",
       source: "position",
       target: "department",
-      sourceName: "position",
-      targetName: "department",
+
       animated: true,
       label: "N:1",
       data: { relationType: "oneToMany" },
@@ -1506,8 +841,7 @@ const hrmTemplate: IVersion = {
       id: "e4",
       source: "leave",
       target: "employee",
-      sourceName: "leave",
-      targetName: "employee",
+
       animated: true,
       label: "N:1",
       data: { relationType: "oneToMany" },
@@ -1520,125 +854,10 @@ const investTrackerTemplate: IVersion = {
   name: "Invest Tracker",
   description: "Invest Tracker",
   is_active: false,
-  models: [
-    {
-      name: "Investment",
-      fields: [
-        {
-          id: "i1",
-          name: "id",
-          type: "string",
-          label: "ID",
-          validations: { required: true },
-        },
-        {
-          id: "i2",
-          name: "name",
-          type: "string",
-          label: "Name",
-          validations: { required: true },
-        },
-        {
-          id: "i3",
-          name: "amount",
-          type: "number",
-          label: "Amount",
-          validations: { required: true },
-        },
-        {
-          id: "i4",
-          name: "date",
-          type: "date",
-          label: "Date",
-          validations: { required: true },
-        },
-        {
-          id: "i5",
-          name: "category",
-          type: "string",
-          label: "Category",
-          validations: { required: true },
-        },
-        {
-          id: "i6",
-          name: "description",
-          type: "string",
-          label: "Description",
-          validations: { required: false },
-        },
-      ],
-    },
-    {
-      name: "Category",
-      fields: [
-        {
-          id: "c1",
-          name: "id",
-          type: "string",
-          label: "ID",
-          validations: { required: true },
-        },
-        {
-          id: "c2",
-          name: "name",
-          type: "string",
-          label: "Name",
-          validations: { required: true },
-        },
-        {
-          id: "c3",
-          name: "description",
-          type: "string",
-          label: "Description",
-          validations: { required: false },
-        },
-      ],
-    },
-    {
-      name: "User",
-      fields: [
-        {
-          id: "u1",
-          name: "id",
-          type: "string",
-          label: "ID",
-          validations: { required: true },
-        },
-        {
-          id: "u2",
-          name: "name",
-          type: "string",
-          label: "Name",
-          validations: { required: true },
-        },
-        {
-          id: "u3",
-          name: "email",
-          type: "string",
-          label: "Email",
-          validations: { required: true },
-        },
-        {
-          id: "u4",
-          name: "password",
-          type: "string",
-          label: "Password",
-          validations: { required: true },
-        },
-        {
-          id: "u5",
-          name: "investments",
-          type: "reference",
-          label: "Investments",
-          validations: { required: false },
-        },
-      ],
-    },
-  ],
+  type: "model",
   nodes: [
     {
       id: "investment",
-      type: "schema",
       position: { x: 100, y: 100 },
       data: {
         name: "Investment",
@@ -1655,7 +874,6 @@ const investTrackerTemplate: IVersion = {
     },
     {
       id: "category",
-      type: "schema",
       position: { x: 500, y: 100 },
       data: {
         name: "Category",
@@ -1669,7 +887,6 @@ const investTrackerTemplate: IVersion = {
     },
     {
       id: "user",
-      type: "schema",
       position: { x: 100, y: 400 },
       data: {
         name: "User",
@@ -1689,8 +906,6 @@ const investTrackerTemplate: IVersion = {
       id: "e1",
       source: "investment",
       target: "category",
-      sourceName: "investment",
-      targetName: "category",
       animated: true,
       label: "N:1",
       data: { relationType: "oneToMany" },
@@ -1699,11 +914,850 @@ const investTrackerTemplate: IVersion = {
       id: "e2",
       source: "user",
       target: "investment",
-      sourceName: "user",
-      targetName: "investment",
       animated: true,
       label: "N:1",
       data: { relationType: "oneToMany" },
+    },
+  ],
+};
+
+const matrixModelTemplate: IVersion = {
+  id: "matrixModel",
+  name: "Matrix Model",
+  description: "Matrix Model",
+  is_active: false,
+  type: "model",
+  nodes: [
+    {
+      id: "User",
+      position: { x: 100, y: 100 },
+      data: [
+        {
+          id: "n2",
+          name: "fullname",
+          type: "string",
+          label: "Full Name",
+          validations: { required: true },
+        },
+        {
+          id: "n3",
+          name: "email",
+          type: "string",
+          label: "Email",
+          validations: { required: true },
+        },
+        {
+          id: "n4",
+          name: "password",
+          type: "string",
+          label: "Password",
+          validations: { required: true },
+        },
+        {
+          id: "n5",
+          name: "role",
+          type: "string",
+          label: "Role",
+          validations: { required: true },
+        },
+        {
+          id: "n6",
+          name: "photo",
+          type: "string",
+          label: "Photo",
+          validations: { required: false },
+        },
+      ],
+    },
+    {
+      id: "Project",
+      position: { x: 500, y: 100 },
+      data: [
+        {
+          id: "n1",
+          name: "name",
+          type: "string",
+          label: "Name",
+          validations: { required: true },
+        },
+        {
+          id: "n2",
+          name: "description",
+          type: "string",
+          label: "Description",
+          validations: { required: false },
+        },
+        {
+          id: "n3",
+          name: "user",
+          type: "reference",
+          label: "User",
+          validations: { required: true },
+        },
+      ],
+    },
+    {
+      id: "Version",
+      position: { x: 100, y: 400 },
+      data: [
+        {
+          id: "n1",
+          name: "name",
+          type: "string",
+          label: "Name",
+          validations: { required: true },
+        },
+        {
+          id: "n2",
+          name: "description",
+          type: "string",
+          label: "Description",
+          validations: { required: false },
+        },
+        {
+          id: "n3",
+          name: "is_active",
+          type: "boolean",
+          label: "Is Active",
+          validations: { required: true },
+        },
+        {
+          id: "n4",
+          name: "type",
+          type: "string",
+          label: "Type",
+          validations: { required: true },
+        },
+        {
+          id: "n5",
+          name: "project",
+          type: "reference",
+          label: "Project",
+          validations: { required: true },
+        },
+      ],
+    },
+    {
+      id: "Node",
+      position: { x: 500, y: 400 },
+      data: [
+        {
+          id: "n1",
+          name: "version",
+          type: "reference",
+          label: "Version",
+          validations: { required: true },
+        },
+        {
+          id: "n2",
+          name: "data",
+          type: "object",
+          label: "Data",
+          validations: { required: true },
+        },
+        {
+          id: "n3",
+          name: "position",
+          type: "object",
+          label: "Position",
+          validations: { required: true },
+        },
+      ],
+    },
+    {
+      id: "Edge",
+      position: { x: 100, y: 800 },
+      data: [
+        {
+          id: "n1",
+          name: "source",
+          type: "string",
+          label: "Source",
+          validations: { required: true },
+        },
+        {
+          id: "n2",
+          name: "target",
+          type: "string",
+          label: "Target",
+          validations: { required: true },
+        },
+        {
+          id: "n3",
+          name: "animated",
+          type: "boolean",
+          label: "Animated",
+          validations: { required: true },
+        },
+        {
+          id: "n4",
+          name: "label",
+          type: "string",
+          label: "Label",
+          validations: { required: true },
+        },
+        {
+          id: "n5",
+          name: "data",
+          type: "object",
+          label: "Data",
+          validations: { required: true },
+        },
+        {
+          id: "n6",
+          name: "version",
+          type: "reference",
+          label: "Version",
+          validations: { required: true },
+        },
+      ],
+    },
+    {
+      id: "Screen",
+      position: { x: 500, y: 800 },
+      data: [
+        {
+          id: "n1",
+          name: "name",
+          type: "string",
+          label: "Name",
+          validations: { required: true },
+        },
+        {
+          id: "n2",
+          name: "description",
+          type: "string",
+          label: "Description",
+          validations: { required: false },
+        },
+        {
+          id: "n3",
+          name: "props",
+          type: "object",
+          label: "Props",
+          validations: { required: false },
+        },
+        {
+          id: "n4",
+          name: "project",
+          type: "reference",
+          label: "Project",
+          validations: { required: true },
+        },
+      ],
+    },
+    {
+      id: "Page",
+      position: { x: 500, y: 800 },
+      data: [
+        {
+          id: "n1",
+          name: "name",
+          type: "string",
+          label: "Name",
+          validations: { required: true },
+        },
+        {
+          id: "n2",
+          name: "description",
+          type: "string",
+          label: "Description",
+          validations: { required: false },
+        },
+        {
+          id: "n3",
+          name: "props",
+          type: "object",
+          label: "Props",
+          validations: { required: false },
+        },
+        {
+          id: "n4",
+          name: "project",
+          type: "reference",
+          label: "Project",
+          validations: { required: true },
+        },
+      ],
+    },
+    {
+      id: "Flow",
+      position: { x: 500, y: 800 },
+      data: [
+        {
+          id: "n1",
+          name: "name",
+          type: "string",
+          label: "Name",
+          validations: { required: true },
+        },
+        {
+          id: "n2",
+          name: "description",
+          type: "string",
+          label: "Description",
+          validations: { required: false },
+        },
+        {
+          id: "n3",
+          name: "project",
+          type: "reference",
+          label: "Project",
+          validations: { required: true },
+        },
+      ],
+    },
+    {
+      id: "FlowStep",
+      position: { x: 500, y: 800 },
+      data: [
+        {
+          id: "n1",
+          name: "flow",
+          type: "reference",
+          label: "Flow",
+          validations: { required: true },
+        },
+        {
+          id: "n2",
+          name: "agent",
+          type: "reference",
+          label: "Agent",
+          validations: { required: true },
+        },
+        {
+          id: "n3",
+          name: "order",
+          type: "number",
+          label: "Order",
+          validations: { required: true },
+        },
+      ],
+    },
+    {
+      id: "FlowSession",
+      position: { x: 500, y: 800 },
+      data: [
+        {
+          id: "n1",
+          name: "flow",
+          type: "reference",
+          label: "Flow",
+          validations: { required: true },
+        },
+        {
+          id: "n2",
+          name: "session",
+          type: "reference",
+          label: "Session",
+          validations: { required: true },
+        },
+      ],
+    },
+    {
+      id: "Agent",
+      position: { x: 500, y: 800 },
+      data: [
+        {
+          id: "n1",
+          name: "name",
+          type: "string",
+          label: "Name",
+          validations: { required: true },
+        },
+        {
+          id: "n2",
+          name: "instructions",
+          type: "string",
+          label: "Instructions",
+          validations: { required: true },
+        },
+        {
+          id: "n3",
+          name: "stream",
+          type: "boolean",
+          label: "Stream",
+          validations: { required: true },
+        },
+        {
+          id: "n4",
+          name: "model_provider",
+          type: "string",
+          label: "Model Provider",
+          validations: { required: true },
+        },
+        {
+          id: "n5",
+          name: "model_name",
+          type: "string",
+          label: "Model Name",
+          validations: { required: true },
+        },
+        {
+          id: "n6",
+          name: "key",
+          type: "reference",
+          label: "Key",
+          validations: { required: true },
+        },
+        {
+          id: "n7",
+          name: "photo",
+          type: "string",
+          label: "Photo",
+          validations: { required: false },
+        },
+        {
+          id: "n8",
+          name: "is_public",
+          type: "boolean",
+          label: "Is Public",
+          validations: { required: true },
+        },
+        {
+          id: "n9",
+          name: "title",
+          type: "string",
+          label: "Title",
+          validations: { required: false },
+        },
+        {
+          id: "n10",
+          name: "seed",
+          type: "number",
+          label: "Seed",
+          validations: { required: true },
+        },
+        {
+          id: "n11",
+          name: "max_tokens",
+          type: "number",
+          label: "Max Tokens",
+          validations: { required: true },
+        },
+        {
+          id: "n12",
+          name: "temperature",
+          type: "number",
+          label: "Temperature",
+          validations: { required: true },
+        },
+      ],
+    },
+    {
+      id: "Key",
+      position: { x: 500, y: 800 },
+      data: [
+        {
+          id: "n1",
+          name: "name",
+          type: "string",
+          label: "Name",
+          validations: { required: true },
+        },
+        {
+          id: "n2",
+          name: "value",
+          type: "string",
+          label: "Value",
+          validations: { required: true },
+        },
+        {
+          id: "n3",
+          name: "type",
+          type: "string",
+          label: "Type",
+          validations: { required: true },
+        },
+        {
+          id: "n4",
+          name: "user",
+          type: "reference",
+          label: "User",
+          validations: { required: true },
+        },
+        {
+          id: "n5",
+          name: "description",
+          type: "string",
+          label: "Description",
+          validations: { required: false },
+        },
+      ],
+    },
+    {
+      id: "Hiring",
+      position: { x: 500, y: 800 },
+      data: [
+        {
+          id: "n1",
+          name: "user",
+          type: "reference",
+          label: "User",
+          validations: { required: true },
+        },
+        {
+          id: "n2",
+          name: "agent",
+          type: "reference",
+          label: "Agent",
+          validations: { required: true },
+        },
+      ],
+    },
+    {
+      id: "Chat",
+      position: { x: 500, y: 800 },
+      data: [
+        {
+          id: "n1",
+          name: "role",
+          type: "string",
+          label: "Role",
+          validations: { required: true },
+        },
+        {
+          id: "n2",
+          name: "content",
+          type: "string",
+          label: "Content",
+          validations: { required: true },
+        },
+        {
+          id: "n3",
+          name: "session",
+          type: "reference",
+          label: "Session",
+          validations: { required: true },
+        },
+        {
+          id: "n4",
+          name: "attachments",
+          type: "array",
+          label: "Attachments",
+          validations: { required: false },
+        },
+      ],
+    },
+    {
+      id: "Session",
+      position: { x: 500, y: 800 },
+      data: [
+        {
+          id: "n1",
+          name: "agent",
+          type: "reference",
+          label: "Agent",
+          validations: { required: true },
+        },
+        {
+          id: "n2",
+          name: "user",
+          type: "reference",
+          label: "User",
+          validations: { required: true },
+        },
+      ],
+    },
+    {
+      id: "Family",
+      position: { x: 500, y: 800 },
+      data: [
+        {
+          id: "n1",
+          name: "agent",
+          type: "reference",
+          label: "Agent",
+          validations: { required: true },
+        },
+        {
+          id: "n2",
+          name: "parent",
+          type: "reference",
+          label: "Parent",
+          validations: { required: true },
+        },
+      ],
+    },
+    {
+      id: "Model",
+      position: { x: 500, y: 800 },
+      data: [
+        {
+          id: "n1",
+          name: "name",
+          type: "string",
+          label: "Name",
+          validations: { required: true },
+        },
+        {
+          id: "n2",
+          name: "project",
+          type: "reference",
+          label: "Project",
+          validations: { required: true },
+        },
+        {
+          id: "n3",
+          name: "description",
+          type: "string",
+          label: "Description",
+          validations: { required: false },
+        },
+      ],
+    },
+    {
+      id: "Field",
+      position: { x: 500, y: 800 },
+      data: [
+        {
+          id: "n1",
+          name: "name",
+          type: "string",
+          label: "Name",
+          validations: { required: true },
+        },
+        {
+          id: "n2",
+          name: "model",
+          type: "reference",
+          label: "Model",
+          validations: { required: true },
+        },
+        {
+          id: "n3",
+          name: "label",
+          type: "string",
+          label: "Label",
+          validations: { required: true },
+        },
+        {
+          id: "n4",
+          name: "type",
+          type: "string",
+          label: "Type",
+          validations: { required: true },
+        },
+        {
+          id: "n5",
+          name: "validations",
+          type: "object",
+          label: "Validations",
+          validations: { required: false },
+        },
+      ],
+    },
+  ],
+  edges: [
+    {
+      id: "e1",
+      source: "Key",
+      target: "Agent",
+      animated: true,
+      label: "N:1",
+      data: {
+        relationType: "oneToMany",
+      },
+    },
+    {
+      id: "e2",
+      source: "Session",
+      target: "Chat",
+      animated: true,
+      label: "N:1",
+      data: {
+        relationType: "oneToMany",
+      },
+    },
+    {
+      id: "e3",
+      source: "Version",
+      target: "Edge",
+      animated: true,
+      label: "N:1",
+      data: {
+        relationType: "oneToMany",
+      },
+    },
+    {
+      id: "e4",
+      source: "Family",
+      target: "Agent",
+      animated: true,
+      label: "N:1",
+      data: {
+        relationType: "oneToMany",
+      },
+    },
+    {
+      id: "e5",
+      source: "Model",
+      target: "Field",
+      animated: true,
+      label: "N:1",
+      data: {
+        relationType: "oneToMany",
+      },
+    },
+    {
+      id: "e6",
+      source: "Project",
+      target: "Flow",
+      animated: true,
+      label: "N:1",
+      data: {
+        relationType: "oneToMany",
+      },
+    },
+    {
+      id: "e7",
+      source: "Flow",
+      target: "FlowSession",
+      animated: true,
+      label: "N:1",
+      data: {
+        relationType: "oneToMany",
+      },
+    },
+    {
+      id: "e8",
+      source: "Session",
+      target: "FlowSession",
+      animated: true,
+      label: "N:1",
+      data: {
+        relationType: "oneToMany",
+      },
+    },
+    {
+      id: "e9",
+      source: "Agent",
+      target: "FlowStep",
+      animated: true,
+      label: "N:1",
+      data: {
+        relationType: "oneToMany",
+      },
+    },
+    {
+      id: "e10",
+      source: "Flow",
+      target: "FlowStep",
+      animated: true,
+      label: "N:1",
+      data: {
+        relationType: "oneToMany",
+      },
+    },
+    {
+      id: "e11",
+      source: "User",
+      target: "Hiring",
+      animated: true,
+      label: "N:1",
+      data: {
+        relationType: "oneToMany",
+      },
+    },
+    {
+      id: "e12",
+      source: "Agent",
+      target: "Hiring",
+      animated: true,
+      label: "N:1",
+      data: {
+        relationType: "oneToMany",
+      },
+    },
+    {
+      id: "e13",
+      source: "User",
+      target: "Key",
+      animated: true,
+      label: "N:1",
+      data: {
+        relationType: "oneToMany",
+      },
+    },
+    {
+      id: "e14",
+      source: "Project",
+      target: "Model",
+      animated: true,
+      label: "N:1",
+      data: {
+        relationType: "oneToMany",
+      },
+    },
+    {
+      id: "e15",
+      source: "Version",
+      target: "Node",
+      animated: true,
+      label: "N:1",
+      data: {
+        relationType: "oneToMany",
+      },
+    },
+    {
+      id: "e16",
+      source: "Project",
+      target: "Page",
+      animated: true,
+      label: "N:1",
+      data: {
+        relationType: "oneToMany",
+      },
+    },
+    {
+      id: "e17",
+      source: "User",
+      target: "Project",
+      animated: true,
+      label: "N:1",
+      data: {
+        relationType: "oneToMany",
+      },
+    },
+    {
+      id: "e18",
+      source: "Project",
+      target: "Screen",
+      animated: true,
+      label: "N:1",
+      data: {
+        relationType: "oneToMany",
+      },
+    },
+    {
+      id: "e19",
+      source: "Agent",
+      target: "Session",
+      animated: true,
+      label: "N:1",
+      data: {
+        relationType: "oneToMany",
+      },
+    },
+    {
+      id: "e20",
+      source: "User",
+      target: "Session",
+      animated: true,
+      label: "N:1",
+      data: {
+        relationType: "oneToMany",
+      },
+    },
+    {
+      id: "e21",
+      source: "Project",
+      target: "Version",
+      animated: true,
+      label: "N:1",
+      data: {
+        relationType: "oneToMany",
+      },
     },
   ],
 };
@@ -1714,6 +1768,7 @@ export const templates: IVersion[] = [
   hrmTemplate,
   gymTemplate,
   investTrackerTemplate,
+  matrixModelTemplate,
 ];
 
 export const defaultNodes: Node[] = eCommerceTemplate.nodes;

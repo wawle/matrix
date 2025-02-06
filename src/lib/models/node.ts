@@ -1,6 +1,5 @@
 import mongoose from "mongoose";
 import { IVersion } from "./version";
-import { IFlow } from "./flow";
 
 export interface INode {
   id: string;
@@ -10,8 +9,6 @@ export interface INode {
   version?: IVersion;
   data: any;
   position: { x: number; y: number };
-  type: "schema" | "agent" | "component";
-  flow: IFlow;
 }
 
 export const nodeSchema = new mongoose.Schema<INode>(
@@ -20,16 +17,6 @@ export const nodeSchema = new mongoose.Schema<INode>(
       type: mongoose.Schema.Types.ObjectId,
       ref: "Version",
       required: true,
-    },
-    flow: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Flow",
-      required: false,
-    },
-    type: {
-      type: String,
-      required: true,
-      enum: ["schema", "agent", "component"],
     },
     data: {
       type: Object,

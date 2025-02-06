@@ -2,7 +2,6 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ProjectForm } from "./components/project-form";
 import { fetchProject } from "@/lib/actions/project";
 import Link from "next/link";
-import { Button } from "@/components/ui/button";
 
 interface ProjectPageProps {
   params: Promise<{ projectId: string }>;

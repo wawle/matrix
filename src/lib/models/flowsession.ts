@@ -18,7 +18,6 @@ export const flowsessionSchema = new mongoose.Schema<IFlowSession>(
       ref: "Flow",
       required: true,
     },
-
     session: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Session",
