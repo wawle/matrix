@@ -1,10 +1,8 @@
 import { Project, IProject } from "@/lib/models/project";
 import connectDB from "@/lib/db";
 import { Version } from "../models/version";
-import { Model } from "../models/model";
 import { Node } from "../models/node";
 import { Edge } from "../models/edge";
-import { Field } from "../models/field";
 import { asyncFnService } from "../middlewares/async";
 import { ErrorResponse } from "../middlewares/error";
 
@@ -26,22 +24,11 @@ export const getProjectById = asyncFnService(
     const project = await Project.findById(id).populate({
       path: "versions",
       model: Version,
-      select: "name is_active models nodes edges",
       populate: [
-        {
-          path: "models",
-          model: Model,
-          select: "name description fields",
-          populate: {
-            path: "fields",
-            model: Field,
-            select: "name type label validations",
-          },
-        },
         {
           path: "nodes",
           model: Node,
-          select: "type position data",
+          select: "position data",
         },
         {
           path: "edges",

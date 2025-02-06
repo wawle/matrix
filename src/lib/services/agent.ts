@@ -2,12 +2,22 @@ import { Agent, IAgent } from "@/lib/models/agent";
 import connectDB from "@/lib/db";
 import { asyncFnService } from "../middlewares/async";
 import { ErrorResponse } from "../middlewares/error";
+import { listing } from "../middlewares/listing";
 
-export const getAgents = asyncFnService(async (): Promise<IAgent[]> => {
-  await connectDB();
-  const agents = await Agent.find().sort({ createdAt: -1 });
-  return agents;
-});
+export const getAgents = asyncFnService(
+  async (
+    queryParams: any
+  ): Promise<{
+    data: IAgent[];
+    total: number;
+    pageCount: number;
+    pagination: { next?: { page: number; limit: number } };
+  }> => {
+    await connectDB();
+    const agents = await listing<IAgent>(Agent, queryParams);
+    return agents;
+  }
+);
 
 export const getAgentById = asyncFnService(
   async (id: string): Promise<IAgent> => {

@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import {
   Form,
   FormControl,
+  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -20,12 +21,23 @@ import {
   createVersionAction,
   updateVersionAction,
 } from "@/lib/actions/version";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Switch } from "@/components/ui/switch";
 
 const formSchema = z.object({
   name: z.string().min(3, {
     message: "Proje adı en az 3 karakter olmalıdır.",
   }),
   description: z.string().optional(),
+  type: z.enum(["model", "agent", "page", "screen"]),
+  is_active: z.boolean(),
+  project: z.string(),
 });
 
 type FormValues = z.infer<typeof formSchema>;
@@ -77,11 +89,54 @@ export function VersionForm({ defaultValues, versionId }: VersionFormProps) {
           name="name"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Flow Adı</FormLabel>
+              <FormLabel>Version Adı</FormLabel>
               <FormControl>
-                <Input placeholder="Yeni Flow" {...field} />
+                <Input placeholder="Yeni Version" {...field} />
               </FormControl>
               <FormMessage />
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
+          name="type"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Type</FormLabel>
+              <FormControl>
+                <Select {...field}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select a type" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="model">Model</SelectItem>
+                    <SelectItem value="flow">Flow</SelectItem>
+                    <SelectItem value="page">Page</SelectItem>
+                    <SelectItem value="screen">Screen</SelectItem>
+                  </SelectContent>
+                </Select>
+              </FormControl>
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          control={form.control}
+          name="is_active"
+          render={({ field }) => (
+            <FormItem className="flex flex-col gap-1">
+              <FormLabel>Active</FormLabel>
+              <div className="flex items-center justify-between border rounded-md p-2 px-3">
+                <FormDescription>
+                  Versioninizin aktif olup olmadığını belirleyin.
+                </FormDescription>
+                <FormControl>
+                  <Switch
+                    checked={field.value}
+                    onCheckedChange={field.onChange}
+                  />
+                </FormControl>
+              </div>
             </FormItem>
           )}
         />
@@ -94,7 +149,7 @@ export function VersionForm({ defaultValues, versionId }: VersionFormProps) {
               <FormLabel>Açıklama</FormLabel>
               <FormControl>
                 <Textarea
-                  placeholder="Flowiniz hakkında kısa bir açıklama yazın..."
+                  placeholder="Versioniniz hakkında kısa bir açıklama yazın..."
                   {...field}
                 />
               </FormControl>

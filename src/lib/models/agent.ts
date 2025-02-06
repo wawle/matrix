@@ -1,12 +1,12 @@
 import mongoose from "mongoose";
 import { IKey, Key } from "./key";
-import { Hiring } from "./hiring";
-import { FlowStep } from "./flowstep";
-import { Family } from "./family";
+import { Hiring, IHiring } from "./hiring";
+import { Family, IFamily } from "./family";
 import { ISession, Session } from "./session";
 import OpenAI from "openai";
 import { Chat, IChat } from "./chat";
 import { ErrorResponse } from "../middlewares/error";
+import { IProject } from "./project";
 
 export interface IAgent {
   id: string;
@@ -25,7 +25,11 @@ export interface IAgent {
   is_public: boolean;
   photo: string;
   key: IKey;
+  project: IProject;
 
+  children: IFamily[];
+  contracts: IHiring[];
+  sessions: ISession[];
   getKey(): Promise<string>;
   getOpenAI(): Promise<OpenAI>;
   getSession(sessionId: string): Promise<ISession | null>;
@@ -106,6 +110,11 @@ export const agentSchema = new mongoose.Schema<IAgent>(
     key: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Key",
+      required: true,
+    },
+    project: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Project",
       required: true,
     },
   },
@@ -277,16 +286,10 @@ agentSchema.virtual("contracts", {
   foreignField: "agent",
 });
 
-agentSchema.virtual("flowsteps", {
-  ref: FlowStep,
-  localField: "_id",
-  foreignField: "agent",
-});
-
-agentSchema.virtual("parents", {
+agentSchema.virtual("children", {
   ref: Family,
   localField: "_id",
-  foreignField: "agent",
+  foreignField: "parent",
 });
 
 agentSchema.virtual("sessions", {
@@ -298,7 +301,6 @@ agentSchema.virtual("sessions", {
 agentSchema.pre("findOneAndDelete", async function (next) {
   const { _id } = this.getQuery();
   await Promise.all([
-    FlowStep.deleteMany({ agent: _id }),
     Hiring.deleteMany({ agent: _id }),
     Family.deleteMany({ agent: _id }),
     Family.deleteMany({ parent: _id }),

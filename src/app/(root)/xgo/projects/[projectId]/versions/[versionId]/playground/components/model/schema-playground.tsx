@@ -26,7 +26,6 @@ import { SchemaDialogs } from "./schema-dialogs";
 import { IVersion } from "@/lib/models/version";
 import { IProject } from "@/lib/models/project";
 import { toast } from "sonner";
-import { updateProjectAction } from "@/lib/actions/project";
 import { templates } from "@/lib/constants/templates";
 import {
   deleteVersionAction,
@@ -37,7 +36,6 @@ import {
   setAutoSaveState,
   updateAppFromVersion,
 } from "@/lib/actions/version";
-import { convertTemplateToVersion } from "@/lib/utils";
 import { INode } from "@/lib/models/node";
 import { IEdge } from "@/lib/models/edge";
 
@@ -197,7 +195,9 @@ export default function SchemaPlayground({
     // If selected version is not found, generate a new version from template
     if (!selectedVersion) {
       // Find the selected template
-      const selectedTemplate = templates.find((t) => t.id === selectedPreset);
+      const selectedTemplate = templates.models.find(
+        (t) => t.id === selectedPreset
+      );
 
       // If selected template is not found, show an error message
       if (!selectedTemplate) {
@@ -343,7 +343,7 @@ export default function SchemaPlayground({
    */
   const onPresetChange = useCallback(
     (value: string) => {
-      const defaultTemplate = templates.find((t) => t.id === value);
+      const defaultTemplate = templates.models.find((t) => t.id === value);
       if (defaultTemplate) {
         const clonedNodes = JSON.parse(JSON.stringify(defaultTemplate.nodes));
         const nodesWithHandlers = clonedNodes.map((node: any) => ({

@@ -18,7 +18,7 @@ export default async function Layout({
         url: "/agents",
         icon: <Bot />,
         isActive: false,
-        items: agents.map((agent) => ({
+        items: agents.data.map((agent) => ({
           title: agent.name,
           url: `/agents/${agent.id}`,
           icon: (

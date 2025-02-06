@@ -5,14 +5,9 @@ import { Separator } from "@/components/ui/separator";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { AgentCard } from "./components/agent-card";
 import { fetchAgents } from "@/lib/actions/agent";
-import { fetchFlows } from "@/lib/actions/flow";
-import FlowCard from "./components/flow-card";
 
 export default async function AgentsPage() {
-  const [{ data: flows }, { data: agents }] = await Promise.all([
-    fetchFlows(),
-    fetchAgents(),
-  ]);
+  const [{ data: agents }] = await Promise.all([fetchAgents()]);
   return (
     <div className="grid lg:grid-cols-4">
       <div className="col-span-3 lg:col-span-4 px-8 py-4">
@@ -46,7 +41,7 @@ export default async function AgentsPage() {
             <div className="relative">
               <ScrollArea>
                 <div className="flex space-x-4 pb-4">
-                  {agents.map((agent) => (
+                  {agents.data.map((agent) => (
                     <AgentCard
                       key={agent.name}
                       agent={agent}
@@ -54,31 +49,6 @@ export default async function AgentsPage() {
                       aspectRatio="portrait"
                       width={250}
                       height={330}
-                    />
-                  ))}
-                </div>
-                <ScrollBar orientation="horizontal" />
-              </ScrollArea>
-            </div>
-            <Separator className="my-4" />
-            <div className="flex items-center justify-between">
-              <div className="space-y-1">
-                <h2 className="text-2xl font-semibold tracking-tight">
-                  Public Flows
-                </h2>
-                <p className="text-sm text-muted-foreground">
-                  Public Flows for you.
-                </p>
-              </div>
-            </div>
-            <div className="relative">
-              <ScrollArea>
-                <div className="flex space-x-4 pb-4">
-                  {flows.map((flow) => (
-                    <FlowCard
-                      key={flow.name}
-                      flow={flow}
-                      className="w-[800px]"
                     />
                   ))}
                 </div>

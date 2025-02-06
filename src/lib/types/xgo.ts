@@ -11,3 +11,11 @@ export interface ComponentNode {
   props?: Record<string, any>;
   template: string;
 }
+
+export interface INodeField {
+  id: string;
+  name: string;
+  label: string;
+  type: string;
+  validations?: Record<string, any>;
+}

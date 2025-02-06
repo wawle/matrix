@@ -18,6 +18,7 @@ import { createNodeAction, updateNodeAction } from "./node";
 import { createEdgeAction, updateEdgeAction } from "./edge";
 import { fetchProject } from "./project";
 import { createNextProject } from "../xgo/generators/app";
+import { INodeField } from "../types/xgo";
 
 export async function fetchVersions() {
   try {
@@ -321,7 +322,7 @@ export const updateAppFromVersion = async (
   projectName?: string;
 }> => {
   try {
-    const { models, edges, nodes } = version;
+    const { edges, nodes } = version;
 
     const updatedNodesBody = nodes.map((node) => ({
       id: node.id,
@@ -332,7 +333,6 @@ export const updateAppFromVersion = async (
         fields: node.data.fields,
       },
       position: node.position,
-      type: node.type,
       version: node.version,
     }));
 
@@ -341,26 +341,24 @@ export const updateAppFromVersion = async (
       data: edge.data,
       source: edge.source,
       target: edge.target,
-      sourceName: edge.sourceName,
-      targetName: edge.targetName,
       version: edge.version,
     }));
 
-    const updatedModelsBody = models.map((model) => ({
-      id: model.id,
-      name: model.name,
-      description: model.description,
-      version: model.version,
+    const updatedModelsBody = nodes.map((node) => ({
+      id: node.id,
+      name: node.data.name,
+      description: node.data.description,
+      project: projectId,
     }));
 
-    const updatedFieldsBody = models.flatMap((model) =>
-      model.fields.map((field) => ({
+    const updatedFieldsBody = nodes.flatMap((node) =>
+      node.data.fields.map((field: INodeField) => ({
         id: field.id,
         name: field.name,
         label: field.label,
         type: field.type,
         validations: field.validations,
-        model: field.model,
+        model: updatedModelsBody.find((m) => m.name === node.data.name)?.id,
       }))
     );
 
@@ -375,7 +373,7 @@ export const updateAppFromVersion = async (
         Promise.all(
           updatedModelsBody.map((model) =>
             model.id
-              ? updateModelAction(model.id, { ...model, fields: [] })
+              ? updateModelAction(model.id, model)
               : createModelAction(model)
           )
         ),
@@ -439,13 +437,11 @@ export async function generateAppAction(
       throw new Error(version.error || project.error);
     }
 
-    const models = version.data.models;
-
     const appData = {
       projectName: project.data.name,
       version: {
         name: version.data.name,
-        models: models,
+        models: project.data.models,
         relations: version.data.edges,
       },
     };

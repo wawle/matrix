@@ -2,7 +2,6 @@ import mongoose from "mongoose";
 import { IAgent } from "./agent";
 import { IUser } from "./user";
 import { Chat, IChat } from "./chat";
-import { FlowSession } from "./flowsession";
 
 export interface ISession {
   id: string;
@@ -40,18 +39,9 @@ sessionSchema.virtual("chats", {
   foreignField: "session",
 });
 
-sessionSchema.virtual("flowsessions", {
-  ref: FlowSession,
-  localField: "_id",
-  foreignField: "session",
-});
-
 sessionSchema.pre("findOneAndDelete", async function (next) {
   const { _id } = this.getQuery();
-  await Promise.all([
-    Chat.deleteMany({ session: _id }),
-    FlowSession.deleteMany({ session: _id }),
-  ]);
+  await Promise.all([Chat.deleteMany({ session: _id })]);
   next();
 });
 

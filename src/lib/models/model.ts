@@ -8,7 +8,7 @@ export interface IModel {
   createdAt?: Date;
   updatedAt?: Date;
   name: string;
-  project?: IProject;
+  project: IProject;
   description?: string;
   fields: IField[];
 }

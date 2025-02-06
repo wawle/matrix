@@ -2,9 +2,9 @@ import mongoose, { Model } from "mongoose";
 import { IUser } from "./user";
 import { IVersion, Version } from "./version";
 import { IModel } from "./model";
-import { Flow, IFlow } from "./flow";
 import { IPage, Page } from "./page";
 import { IScreen, Screen } from "./screen";
+import { Agent, IAgent } from "./agent";
 
 export interface IProject {
   id: string;
@@ -15,7 +15,7 @@ export interface IProject {
   description: string;
   user: IUser;
   models: IModel[];
-  flows: IFlow[];
+  agents: IAgent[];
   pages: IPage[];
   screens: IScreen[];
   versions: IVersion[];
@@ -56,8 +56,8 @@ projectSchema.virtual("models", {
   foreignField: "project",
 });
 
-projectSchema.virtual("flows", {
-  ref: Flow,
+projectSchema.virtual("agents", {
+  ref: Agent,
   localField: "_id",
   foreignField: "project",
 });
@@ -79,7 +79,7 @@ projectSchema.pre("findOneAndDelete", async function (next) {
   await Promise.all([
     Version.deleteMany({ project: _id }),
     Model.deleteMany({ project: _id }),
-    Flow.deleteMany({ project: _id }),
+    Agent.deleteMany({ project: _id }),
     Page.deleteMany({ project: _id }),
     Screen.deleteMany({ project: _id }),
   ]);

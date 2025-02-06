@@ -13,55 +13,84 @@ import { IAgent } from "../models/agent";
 import { authSession } from "../dal";
 
 export async function fetchAgents(): Promise<{
-  data: IAgent[];
+  data: {
+    data: IAgent[];
+    total: number;
+    pageCount: number;
+    pagination: { next?: { page: number; limit: number } };
+  };
   error?: any;
   success: boolean;
 }> {
   try {
     const agents = await getAgents();
-    return { data: JSON.parse(JSON.stringify(agents)), success: true };
+    return { data: agents, success: true };
   } catch (error: any) {
-    return { error: error.message, success: false, data: [] };
+    return {
+      error: error.message,
+      success: false,
+      data: { data: [], total: 0, pageCount: 0, pagination: {} },
+    };
   }
 }
 
-export async function fetchAgent(id: string) {
+export async function fetchAgent(id: string): Promise<{
+  data?: IAgent;
+  success: boolean;
+  error?: string;
+}> {
   try {
     const agent = await getAgentById(id);
-    return { data: JSON.parse(JSON.stringify(agent)) };
+    return { data: JSON.parse(JSON.stringify(agent)), success: true };
   } catch (error: any) {
-    return { error: error.message };
+    return { error: error.message, success: false };
   }
 }
 
-export async function createAgentAction(data: any) {
+export async function createAgentAction(data: any): Promise<{
+  data?: IAgent;
+  success: boolean;
+  error?: string;
+}> {
   try {
     const agent = await createAgent(data);
-    revalidatePath("/agents");
-    return { data: JSON.parse(JSON.stringify(agent)) };
+    revalidatePath("/admin/agents");
+    return { data: JSON.parse(JSON.stringify(agent)), success: true };
   } catch (error: any) {
-    return { error: error.message };
+    return { error: error.message, success: false };
   }
 }
 
-export async function updateAgentAction(id: string, data: any) {
+export async function updateAgentAction(
+  id: string,
+  data: any
+): Promise<{
+  data?: IAgent;
+  success: boolean;
+  error?: string;
+}> {
   try {
     const agent = await updateAgent(id, data);
-    revalidatePath("/agents");
-    revalidatePath("/agents/[id]");
-    return { data: JSON.parse(JSON.stringify(agent)) };
+    revalidatePath("/admin/agents");
+    revalidatePath(`/admin/agents/${id}`, "page");
+    return { data: JSON.parse(JSON.stringify(agent)), success: true };
   } catch (error: any) {
-    return { error: error.message };
+    return { error: error.message, success: false };
   }
 }
 
-export async function deleteAgentAction(id: string) {
+export async function deleteAgentAction(id: string): Promise<{
+  data?: IAgent;
+  success: boolean;
+  error?: string;
+}> {
   try {
     const agent = await deleteAgent(id);
-    revalidatePath("/agents");
-    return { data: JSON.parse(JSON.stringify(agent)) };
+    revalidatePath("/admin/agents");
+    revalidatePath(`/admin/agents/${id}`, "page");
+    return { data: JSON.parse(JSON.stringify(agent)), success: true };
   } catch (error: any) {
-    return { error: error.message };
+    return { error: error.message, success: false };
   }
 }
 

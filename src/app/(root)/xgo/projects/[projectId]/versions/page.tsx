@@ -1,3 +1,4 @@
+import { Badge } from "@/components/ui/badge";
 import {
   Card,
   CardContent,
@@ -8,7 +9,14 @@ import {
 import { fetchProject } from "@/lib/actions/project";
 import { formatDistanceToNow } from "date-fns";
 import { tr } from "date-fns/locale";
-import { Calendar, Clock, Layers, PlusCircle } from "lucide-react";
+import {
+  Calendar,
+  Clock,
+  Layers,
+  PlusCircle,
+  Type,
+  Workflow,
+} from "lucide-react";
 import Link from "next/link";
 import React from "react";
 
@@ -29,7 +37,7 @@ const VersionsPage = async ({ params, searchParams }: Props) => {
     <div className="flex-1 overflow-auto p-4">
       <div className="max-w-7xl w-full space-y-8">
         <div className="flex justify-between items-center">
-          <h1 className="text-xl font-bold text-foreground">Flows</h1>
+          <h1 className="text-xl font-bold text-foreground">Versions</h1>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           {/* Yeni Proje Kartı */}
@@ -54,17 +62,28 @@ const VersionsPage = async ({ params, searchParams }: Props) => {
                 <CardHeader className="space-y-2">
                   <div className="space-y-1">
                     <CardTitle className="line-clamp-1">
-                      {version.name}
+                      Version: {version.name}
                     </CardTitle>
                     <CardDescription className="line-clamp-2">
                       {version.description}
                     </CardDescription>
                   </div>
                 </CardHeader>
-                <CardContent className="space-y-3">
+                <CardContent className="space-y-1.5">
+                  <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                    <Type className="w-4 h-4" />
+                    <Badge variant={variantSwitcher(version.type)}>
+                      {version.type.charAt(0).toUpperCase() +
+                        version.type.slice(1)}
+                    </Badge>
+                  </div>
                   <div className="flex items-center gap-2 text-sm text-muted-foreground">
                     <Layers className="w-4 h-4" />
-                    <span>{version.nodes?.length || 0} Step</span>
+                    <span>{version.nodes?.length || 0} Node</span>
+                  </div>
+                  <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                    <Workflow className="w-4 h-4" />
+                    <span>{version.edges?.length || 0} Edge</span>
                   </div>
                   <div className="flex flex-col gap-1.5 text-sm text-muted-foreground">
                     <div className="flex items-center gap-2">
@@ -97,6 +116,21 @@ const VersionsPage = async ({ params, searchParams }: Props) => {
       </div>
     </div>
   );
+};
+
+const variantSwitcher = (type: string) => {
+  switch (type) {
+    case "model":
+      return "outline";
+    case "flow":
+      return "secondary";
+    case "page":
+      return "destructive";
+    case "screen":
+      return "default";
+    default:
+      return "default";
+  }
 };
 
 export default VersionsPage;

@@ -95,7 +95,7 @@ export function SchemaHeader({
             {/* Varsayılan template'ler */}
             <SelectGroup>
               <SelectLabel>Varsayılan Şablonlar</SelectLabel>
-              {templates.map((template) => (
+              {templates.models.map((template) => (
                 <SelectItem
                   key={template.id}
                   value={template.id}

@@ -7,7 +7,6 @@ import {
   Connection,
   Node,
   Edge,
-  EdgeProps,
   MarkerType,
   ReactFlowProvider,
 } from "reactflow";
@@ -20,12 +19,24 @@ import { FlowCanvas } from "./flow-canvas";
 import { FlowSidebar } from "./flow-sidebar";
 import { FlowDialogs } from "./flow-dialogs";
 import { IAgent } from "@/lib/models/agent";
-import { IFlow } from "@/lib/models/flow";
+import { IVersion } from "@/lib/models/version";
+import { IProject } from "@/lib/models/project";
+import { templates } from "@/lib/constants/templates";
+import {
+  generatePromptForVersion,
+  generateVersionAction,
+  generateVersionFromTemplate,
+  setAutoSaveState,
+  updateAppFromVersion,
+} from "@/lib/actions/version";
+import { toast } from "sonner";
+import { INode } from "@/lib/models/node";
+import { IEdge } from "@/lib/models/edge";
 
 interface Props {
-  agents: IAgent[];
-  defaultAgent?: IAgent;
-  flow: IFlow;
+  versions: IVersion[];
+  defaultVersion: IVersion;
+  project: IProject;
   defaultAutoSave: boolean;
 }
 
@@ -37,21 +48,54 @@ interface CustomEdgeData {
 }
 
 export default function FlowPlayground({
-  agents,
-  defaultAgent,
-  flow,
+  versions,
+  defaultVersion,
+  project,
   defaultAutoSave,
 }: Props) {
   // Genel durum yönetimi
   const [isFullscreen, setIsFullscreen] = useState(false);
-  const [selectedAgent, setSelectedAgent] = useState<string>(
-    (defaultAgent?.id as string) || ""
+  const [selectedPreset, setSelectedPreset] = useState<string>(
+    defaultVersion.id as string
   );
+
   const [isAutoSaveEnabled, setIsAutoSaveEnabled] = useState(defaultAutoSave);
 
+  // Dialog durumları
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [isConnectionDialogOpen, setIsConnectionDialogOpen] = useState(false);
+  const [isAIPromptDialogOpen, setIsAIPromptDialogOpen] = useState(false);
+
+  // AI ile ilgili durumlar
+  const [promptText, setPromptText] = useState("");
+  const [isGenerating, setIsGenerating] = useState(false);
+  const [isOptimizing, setIsOptimizing] = useState(false);
+  const [isPromptExpanded, setIsPromptExpanded] = useState(false);
+  const [isUpdatingExisting, setIsUpdatingExisting] = useState(false);
+
+  // Agent durumları
+  const [isEditingAgent, setIsEditingAgent] = useState(false);
+  const [newAgent, setNewAgent] = useState<Partial<IAgent>>({
+    name: "",
+    title: "",
+    instructions: "",
+    is_public: false,
+    model_provider: "openai",
+    model_name: "gpt-3.5-turbo",
+  });
+
+  // Bağlantı durumları
+  const [pendingConnection, setPendingConnection] = useState<Connection | null>(
+    null
+  );
+  const [connectionType, setConnectionType] =
+    useState<ConnectionType>("sequential");
+  const [connectionCondition, setConnectionCondition] = useState<string>("");
+
   // ReactFlow durumları
+  const [selectedNode, setSelectedNode] = useState<Node | null>(null);
   const [nodes, setNodes, onNodesChange] = useNodesState(
-    flow.nodes.map((node: any) => {
+    defaultVersion.nodes.map((node: any) => {
       const flowNode = {
         ...node,
         type: "agent",
@@ -73,7 +117,7 @@ export default function FlowPlayground({
     })
   );
   const [edges, setEdges, onEdgesChange] = useEdgesState(
-    flow.edges.map((edge: any) => ({
+    defaultVersion.edges.map((edge: any) => ({
       ...edge,
       style: {
         stroke: "hsl(var(--primary))",
@@ -102,32 +146,6 @@ export default function FlowPlayground({
     },
     []
   );
-
-  // Seçim ve düzenleme durumları
-  const [selectedNode, setSelectedNode] = useState<Node | null>(null);
-  const [isEditingAgent, setIsEditingAgent] = useState(false);
-
-  // Dialog durumları
-  const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const [isConnectionDialogOpen, setIsConnectionDialogOpen] = useState(false);
-
-  // Yeni agent ve bağlantı durumları
-  const [newAgent, setNewAgent] = useState<Partial<IAgent>>({
-    name: "",
-    title: "",
-    instructions: "",
-    is_public: false,
-    model_provider: "openai",
-    model_name: "gpt-3.5-turbo",
-  });
-
-  // Bağlantı durumları
-  const [pendingConnection, setPendingConnection] = useState<Connection | null>(
-    null
-  );
-  const [connectionType, setConnectionType] =
-    useState<ConnectionType>("sequential");
-  const [connectionCondition, setConnectionCondition] = useState<string>("");
 
   // Node tipleri tanımı
   const nodeTypes = useMemo(
@@ -308,17 +326,189 @@ export default function FlowPlayground({
     }
   }, []);
 
+  /**
+   * @function onPresetChange
+   * @description Seçili şablonu değiştirir ve yeni şablonu yükler
+   * @param {string} value - Seçilen şablon ID'si
+   */
+  const onPresetChange = useCallback(
+    (value: string) => {
+      const defaultTemplate = templates.flows.find((t) => t.id === value);
+      if (defaultTemplate) {
+        const clonedNodes = JSON.parse(JSON.stringify(defaultTemplate.nodes));
+        const nodesWithHandlers = clonedNodes.map((node: any) => ({
+          ...node,
+          data: {
+            ...node.data,
+            onWidthChange: (width: number) =>
+              updateNodeDimensions(node.id, width),
+            onHeightChange: (height: number) =>
+              updateNodeDimensions(node.id, undefined, height),
+          },
+        }));
+        setNodes(nodesWithHandlers);
+        setEdges(JSON.parse(JSON.stringify(defaultTemplate.edges)));
+        setSelectedPreset(value);
+      }
+
+      const selectedVersion = versions.find((t) => t.id === value);
+      if (selectedVersion) {
+        setNodes(selectedVersion.nodes);
+        setEdges(selectedVersion.edges);
+        setSelectedPreset(value);
+      }
+    },
+    [templates, selectedPreset, updateNodeDimensions]
+  );
+
+  const handleAutoSaveChange = useCallback(async (state: boolean) => {
+    setIsAutoSaveEnabled(state);
+    await setAutoSaveState(state);
+  }, []);
+
+  /**
+   * @function updateProject
+   * @description Projeyi güncelleyerek değişiklikleri kaydeder
+   */
+  const updateProject = useCallback(async () => {
+    const selectedVersion = versions.find((t) => t.id === selectedPreset);
+
+    // If selected version is not found, generate a new version from template
+    if (!selectedVersion) {
+      // Find the selected template
+      const selectedTemplate = templates.flows.find(
+        (t) => t.id === selectedPreset
+      );
+
+      // If selected template is not found, show an error message
+      if (!selectedTemplate) {
+        toast.error("Seçili şablon bulunamadı.");
+        return;
+      }
+
+      // Generate a new version from the selected template
+      const result = await generateVersionFromTemplate(
+        selectedTemplate,
+        project.id
+      );
+      if (result.success && result.version) {
+        setSelectedPreset(result.version.id);
+
+        toast.success("Yeni şema oluşturuldu.");
+      } else {
+        toast.error("Yeni şema oluşturulurken bir hata oluştu.");
+      }
+      return;
+    }
+
+    try {
+      const updatedVersion = {
+        ...selectedVersion,
+        nodes: nodes as INode[],
+        edges: edges as IEdge[],
+      };
+      const result = await updateAppFromVersion(updatedVersion, project.id);
+      if (result.success) {
+        toast.success("Proje başarıyla güncellendi.");
+      }
+    } catch (error) {
+      toast.error("Proje güncellenirken bir hata oluştu.");
+    }
+  }, [selectedPreset, project.id, toast, nodes, edges]);
+
+  /**
+   * @function handleOptimizePrompt
+   * @description AI prompt'unu optimize eder
+   */
+  const handleOptimizePrompt = useCallback(async () => {
+    try {
+      setIsOptimizing(true);
+      const result = await generatePromptForVersion(promptText);
+      if (result.success) {
+        setPromptText(result.prompt);
+        toast.success("Prompt optimize edildi");
+        setIsPromptExpanded(true);
+      } else {
+        toast.error(result.error);
+      }
+    } catch (error) {
+      toast.error("Prompt oluşturulurken bir hata oluştu");
+    } finally {
+      setIsOptimizing(false);
+    }
+  }, [promptText, toast]);
+
+  /**
+   * @function handleGenerateSchema
+   * @description AI kullanarak yeni bir şema oluşturur
+   */
+  const handleGenerateSchema = useCallback(async () => {
+    try {
+      setIsGenerating(true);
+      const result = await generateVersionAction(
+        promptText,
+        project.id,
+        isUpdatingExisting ? nodes : [],
+        isUpdatingExisting ? selectedPreset : undefined
+      );
+
+      if (result.success && result.version) {
+        const flattenedNodes = JSON.parse(
+          JSON.stringify(
+            result.version.nodes.reduce((acc: any[], node: any) => {
+              if (node.data.nodes) {
+                return [...acc, ...node.data.nodes];
+              }
+              return [...acc, node];
+            }, [])
+          )
+        );
+
+        const flattenedEdges = JSON.parse(
+          JSON.stringify(
+            result.version.nodes.reduce((acc: any[], node: any) => {
+              if (node.data.edges) {
+                return [...acc, ...node.data.edges];
+              }
+              return [...acc, ...(result.version.edges || [])];
+            }, [])
+          )
+        );
+
+        setNodes(flattenedNodes);
+        setEdges(flattenedEdges);
+        setSelectedPreset(result.version.id);
+        setIsAIPromptDialogOpen(false);
+        toast.success("Şema Oluşturuldu");
+      } else {
+        throw new Error(result.error);
+      }
+    } catch (error) {
+      toast.error(
+        error instanceof Error
+          ? error.message
+          : "Şema oluşturulurken bir hata oluştu"
+      );
+    } finally {
+      setIsGenerating(false);
+      setPromptText("");
+    }
+  }, [promptText, project.id]);
+
   return (
     <ReactFlowProvider>
       <div className={`flex flex-col h-[calc(100vh-65px)]`}>
         {/* Header */}
         <FlowHeader
-          selectedAgent={selectedAgent}
-          agents={agents}
+          selectedPreset={selectedPreset}
+          versions={versions}
           isAutoSaveEnabled={isAutoSaveEnabled}
-          onAgentChange={setSelectedAgent}
-          onAutoSaveChange={setIsAutoSaveEnabled}
-          onNewAgent={() => setIsDialogOpen(true)}
+          selectedNode={selectedNode}
+          onPresetChange={onPresetChange}
+          onAutoSaveChange={handleAutoSaveChange}
+          onSave={updateProject}
+          onNewNode={() => setIsDialogOpen(true)}
+          onAIPrompt={() => setIsAIPromptDialogOpen(true)}
         />
 
         {/* Main Content */}
@@ -348,17 +538,29 @@ export default function FlowPlayground({
           {/* Dialogs */}
           <FlowDialogs
             isDialogOpen={isDialogOpen}
-            setIsDialogOpen={setIsDialogOpen}
+            isGenerating={isGenerating}
+            isOptimizing={isOptimizing}
             newAgent={newAgent}
+            isAIPromptDialogOpen={isAIPromptDialogOpen}
+            isConnectionDialogOpen={isConnectionDialogOpen}
+            connectionType={connectionType}
+            connectionCondition={connectionCondition}
+            isPromptExpanded={isPromptExpanded}
+            promptText={promptText}
+            isUpdatingExisting={isUpdatingExisting}
+            setIsDialogOpen={setIsDialogOpen}
             setNewAgent={setNewAgent}
             onAddNewAgent={addNewAgent}
-            isConnectionDialogOpen={isConnectionDialogOpen}
+            setIsAIPromptDialogOpen={setIsAIPromptDialogOpen}
             setIsConnectionDialogOpen={setIsConnectionDialogOpen}
-            connectionType={connectionType}
             setConnectionType={setConnectionType}
-            connectionCondition={connectionCondition}
             setConnectionCondition={setConnectionCondition}
             onCompleteConnection={completeConnection}
+            setIsPromptExpanded={setIsPromptExpanded}
+            setPromptText={setPromptText}
+            onOptimizePrompt={handleOptimizePrompt}
+            onGenerateSchema={handleGenerateSchema}
+            setIsUpdatingExisting={setIsUpdatingExisting}
           />
         </div>
       </div>

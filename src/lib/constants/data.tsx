@@ -204,13 +204,8 @@ export const userSidebarData = {
           icon: <Bot />,
         },
         {
-          title: "Flowish",
-          url: "/flowish/flows",
-          icon: <Workflow />,
-        },
-        {
           title: "XGO",
-          url: "/xgo/projects",
+          url: "/xgo",
           icon: <Box />,
         },
       ],

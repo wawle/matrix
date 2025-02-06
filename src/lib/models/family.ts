@@ -8,6 +8,7 @@ export interface IFamily {
   updatedAt?: Date;
   agent: IAgent;
   parent: IAgent;
+  order: number;
 }
 
 export const familySchema = new mongoose.Schema<IFamily>(
@@ -20,6 +21,10 @@ export const familySchema = new mongoose.Schema<IFamily>(
     parent: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Parent",
+      required: true,
+    },
+    order: {
+      type: Number,
       required: true,
     },
   },

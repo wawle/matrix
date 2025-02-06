@@ -3,85 +3,100 @@ export const action = {
     const routeName = modelName.toLowerCase();
     return `
 "use server";
-  
+
 import { revalidatePath } from "next/cache";
-  import { 
-    get${modelName}s,
-    get${modelName}ById,
-    create${modelName},
-    update${modelName},
-    delete${modelName}
-  } from "@/lib/services/${routeName}";
-   import { I${modelName} } from "@/lib/models/${routeName}";
-   import { ${modelName}FormData } from "@/lib/schemas/${routeName}";
-  
-  export async function fetch${modelName}s(): Promise<{
+import {
+  get${modelName}s,
+  get${modelName}ById,
+  create${modelName},
+  update${modelName},
+  delete${modelName},
+  execute${modelName},
+} from "@/lib/services/${routeName}";
+import { I${modelName} } from "@/lib/models/${routeName}";
+import { authSession } from "@/lib/dal";
+
+export async function fetch${modelName}s(): Promise<{
+  data: {
     data: I${modelName}[];
-    success: boolean;
-    error?: string;
-  }> {
-    try {
-      const ${routeName}s = await get${modelName}s();
-      return { data: JSON.parse(JSON.stringify(${routeName}s)), success: true };
-    } catch (error: any) {
-      return { error: error.message, success: false, data: [] };
-    }
+    total: number;
+    pageCount: number;
+    pagination: { next?: { page: number; limit: number } };
+  };
+  error?: any;
+  success: boolean;
+}> {
+  try {
+    const ${routeName}s = await get${modelName}s();
+    return { data: ${routeName}s, success: true };
+  } catch (error: any) {
+    return {
+      error: error.message,
+      success: false,
+      data: { data: [], total: 0, pageCount: 0, pagination: {} },
+    };
   }
-  
-  export async function fetch${modelName}(id: string): Promise<{
-    data?: I${modelName};
-    success: boolean;
-    error?: string;
-  }> {
-    try {
-      const ${routeName} = await get${modelName}ById(id);
-      return { data: JSON.parse(JSON.stringify(${routeName})), success: true };
-    } catch (error: any) {
-      return { error: error.message, success: false };
-    }
+}
+
+export async function fetch${modelName}(id: string): Promise<{
+  data?: I${modelName};
+  success: boolean;
+  error?: string;
+}> {
+  try {
+    const ${routeName} = await get${modelName}ById(id);
+    return { data: JSON.parse(JSON.stringify(${routeName})), success: true };
+  } catch (error: any) {
+    return { error: error.message, success: false };
   }
-  
-  export async function create${modelName}Action(data: ${modelName}FormData): Promise<{
-    data?: I${modelName};
-    success: boolean;
-    error?: string;
-  }> {
-    try {
-      const ${routeName} = await create${modelName}(data);
-      revalidatePath("/admin/${routeName}s");
-      return { data: JSON.parse(JSON.stringify(${routeName})), success: true };
-    } catch (error: any) {
-      return { error: error.message, success: false };
-    }
+}
+
+export async function create${modelName}Action(data: any): Promise<{
+  data?: I${modelName};
+  success: boolean;
+  error?: string;
+}> {
+  try {
+    const ${routeName} = await create${modelName}(data);
+    revalidatePath("/admin/${routeName}s");
+    return { data: JSON.parse(JSON.stringify(${routeName})), success: true };
+  } catch (error: any) {
+    return { error: error.message, success: false };
   }
-  
-  export async function update${modelName}Action(id: string, data: ${modelName}FormData): Promise<{
-    data?: I${modelName};
-    success: boolean;
-    error?: string;
-  }> {
-    try {
-      const ${routeName} = await update${modelName}(id, data);
-      revalidatePath("/admin/${routeName}s");
-      revalidatePath("/admin/${routeName}s/[id]", "page");
-      return { data: JSON.parse(JSON.stringify(${routeName})), success: true };
-    } catch (error: any) {
-      return { error: error.message, success: false };
-    }
+}
+
+export async function updateAgentAction(
+  id: string,
+  data: any
+): Promise<{
+  data?: I${modelName};
+  success: boolean;
+  error?: string;
+}> {
+  try {
+    const ${routeName} = await update${modelName}(id, data);
+    revalidatePath("/admin/${routeName}s");
+
+    return { data: JSON.parse(JSON.stringify(${routeName})), success: true };
+  } catch (error: any) {
+    return { error: error.message, success: false };
   }
-  
-  export async function delete${modelName}Action(id: string): Promise<{
-    data?: I${modelName};
-    success: boolean;
-    error?: string;
-  }> {
-    try {
-      const ${routeName} = await delete${modelName}(id);
-      revalidatePath("/admin/${routeName}s");
-      return { data: JSON.parse(JSON.stringify(${routeName})), success: true };
-    } catch (error: any) {
-      return { error: error.message, success: false };
-    }
-  }`;
+}
+
+export async function delete${modelName}Action(id: string): Promise<{
+  data?: I${modelName};
+  success: boolean;
+  error?: string;
+}> {
+  try {
+    const ${routeName} = await delete${modelName}(id);
+    revalidatePath("/admin/${routeName}s");
+ 
+    return { data: JSON.parse(JSON.stringify(${routeName})), success: true };
+  } catch (error: any) {
+    return { error: error.message, success: false };
+  }
+}
+`;
   },
 };

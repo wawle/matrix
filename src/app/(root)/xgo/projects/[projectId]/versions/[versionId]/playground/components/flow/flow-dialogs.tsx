@@ -19,19 +19,34 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { IAgent } from "@/lib/models/agent";
+import { Maximize2, Minimize2 } from "lucide-react";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 interface FlowDialogsProps {
   isDialogOpen: boolean;
-  setIsDialogOpen: (value: boolean) => void;
+  isAIPromptDialogOpen: boolean;
   newAgent: Partial<IAgent>;
+  isConnectionDialogOpen: boolean;
+  connectionType: "sequential" | "parallel" | "conditional";
+  connectionCondition: string;
+  isPromptExpanded: boolean;
+  promptText: string;
+  isGenerating: boolean;
+  isOptimizing: boolean;
+  isUpdatingExisting: boolean;
+
+  setPromptText: (value: string) => void;
+  setIsDialogOpen: (value: boolean) => void;
+  setIsAIPromptDialogOpen: (value: boolean) => void;
   setNewAgent: (value: Partial<IAgent>) => void;
   onAddNewAgent: () => void;
-  isConnectionDialogOpen: boolean;
   setIsConnectionDialogOpen: (value: boolean) => void;
-  connectionType: "sequential" | "parallel" | "conditional";
   setConnectionType: (value: "sequential" | "parallel" | "conditional") => void;
-  connectionCondition: string;
   setConnectionCondition: (value: string) => void;
+  onOptimizePrompt: () => void;
+  onGenerateSchema: () => void;
+  setIsUpdatingExisting: (value: boolean) => void;
+  setIsPromptExpanded: (value: boolean) => void;
   onCompleteConnection: (
     type: "sequential" | "parallel" | "conditional",
     condition?: string
@@ -40,17 +55,29 @@ interface FlowDialogsProps {
 
 export const FlowDialogs = ({
   isDialogOpen,
-  setIsDialogOpen,
+  isAIPromptDialogOpen,
   newAgent,
+  isConnectionDialogOpen,
+  connectionType,
+  connectionCondition,
+  isPromptExpanded,
+  promptText,
+  isGenerating,
+  isOptimizing,
+  isUpdatingExisting,
+  setPromptText,
+  setIsDialogOpen,
+  setIsAIPromptDialogOpen,
+  setIsPromptExpanded,
   setNewAgent,
   onAddNewAgent,
-  isConnectionDialogOpen,
   setIsConnectionDialogOpen,
-  connectionType,
   setConnectionType,
-  connectionCondition,
   setConnectionCondition,
   onCompleteConnection,
+  onOptimizePrompt,
+  onGenerateSchema,
+  setIsUpdatingExisting,
 }: FlowDialogsProps) => {
   return (
     <>
@@ -193,6 +220,161 @@ export const FlowDialogs = ({
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      {/* AI Prompt Dialog'u */}
+      <AIPromptDialog
+        isOpen={isAIPromptDialogOpen}
+        onOpenChange={setIsAIPromptDialogOpen}
+        isPromptExpanded={isPromptExpanded}
+        setIsPromptExpanded={setIsPromptExpanded}
+        promptText={promptText}
+        setPromptText={setPromptText}
+        isGenerating={isGenerating}
+        isOptimizing={isOptimizing}
+        onOptimizePrompt={onOptimizePrompt}
+        onGenerateSchema={onGenerateSchema}
+        isUpdatingExisting={isUpdatingExisting}
+        setIsUpdatingExisting={setIsUpdatingExisting}
+      />
     </>
   );
 };
+
+// AI Prompt Dialog komponenti
+function AIPromptDialog({
+  isOpen,
+  onOpenChange,
+  isPromptExpanded,
+  setIsPromptExpanded,
+  promptText,
+  setPromptText,
+  isGenerating,
+  isOptimizing,
+  onOptimizePrompt,
+  onGenerateSchema,
+  isUpdatingExisting,
+  setIsUpdatingExisting,
+}: {
+  isOpen: boolean;
+  onOpenChange: (open: boolean) => void;
+  isPromptExpanded: boolean;
+  setIsPromptExpanded: (expanded: boolean) => void;
+  promptText: string;
+  setPromptText: (text: string) => void;
+  isGenerating: boolean;
+  isOptimizing: boolean;
+  onOptimizePrompt: () => void;
+  onGenerateSchema: () => void;
+  isUpdatingExisting: boolean;
+  setIsUpdatingExisting: (isUpdating: boolean) => void;
+}) {
+  return (
+    <Dialog open={isOpen} onOpenChange={onOpenChange}>
+      <DialogContent
+        className={isPromptExpanded ? "w-full max-w-[800px] h-[80vh]" : ""}
+      >
+        <DialogHeader>
+          <DialogTitle className="flex items-center justify-between">
+            <span>AI ile Şema Oluştur</span>
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => setIsPromptExpanded(!isPromptExpanded)}
+            >
+              {isPromptExpanded ? (
+                <Minimize2 className="h-4 w-4" />
+              ) : (
+                <Maximize2 className="h-4 w-4" />
+              )}
+            </Button>
+          </DialogTitle>
+          <DialogDescription>
+            Oluşturmak istediğiniz projenin senaryosunu ve gereksinimlerini
+            detaylı bir şekilde açıklayın.
+          </DialogDescription>
+        </DialogHeader>
+
+        <Tabs defaultValue="create" className="w-full">
+          <TabsList className="grid w-full grid-cols-2">
+            <TabsTrigger
+              value="create"
+              onClick={() => setIsUpdatingExisting(false)}
+            >
+              Yeni Oluştur
+            </TabsTrigger>
+            <TabsTrigger
+              value="update"
+              onClick={() => setIsUpdatingExisting(true)}
+            >
+              Mevcut Şemayı Güncelle
+            </TabsTrigger>
+          </TabsList>
+
+          <TabsContent value="create" className="mt-4">
+            <div className="space-y-2">
+              <Label>Proje Açıklaması</Label>
+              <Textarea
+                placeholder="Örnek: Bir e-ticaret sistemi istiyorum. Kullanıcılar ürünleri listeleyebilmeli, sepete ekleyebilmeli ve sipariş verebilmeli..."
+                value={promptText}
+                onChange={(e) => setPromptText(e.target.value)}
+                className={
+                  isPromptExpanded
+                    ? "h-[calc(60vh-200px)] resize-none"
+                    : "h-[200px] resize-none"
+                }
+              />
+            </div>
+          </TabsContent>
+
+          <TabsContent value="update" className="mt-4">
+            <div className="space-y-2">
+              <Label>Güncelleme Açıklaması</Label>
+              <Textarea
+                placeholder="Örnek: Mevcut e-ticaret sistemine yorum ve değerlendirme özelliği eklemek istiyorum..."
+                value={promptText}
+                onChange={(e) => setPromptText(e.target.value)}
+                className={
+                  isPromptExpanded
+                    ? "h-[calc(60vh-200px)] resize-none"
+                    : "h-[200px] resize-none"
+                }
+              />
+            </div>
+          </TabsContent>
+        </Tabs>
+
+        <DialogFooter className="flex gap-2">
+          <Button
+            variant="outline"
+            onClick={onOptimizePrompt}
+            disabled={!promptText.trim() || isOptimizing}
+          >
+            {isOptimizing ? (
+              <>
+                <div className="mr-2 h-4 w-4 animate-spin rounded-full border-2 border-background border-r-foreground" />
+                Prompt Optimize Ediliyor...
+              </>
+            ) : (
+              "Promptu Optimize Et"
+            )}
+          </Button>
+          <Button
+            onClick={onGenerateSchema}
+            disabled={!promptText.trim() || isGenerating}
+          >
+            {isGenerating ? (
+              <>
+                <div className="mr-2 h-4 w-4 animate-spin rounded-full border-2 border-background border-r-foreground" />
+                {isUpdatingExisting ? "Güncelleniyor..." : "Oluşturuluyor..."}
+              </>
+            ) : isUpdatingExisting ? (
+              "Güncelle"
+            ) : (
+              "Oluştur"
+            )}
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+  );
+}

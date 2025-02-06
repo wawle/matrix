@@ -1,3 +1,8 @@
+export const listingMiddleware = {
+  template: (name: string, props: any) => {
+    return `
+import { NextRequest } from "next/server";
+
 export const listing = async <TData>(
   model: any,
   queryParams: any,
@@ -23,26 +28,7 @@ export const listing = async <TData>(
   // Create query string
 
   let queryObj: any = { ...filteredQuery };
-
-  // Handling operators ($gt, $gte, etc)
-  for (const [key, value] of Object.entries(filteredQuery)) {
-    const match = key.match(/(.+)\[(gt|gte|lt|lte|in|like)\]/);
-    if (match) {
-      const [, field, operator] = match;
-
-      if (!queryObj[field]) queryObj[field] = {};
-
-      if (operator === "in") {
-        queryObj[field][`$${operator}`] = (value as any).split(",");
-      } else if (operator === "like") {
-        queryObj[field] = { $regex: value, $options: "i" };
-      } else {
-        queryObj[field][`$${operator}`] = value;
-      }
-    } else {
-      queryObj[key] = value;
-    }
-  }
+ 
 
   // Finding resource
   let query = model.find(queryObj);
@@ -115,4 +101,8 @@ export const listing = async <TData>(
     pagination,
     data: results.map((result: any) => result.toObject({ getters: true })),
   };
+};
+
+    `;
+  },
 };

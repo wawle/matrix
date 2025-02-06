@@ -1,7 +1,5 @@
 import { Version, IVersion } from "@/lib/models/version";
 import connectDB from "@/lib/db";
-import { Model } from "../models/model";
-import { Field } from "../models/field";
 import { Edge } from "../models/edge";
 import { Node } from "../models/node";
 import { ErrorResponse } from "../middlewares/error";
@@ -17,14 +15,6 @@ export const getVersionById = asyncFnService(
   async (id: string): Promise<IVersion> => {
     await connectDB();
     const version = await Version.findById(id).populate([
-      {
-        path: "models",
-        model: Model,
-        populate: {
-          path: "fields",
-          model: Field,
-        },
-      },
       {
         path: "nodes",
         model: Node,

@@ -13,7 +13,7 @@ export interface IVersion {
   description?: string;
   is_active: boolean;
   project?: IProject;
-  type: "model" | "flow" | "page" | "screen";
+  type: "model" | "agent" | "page" | "screen";
   nodes: INode[];
   edges: IEdge[];
 }
@@ -35,7 +35,7 @@ export const versionSchema = new mongoose.Schema<IVersion>(
     type: {
       type: String,
       required: true,
-      enum: ["model", "flow", "page", "screen"],
+      enum: ["model", "agent", "page", "screen"],
     },
     project: {
       type: mongoose.Schema.Types.ObjectId,

@@ -66,6 +66,10 @@ import { dynamicInput } from "./components/inputs/dynamic-input";
 import { dateInput } from "./components/inputs/date-input";
 import { referenceInput } from "./components/inputs/reference-input";
 import { numberInput } from "./components/inputs/number-input";
+import { protectMiddleware } from "./middlewares/protect";
+import { asyncMiddleware } from "./middlewares/async";
+import { errorMiddleware } from "./middlewares/error";
+import { listingMiddleware } from "./middlewares/listing";
 
 const templates = {
   components: {
@@ -118,6 +122,10 @@ const templates = {
   middleware: {
     default: middleware,
     auth: authMiddleware,
+    protect: protectMiddleware,
+    async: asyncMiddleware,
+    error: errorMiddleware,
+    listing: listingMiddleware,
   },
   util: {
     eslint,

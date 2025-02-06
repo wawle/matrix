@@ -48,9 +48,9 @@ export async function createModelAction(data: any): Promise<{
 
 export async function updateModelAction(
   id: string,
-  data: IModel
+  data: any
 ): Promise<{
-  data?: IModel;
+  data?: any;
   error?: string;
   success: boolean;
 }> {

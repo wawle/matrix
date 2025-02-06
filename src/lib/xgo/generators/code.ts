@@ -41,6 +41,7 @@ export async function generateCode(
       "lib/actions",
       "lib/types",
       "lib/schemas",
+      "lib/middlewares",
       "components/sidebar",
       "components/theme",
     ];
@@ -121,22 +122,40 @@ export async function generateCode(
     }
 
     await Promise.all([
-      // Auth
-      // Services
+      // Lib
+      // Auth Services
       writeFile(
         join(outputPath, "lib/services/auth.ts"),
         templates.service.auth.template("", {})
       ),
-      // Actions
+      // Auth Actions
       writeFile(
         join(outputPath, "lib/actions/auth.ts"),
         templates.action.auth.template("", {})
       ),
-      // Schemas
+      // Auth Schemas
       writeFile(
         join(outputPath, "lib/schemas/auth.ts"),
         templates.schema.auth.template("", {})
       ),
+      // Middlewares
+      writeFile(
+        join(outputPath, "lib/middlewares/protect.ts"),
+        templates.middleware.protect.template("", {})
+      ),
+      writeFile(
+        join(outputPath, "lib/middlewares/async.ts"),
+        templates.middleware.async.template("", {})
+      ),
+      writeFile(
+        join(outputPath, "lib/middlewares/error.ts"),
+        templates.middleware.error.template("", {})
+      ),
+      writeFile(
+        join(outputPath, "lib/middlewares/listing.ts"),
+        templates.middleware.listing.template("", {})
+      ),
+
       // API Routes
       writeFile(
         join(outputPath, "app/api/(auth)", "login", "route.ts"),

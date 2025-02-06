@@ -2,6 +2,17 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ProjectForm } from "./components/project-form";
 import { fetchProject } from "@/lib/actions/project";
 import Link from "next/link";
+import { Button } from "@/components/ui/button";
+import { Pencil, PlusCircle } from "lucide-react";
+import {
+  Table,
+  TableBody,
+  TableCaption,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 
 interface ProjectPageProps {
   params: Promise<{ projectId: string }>;
@@ -25,7 +36,7 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
   };
 
   return (
-    <div className="flex-1 overflow-auto p-8 flex justify-center gap-8">
+    <div className="grid grid-cols-2 gap-8 container mx-auto p-8">
       <Card className="w-[600px] hover:shadow-lg transition-all duration-300 hover:border-primary">
         <CardHeader className="space-y-1 pb-2">
           <CardTitle className="text-2xl font-bold text-center">
@@ -39,16 +50,40 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
           <ProjectForm defaultValues={defaultValues} projectId={projectId} />
         </CardContent>
       </Card>
-      {projectId !== "new" && (
-        <Link href={`/xgo/projects/${projectId}/playground`}>
-          <Card className="w-[600px] h-full hover:shadow-lg transition-all duration-300 hover:border-primary">
-            <CardHeader className="space-y-1 pb-2">
-              <CardTitle className="text-2xl font-bold text-center">
-                Playground
-              </CardTitle>
-            </CardHeader>
-          </Card>
-        </Link>
+      {project && (
+        <div className="flex flex-col gap-2">
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead className="w-[100px]">Version</TableHead>
+                <TableHead className="">
+                  <Link href={`/xgo/projects/${projectId}/versions/new`}>
+                    <Button variant="link" size="icon">
+                      <PlusCircle />
+                      New Version
+                    </Button>
+                  </Link>
+                </TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {project?.versions.map((version) => (
+                <TableRow key={version.id}>
+                  <TableCell className="font-medium">
+                    <Link
+                      href={`/xgo/projects/${projectId}/versions/${version.id}`}
+                    >
+                      <Button variant="link" size="icon">
+                        {version.name}
+                      </Button>
+                    </Link>
+                  </TableCell>
+                  <TableCell className="text-right"></TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </div>
       )}
     </div>
   );

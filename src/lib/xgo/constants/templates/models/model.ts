@@ -6,7 +6,7 @@ export const model = {
     const { model, relations }: { model: IModel; relations: IEdge[] } = props;
     const relatedRelations = relations.filter(
       (rel) =>
-        rel.data.relationType === "oneToMany" && rel.targetName === model.name
+        rel.data.relationType === "oneToMany" && rel.target === model.name
     );
     const fields = model.fields
       .map((field: any) => {
@@ -31,10 +31,10 @@ export const model = {
       ?.filter((rel) => rel.data.relationType === "oneToMany")
       ?.map(
         (rel) => `
-        ${model.name.toLowerCase()}Schema.virtual("${rel.sourceName.toLowerCase()}s", {
-          ref: "${rel.sourceName}",
+        ${model.name.toLowerCase()}Schema.virtual("${rel.source.toLowerCase()}s", {
+          ref: "${rel.source}",
           localField: "_id",
-          foreignField: "${rel.targetName.toLowerCase()}"
+          foreignField: "${rel.target.toLowerCase()}"
         });`
       )
       .join("\n");
@@ -61,7 +61,7 @@ export const model = {
 
     const relationalInterfaceFields = relatedRelations
       ?.map((rel) => {
-        return `${rel.sourceName.toLowerCase()}s: I${rel.sourceName}[]`;
+        return `${rel.source.toLowerCase()}s: I${rel.source}[]`;
       })
       .join(",\n");
 
@@ -70,8 +70,8 @@ export const model = {
       relatedRelations
         ?.map((rel) => {
           return `import { I${
-            rel.sourceName
-          } } from "./${rel.sourceName.toLowerCase()}";`;
+            rel.source
+          } } from "./${rel.source.toLowerCase()}";`;
         })
         .join("\n");
 

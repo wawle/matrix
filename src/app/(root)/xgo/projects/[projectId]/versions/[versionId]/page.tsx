@@ -23,7 +23,12 @@ export default async function VersionPage({ params }: VersionPageProps) {
   const defaultValues = {
     name: version?.name || "",
     description: version?.description || "",
+    type: version?.type || "model",
+    is_active: version?.is_active || false,
+    project: projectId,
   };
+
+  console.log({ versionId });
 
   return (
     <div className="flex-1 overflow-auto p-8 flex justify-center gap-8">
