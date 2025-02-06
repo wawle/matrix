@@ -6,25 +6,25 @@ export interface IChat {
   _id: string;
   createdAt?: Date;
   updatedAt?: Date;
-  sender: "user" | "system";
-  message: string;
-  attachments: File[];
+  role: "user" | "system";
+  content: string;
+  attachments: any[];
   session: ISession;
 }
 
 export const chatSchema = new mongoose.Schema<IChat>(
   {
-    sender: {
+    role: {
       type: String,
       required: true,
       enum: ["user", "system"],
     },
-    message: {
+    content: {
       type: String,
       required: true,
     },
     attachments: {
-      type: [File],
+      type: [],
       required: false,
     },
     session: {

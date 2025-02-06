@@ -1515,11 +1515,205 @@ const hrmTemplate: IVersion = {
   ],
 };
 
+const investTrackerTemplate: IVersion = {
+  id: "investTracker",
+  name: "Invest Tracker",
+  description: "Invest Tracker",
+  is_active: false,
+  models: [
+    {
+      name: "Investment",
+      fields: [
+        {
+          id: "i1",
+          name: "id",
+          type: "string",
+          label: "ID",
+          validations: { required: true },
+        },
+        {
+          id: "i2",
+          name: "name",
+          type: "string",
+          label: "Name",
+          validations: { required: true },
+        },
+        {
+          id: "i3",
+          name: "amount",
+          type: "number",
+          label: "Amount",
+          validations: { required: true },
+        },
+        {
+          id: "i4",
+          name: "date",
+          type: "date",
+          label: "Date",
+          validations: { required: true },
+        },
+        {
+          id: "i5",
+          name: "category",
+          type: "string",
+          label: "Category",
+          validations: { required: true },
+        },
+        {
+          id: "i6",
+          name: "description",
+          type: "string",
+          label: "Description",
+          validations: { required: false },
+        },
+      ],
+    },
+    {
+      name: "Category",
+      fields: [
+        {
+          id: "c1",
+          name: "id",
+          type: "string",
+          label: "ID",
+          validations: { required: true },
+        },
+        {
+          id: "c2",
+          name: "name",
+          type: "string",
+          label: "Name",
+          validations: { required: true },
+        },
+        {
+          id: "c3",
+          name: "description",
+          type: "string",
+          label: "Description",
+          validations: { required: false },
+        },
+      ],
+    },
+    {
+      name: "User",
+      fields: [
+        {
+          id: "u1",
+          name: "id",
+          type: "string",
+          label: "ID",
+          validations: { required: true },
+        },
+        {
+          id: "u2",
+          name: "name",
+          type: "string",
+          label: "Name",
+          validations: { required: true },
+        },
+        {
+          id: "u3",
+          name: "email",
+          type: "string",
+          label: "Email",
+          validations: { required: true },
+        },
+        {
+          id: "u4",
+          name: "password",
+          type: "string",
+          label: "Password",
+          validations: { required: true },
+        },
+        {
+          id: "u5",
+          name: "investments",
+          type: "reference",
+          label: "Investments",
+          validations: { required: false },
+        },
+      ],
+    },
+  ],
+  nodes: [
+    {
+      id: "investment",
+      type: "schema",
+      position: { x: 100, y: 100 },
+      data: {
+        name: "Investment",
+        description: "Investment",
+        fields: [
+          { id: "i1", name: "id", type: "string", required: true },
+          { id: "i2", name: "name", type: "string", required: true },
+          { id: "i3", name: "amount", type: "number", required: true },
+          { id: "i4", name: "date", type: "date", required: true },
+          { id: "i5", name: "category", type: "reference", required: true },
+          { id: "i6", name: "description", type: "string", required: false },
+        ],
+      },
+    },
+    {
+      id: "category",
+      type: "schema",
+      position: { x: 500, y: 100 },
+      data: {
+        name: "Category",
+        description: "Category",
+        fields: [
+          { id: "c1", name: "id", type: "string", required: true },
+          { id: "c2", name: "name", type: "string", required: true },
+          { id: "c3", name: "description", type: "string", required: false },
+        ],
+      },
+    },
+    {
+      id: "user",
+      type: "schema",
+      position: { x: 100, y: 400 },
+      data: {
+        name: "User",
+        description: "User",
+        fields: [
+          { id: "u1", name: "id", type: "string", required: true },
+          { id: "u2", name: "name", type: "string", required: true },
+          { id: "u3", name: "email", type: "string", required: true },
+          { id: "u4", name: "password", type: "string", required: true },
+          { id: "u5", name: "investments", type: "reference", required: false },
+        ],
+      },
+    },
+  ],
+  edges: [
+    {
+      id: "e1",
+      source: "investment",
+      target: "category",
+      sourceName: "investment",
+      targetName: "category",
+      animated: true,
+      label: "N:1",
+      data: { relationType: "oneToMany" },
+    },
+    {
+      id: "e2",
+      source: "user",
+      target: "investment",
+      sourceName: "user",
+      targetName: "investment",
+      animated: true,
+      label: "N:1",
+      data: { relationType: "oneToMany" },
+    },
+  ],
+};
+
 export const templates: IVersion[] = [
   eCommerceTemplate,
   crmTemplate,
   hrmTemplate,
   gymTemplate,
+  investTrackerTemplate,
 ];
 
 export const defaultNodes: Node[] = eCommerceTemplate.nodes;

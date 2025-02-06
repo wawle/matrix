@@ -10,7 +10,6 @@ import ReactFlow, {
   Panel,
 } from "reactflow";
 import { useHotkeys } from "react-hotkeys-hook";
-import { EdgeContextMenu } from "./edge-context-menu";
 import { SchemaActionButtons } from "./schema-action-buttons";
 
 interface SchemaCanvasProps {
@@ -124,12 +123,6 @@ export function SchemaCanvas({
           />
         </Panel>
       </ReactFlow>
-
-      <EdgeContextMenu
-        contextMenu={edgeContextMenu}
-        onDeleteEdge={onDeleteEdge}
-        onEditEdge={onEditEdge}
-      />
     </div>
   );
 }

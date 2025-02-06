@@ -6,8 +6,11 @@ import { Family } from "./family";
 import { ISession, Session } from "./session";
 import OpenAI from "openai";
 import { Chat, IChat } from "./chat";
+import { ErrorResponse } from "../middlewares/error";
 
 export interface IAgent {
+  id: string;
+  _id: string;
   createdAt?: Date;
   updatedAt?: Date;
   instructions: string;
@@ -22,36 +25,39 @@ export interface IAgent {
   is_public: boolean;
   photo: string;
   key: IKey;
-}
 
-// Model ve Document tiplerini tanımlayalım
-export interface IAgentDocument extends IAgent, mongoose.Document {
   getKey(): Promise<string>;
   getOpenAI(): Promise<OpenAI>;
   getSession(sessionId: string): Promise<ISession | null>;
-  getSessionMessages(sessionId: string): Promise<IChat[]>;
-  getOrCreateSession(sessionId: string): Promise<ISession>;
+  protect(userId: string): Promise<boolean>;
+  getOrCreateSession(userId: string, sessionId: string): Promise<ISession>;
+  getHistory(
+    sessionId: string
+  ): Promise<{ role: "user" | "system"; content: string }[]>;
   createChat(
     sessionId: string,
-    sender: "user" | "system",
+    role: "user" | "system",
     message: string,
     attachments: File[]
   ): Promise<IChat>;
   sendMessage(
-    session: ISession,
-    message: string,
-    attachments: File[]
-  ): Promise<string>;
-  execute(
     sessionId: string,
     message: string,
-    attachments: File[]
+    attachments: File[],
+    onStream?: (chunk: string) => void
+  ): Promise<string>;
+  execute(
+    userId: string,
+    sessionId: string,
+    message: string,
+    attachments: File[],
+    onStream?: (chunk: string) => void
   ): Promise<string>;
 }
 
-export type AgentModel = mongoose.Model<IAgentDocument>;
+export type AgentModel = mongoose.Model<IAgent>;
 
-export const agentSchema = new mongoose.Schema<IAgentDocument>(
+export const agentSchema = new mongoose.Schema<IAgent>(
   {
     instructions: {
       type: String,
@@ -111,16 +117,16 @@ export const agentSchema = new mongoose.Schema<IAgentDocument>(
 );
 
 agentSchema.methods.getKey = async function (): Promise<string> {
-  const agent = this as IAgentDocument;
+  const agent = this as IAgent;
   const key = await Key.findById(agent.key);
   if (!key) {
-    throw new Error("Key not found");
+    throw new ErrorResponse("Key not found", 404);
   }
   return key.value;
 };
 
 agentSchema.methods.getOpenAI = async function (): Promise<OpenAI> {
-  const agent = this as IAgentDocument;
+  const agent = this as IAgent;
   const apiKey = await agent.getKey();
   return new OpenAI({
     apiKey,
@@ -132,48 +138,54 @@ agentSchema.methods.getSession = async function (
 ): Promise<ISession | null> {
   const session: ISession | null = await Session.findById(sessionId);
   if (!session) {
-    throw new Error("Session not found");
+    throw new ErrorResponse("Session not found", 404);
   }
   return session;
 };
 
-agentSchema.methods.getSessionMessages = async function (
+agentSchema.methods.getHistory = async function (
   sessionId: string
-): Promise<IChat[]> {
-  const agent = this as IAgentDocument;
+): Promise<{ role: "user" | "system"; content: string }[]> {
+  const agent = this as IAgent;
   const session: ISession | null = await agent.getSession(sessionId);
   if (!session) {
-    throw new Error("Session not found");
+    throw new ErrorResponse("Session not found", 404);
   }
-  return session.chats;
+  return session.chats.map((chat) => ({
+    role: chat.role,
+    content: chat.content,
+  }));
 };
 
 agentSchema.methods.getOrCreateSession = async function (
+  userId: string,
   sessionId: string
-): Promise<ISession> {
-  const agent = this as IAgentDocument;
-  let session = await Session.findOne({
-    agent: agent._id,
-    sessionId,
-  });
+): Promise<ISession | null> {
+  const agent = this as IAgent;
+  let session = await agent.getSession(sessionId);
   if (!session) {
     session = await Session.create({
       agent: agent._id,
-      sessionId,
+      user: userId,
     });
   }
+
+  if (!session) {
+    throw new ErrorResponse("Session creation failed", 400);
+  }
+
   return session;
 };
 
 agentSchema.methods.createChat = async function (
   sessionId: string,
-  sender: "user" | "system",
-  message: string,
+  role: "user" | "system",
+  content: string,
   attachments: File[]
 ): Promise<IChat> {
   const chat = await Chat.create({
-    sender,
-    message,
+    role,
+    content,
     attachments,
     session: sessionId,
   });
@@ -181,20 +193,18 @@ agentSchema.methods.createChat = async function (
 };
 
 agentSchema.methods.sendMessage = async function (
-  session: ISession,
+  sessionId: string,
   message: string,
-  attachments: File[]
+  attachments: File[],
+  onStream?: (chunk: string) => void
 ): Promise<string> {
-  const agent = this as IAgentDocument;
+  const agent = this as IAgent;
   const openai = await agent.getOpenAI();
-  const chats = await agent.getSessionMessages(session._id);
-  const history = chats.map((chat) => ({
-    role: chat.sender,
-    content: chat.message,
-  }));
-  const response = await openai.chat.completions.create({
+  const history = await agent.getHistory(sessionId);
+
+  const stream = await openai.chat.completions.create({
     model: agent.model_name,
-    stream: agent.stream,
+    stream: true,
     max_tokens: agent.max_tokens,
     temperature: agent.temperature,
     seed: agent.seed,
@@ -205,18 +215,58 @@ agentSchema.methods.sendMessage = async function (
     ],
   });
 
-  return response.choices[0].message.content;
+  let fullResponse = "";
+
+  for await (const chunk of stream) {
+    const content = chunk.choices[0]?.delta?.content || "";
+    if (content) {
+      fullResponse += content;
+      if (onStream) {
+        onStream(content);
+      }
+    }
+  }
+
+  if (!fullResponse) {
+    throw new ErrorResponse("Agent response is empty", 400);
+  }
+
+  return fullResponse;
+};
+
+agentSchema.methods.protect = async function (
+  userId: string
+): Promise<boolean> {
+  const agent = this as IAgent;
+  const contract = await Hiring.exists({
+    agent: agent._id,
+    user: userId,
+  });
+
+  if (!contract) {
+    throw new ErrorResponse("You are not authorized to use this agent", 403);
+  }
+
+  return true;
 };
 
 agentSchema.methods.execute = async function (
+  userId: string,
   sessionId: string,
   message: string,
-  attachments: File[]
+  attachments: File[],
+  onStream?: (chunk: string) => void
 ): Promise<string> {
-  const agent = this as IAgentDocument;
-  const session = await agent.getOrCreateSession(sessionId);
+  const agent = this as IAgent;
+  await agent.protect(userId);
+  const session = await agent.getOrCreateSession(userId, sessionId);
   await agent.createChat(session._id, "user", message, attachments);
-  const response = await agent.sendMessage(session, message, attachments);
+  const response = await agent.sendMessage(
+    session._id,
+    message,
+    attachments,
+    onStream
+  );
   await agent.createChat(session._id, "system", response, []);
   return response;
 };
@@ -260,4 +310,4 @@ agentSchema.pre("findOneAndDelete", async function (next) {
 // Model tanımını güncelle
 export const Agent =
   (mongoose.models.Agent as AgentModel) ||
-  mongoose.model<IAgentDocument, AgentModel>("Agent", agentSchema);
+  mongoose.model<IAgent, AgentModel>("Agent", agentSchema);

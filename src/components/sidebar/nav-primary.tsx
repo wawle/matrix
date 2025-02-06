@@ -30,7 +30,7 @@ import {
 
 export function NavPrimary({ items }: { items: INavItem[] }) {
   return items.map((item) => (
-    <SidebarGroup key={item.title}>
+    <SidebarGroup key={item.title} className="p-0">
       <SidebarGroupLabel>
         <h2 className="text-lg font-semibold tracking-tight">{item.title}</h2>
       </SidebarGroupLabel>
@@ -43,7 +43,7 @@ const NavItem = ({ items }: { items: INavItem[] }) => {
   const { isMobile } = useSidebar();
 
   return (
-    <SidebarGroupContent>
+    <SidebarGroupContent className="p-0">
       <SidebarMenu>
         {items.map((item) => (
           <SidebarMenuItem key={item.title}>

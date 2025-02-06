@@ -5,6 +5,7 @@ import { templates } from "@/lib/constants/templates";
 import { IProject } from "@/lib/models/project";
 import { fetchModels } from "@/lib/actions/model";
 import { IEdge } from "@/lib/models/edge";
+import { notFound } from "next/navigation";
 
 interface Props {
   params: Promise<{
@@ -18,6 +19,8 @@ const ProjectPlaygroundPage = async ({ params }: Props) => {
     fetchProject(projectId),
     getAutoSaveState(),
   ]);
+
+  if (!project) notFound();
 
   let defaultVersion = null;
   if (project?.versions.length > 0) {

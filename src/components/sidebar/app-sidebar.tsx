@@ -11,7 +11,6 @@ import {
   SidebarRail,
 } from "@/components/ui/sidebar";
 import { ISidebarData } from "@/lib/constants/data";
-import Image from "next/image";
 
 interface Props extends React.ComponentProps<typeof Sidebar> {
   data: ISidebarData;
@@ -23,7 +22,7 @@ export function AppSidebar({ data, ...props }: Props) {
     <Sidebar variant="floating" {...props}>
       {navMain.length > 0 && (
         <SidebarHeader>
-          <NavMain items={navMain} />
+          <NavPrimary items={navMain} />
         </SidebarHeader>
       )}
       <SidebarContent>

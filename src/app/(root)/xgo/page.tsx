@@ -1,19 +1,8 @@
 import Link from "next/link";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import { PlusCircle, Calendar, Clock, Layers } from "lucide-react";
-import { formatDistanceToNow } from "date-fns";
-import { tr } from "date-fns/locale";
-import { fetchProjects } from "@/lib/actions/project";
+import { Card, CardContent } from "@/components/ui/card";
+import { PlusCircle } from "lucide-react";
 
 export default async function XgoPage() {
-  const { data: projects } = await fetchProjects();
-
   return (
     <div className="flex-1 overflow-auto p-4">
       {/* Yeni Proje Kartı */}

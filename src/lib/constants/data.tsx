@@ -24,12 +24,12 @@ import {
   Users,
   Workflow,
 } from "lucide-react";
-import { IAgent } from "../models/agent";
+import { Message } from "@/components/ui/chat";
 
 export interface INavItem {
   title: string;
   url: string;
-  icon: React.JSX.Element;
+  icon: any;
   isActive?: boolean;
   items?: INavItem[];
   hasMore?: boolean;
@@ -192,8 +192,7 @@ export const adminSidebarData: ISidebarData = {
 };
 
 export const userSidebarData = {
-  navMain: [],
-  navPrimary: [
+  navMain: [
     {
       title: "Discover",
       url: "/discover",
@@ -217,6 +216,7 @@ export const userSidebarData = {
       ],
     },
   ],
+  navPrimary: [],
   navSecondary: [
     {
       title: "Settings",
@@ -227,107 +227,101 @@ export const userSidebarData = {
   ],
 };
 
-export const agents: IAgent[] = [
+export const defaultMessages: Message[] = [
   {
-    name: "Agent 1",
-    title: "Agent 1",
-    instructions: "Agent 1",
-    photo:
-      "https://images.unsplash.com/photo-1611348586804-61bf6c080437?w=300&dpr=2&q=80",
-    model_provider: "openai",
-    model_name: "gpt-4o",
-    max_tokens: 1000,
-    temperature: 0.5,
-    seed: 1,
-    stream: true,
-    is_public: true,
-    key: {
-      name: "Agent 1",
-      description: "Agent 1",
-      value: "1",
-      type: "api_key",
-      id: "key-1",
-      _id: "key-1",
-      user: {
-        id: "1",
-        _id: "1",
-        fullname: "Agent 1",
-        email: "agent1@example.com",
-        password: "password",
-        photo:
-          "https://images.unsplash.com/photo-1611348586804-61bf6c080437?w=300&dpr=2&q=80",
-        role: "user",
-      },
-    },
     id: "1",
-    _id: "1",
+    content: "Merhaba, nasıl yardımcı olabilirim?",
+    role: "system" as const,
+    timestamp: new Date(),
   },
   {
-    name: "Agent 2",
-    title: "Agent 2",
-    instructions: "Agent 2",
-    photo:
-      "https://images.unsplash.com/photo-1611348586804-61bf6c080437?w=300&dpr=2&q=80",
-    model_provider: "openai",
-    model_name: "gpt-4o",
-    max_tokens: 1000,
-    temperature: 0.5,
-    seed: 1,
-    stream: true,
-    is_public: true,
-    key: {
-      name: "Agent 2",
-      description: "Agent 2",
-      value: "2",
-      type: "api_key",
-      id: "key-2",
-      _id: "key-2",
-      user: {
-        id: "2",
-        _id: "2",
-        fullname: "Agent 2",
-        email: "agent2@example.com",
-        password: "password",
-        photo:
-          "https://images.unsplash.com/photo-1611348586804-61bf6c080437?w=300&dpr=2&q=80",
-        role: "user",
-      },
-    },
     id: "2",
-    _id: "2",
+    content: "Merhaba, neler yapabilirsiniz?",
+    role: "user" as const,
+    timestamp: new Date(),
   },
   {
-    name: "Agent 3",
-    title: "Agent 3",
-    instructions: "Agent 3",
-    photo:
-      "https://images.unsplash.com/photo-1611348586804-61bf6c080437?w=300&dpr=2&q=80",
-    model_provider: "openai",
-    model_name: "gpt-4o",
-    max_tokens: 1000,
-    temperature: 0.5,
-    seed: 1,
-    stream: true,
-    is_public: true,
-    key: {
-      name: "Agent 3",
-      description: "Agent 3",
-      value: "3",
-      type: "api_key",
-      id: "key-3",
-      _id: "key-3",
-      user: {
-        id: "3",
-        _id: "3",
-        fullname: "Agent 3",
-        email: "agent3@example.com",
-        password: "password",
-        photo:
-          "https://images.unsplash.com/photo-1611348586804-61bf6c080437?w=300&dpr=2&q=80",
-        role: "user",
-      },
-    },
     id: "3",
-    _id: "3",
+    content: "Merhaba, nasıl yardımcı olabilirim?",
+    role: "system" as const,
+    timestamp: new Date(),
+  },
+  {
+    id: "4",
+    content: "Merhaba, nasıl yardımcı olabilirim?",
+    role: "system" as const,
+    timestamp: new Date(),
+  },
+  {
+    id: "5",
+    content: "Merhaba, nasıl yardımcı olabilirim?",
+    role: "system" as const,
+    timestamp: new Date(),
+  },
+  {
+    id: "6",
+    content: "Merhaba, nasıl yardımcı olabilirim?",
+    role: "system" as const,
+    timestamp: new Date(),
+  },
+  {
+    id: "7",
+    content: "Merhaba, nasıl yardımcı olabilirim?",
+    role: "system" as const,
+    timestamp: new Date(),
+  },
+  {
+    id: "8",
+    content: "Merhaba, nasıl yardımcı olabilirim?",
+    role: "system" as const,
+    timestamp: new Date(),
+  },
+  {
+    id: "9",
+    content: "Merhaba, nasıl yardımcı olabilirim?",
+    role: "system" as const,
+    timestamp: new Date(),
+  },
+  {
+    id: "10",
+    content: "Merhaba, neler yapabilirsiniz?",
+    role: "user" as const,
+    timestamp: new Date(),
+  },
+  {
+    id: "11",
+    content: "Merhaba, nasıl yardımcı olabilirim?",
+    role: "system" as const,
+    timestamp: new Date(),
+  },
+  {
+    id: "12",
+    content: "Merhaba, nasıl yardımcı olabilirim?",
+    role: "system" as const,
+    timestamp: new Date(),
+  },
+  {
+    id: "13",
+    content: "Merhaba, nasıl yardımcı olabilirim?",
+    role: "system" as const,
+    timestamp: new Date(),
+  },
+  {
+    id: "14",
+    content: "Merhaba, nasıl yardımcı olabilirim?",
+    role: "system" as const,
+    timestamp: new Date(),
+  },
+  {
+    id: "15",
+    content: "Merhaba, nasıl yardımcı olabilirim?",
+    role: "system" as const,
+    timestamp: new Date(),
+  },
+  {
+    id: "16",
+    content: "Merhaba, nasıl yardımcı olabilirim?",
+    role: "system" as const,
+    timestamp: new Date(),
   },
 ];

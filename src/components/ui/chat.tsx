@@ -15,6 +15,7 @@ import {
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 import Image from "next/image";
+import { SessionNav } from "@/app/(root)/(user)/agents/[agentId]/sessions/[sessionId]/components/session-nav";
 
 interface FileAttachment {
   id: string;
@@ -25,9 +26,9 @@ interface FileAttachment {
 }
 
 export interface Message {
-  id: string;
+  id?: string;
   content: string;
-  role: "user" | "assistant";
+  role: "user" | "system";
   timestamp: Date;
   attachments?: FileAttachment[];
 }
@@ -40,6 +41,7 @@ interface ChatProps {
   assistantPhotoUrl?: string;
   userName?: string;
   assistantName?: string;
+  streamingContent?: string;
 }
 
 export function Chat({
@@ -50,6 +52,7 @@ export function Chat({
   assistantPhotoUrl,
   userName = "Sen",
   assistantName = "Asistan",
+  streamingContent,
 }: ChatProps) {
   const scrollRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -63,6 +66,7 @@ export function Chat({
       const scrollContainer = scrollRef.current.querySelector(
         "[data-radix-scroll-area-viewport]"
       );
+
       if (scrollContainer) {
         scrollContainer.scrollTo({
           top: scrollContainer.scrollHeight,
@@ -204,175 +208,179 @@ export function Chat({
   };
 
   return (
-    <div className="flex h-[92vh]">
-      {/* Ana Sohbet Alanı */}
-      <div className="flex-1 flex flex-col">
-        <ScrollArea className="flex-1" ref={scrollRef}>
-          <div className="p-4">
-            <div className="max-w-3xl mx-auto space-y-2">
-              {messages.map((message) => (
+    <div className="flex-1 flex flex-col">
+      <ScrollArea className="flex-1" ref={scrollRef}>
+        <div
+          className={cn("p-4", messages.length > 0 ? "h-[92vh]" : "h-[30vh]")}
+        >
+          <div className="max-w-3xl mx-auto space-y-2">
+            {messages.map((message) => (
+              <div
+                key={message.id}
+                className={`flex items-start gap-2 rounded-lg ${
+                  message.role === "system" ? "flex-row" : "flex-row-reverse"
+                } ${message.role === "system" ? "p-2" : "p-2 bg-sidebar"}`}
+              >
+                <Avatar className="h-8 w-8">
+                  <AvatarImage
+                    src={
+                      message.role === "system"
+                        ? assistantPhotoUrl
+                        : userPhotoUrl
+                    }
+                  />
+                  <AvatarFallback>
+                    {message.role === "system"
+                      ? assistantName.charAt(0)
+                      : userName.charAt(0)}
+                  </AvatarFallback>
+                </Avatar>
                 <div
-                  key={message.id}
-                  className={`flex items-start gap-2 rounded-lg ${
-                    message.role === "assistant"
-                      ? "flex-row"
-                      : "flex-row-reverse"
-                  } ${message.role === "assistant" ? "p-2" : "p-2 bg-sidebar"}`}
+                  className={`flex-1 ${
+                    message.role === "user" ? "max-w-[50%] ml-auto" : ""
+                  }`}
                 >
-                  <Avatar className="h-8 w-8">
-                    <AvatarImage
-                      src={
-                        message.role === "assistant"
-                          ? assistantPhotoUrl
-                          : userPhotoUrl
-                      }
-                    />
-                    <AvatarFallback>
-                      {message.role === "assistant"
-                        ? assistantName.charAt(0)
-                        : userName.charAt(0)}
-                    </AvatarFallback>
-                  </Avatar>
                   <div
-                    className={`flex-1 ${
-                      message.role === "user" ? "max-w-[50%] ml-auto" : ""
+                    className={`font-semibold mb-1 text-sm ${
+                      message.role === "user" ? "text-right" : ""
                     }`}
                   >
+                    {message.role === "system" ? assistantName : userName}
+                  </div>
+                  {message.content && (
                     <div
-                      className={`font-semibold mb-1 text-sm ${
+                      className={`text-sm leading-6 ${
                         message.role === "user" ? "text-right" : ""
                       }`}
                     >
-                      {message.role === "assistant" ? assistantName : userName}
+                      {message.content}
+                      {message.role === "system" &&
+                        message.id === messages[messages.length - 1].id &&
+                        streamingContent && (
+                          <span className="animate-pulse">
+                            {streamingContent}
+                          </span>
+                        )}
                     </div>
-                    {message.content && (
-                      <div
-                        className={`text-sm leading-6 ${
-                          message.role === "user" ? "text-right" : ""
-                        }`}
-                      >
-                        {message.content}
-                      </div>
-                    )}
-                    {message.attachments && message.attachments.length > 0 && (
-                      <div className="mt-2 space-y-2">
-                        {message.attachments.map((attachment) => (
-                          <div
-                            key={attachment.id}
-                            className="flex justify-end items-center"
-                          >
-                            {renderAttachment(attachment)}
-                          </div>
-                        ))}
-                      </div>
-                    )}
-                  </div>
+                  )}
+                  {message.attachments && message.attachments.length > 0 && (
+                    <div className="mt-2 space-y-2">
+                      {message.attachments.map((attachment) => (
+                        <div
+                          key={attachment.id}
+                          className="flex justify-end items-center"
+                        >
+                          {renderAttachment(attachment)}
+                        </div>
+                      ))}
+                    </div>
+                  )}
                 </div>
-              ))}
-              {isLoading && (
-                <div className="flex items-start gap-6 bg-sidebar py-8 px-4">
-                  <Avatar className="h-8 w-8">
-                    <AvatarImage src={assistantPhotoUrl} />
-                    <AvatarFallback>{assistantName.charAt(0)}</AvatarFallback>
-                  </Avatar>
-                  <div className="space-y-2 flex-1">
-                    <Skeleton className="h-4 w-[100px]" />
-                    <Skeleton className="h-4 w-[300px]" />
-                  </div>
+              </div>
+            ))}
+            {isLoading && (
+              <div className="flex items-start gap-6 bg-sidebar py-8 px-4">
+                <Avatar className="h-8 w-8">
+                  <AvatarImage src={assistantPhotoUrl} />
+                  <AvatarFallback>{assistantName.charAt(0)}</AvatarFallback>
+                </Avatar>
+                <div className="space-y-2 flex-1">
+                  <Skeleton className="h-4 w-[100px]" />
+                  <Skeleton className="h-4 w-[300px]" />
                 </div>
-              )}
-            </div>
-          </div>
-        </ScrollArea>
-
-        {/* Input Alanı */}
-        <div className="p-4">
-          <form onSubmit={handleSubmit} className="max-w-3xl mx-auto">
-            {attachments.length > 0 && (
-              <div className="mb-2 flex flex-wrap gap-2">
-                {attachments.map((file, index) => (
-                  <div
-                    key={index}
-                    className="flex items-center gap-2 bg-muted p-2 rounded-lg"
-                  >
-                    {isImageFile(file.type) ? (
-                      <ImageIcon className="w-4 h-4" />
-                    ) : (
-                      <File className="w-4 h-4" />
-                    )}
-                    <span className="text-sm truncate max-w-[200px]">
-                      {file.name}
-                    </span>
-                    <Button
-                      type="button"
-                      variant="ghost"
-                      size="icon"
-                      className="h-4 w-4"
-                      onClick={() => removeAttachment(index)}
-                    >
-                      <X className="h-3 w-3" />
-                    </Button>
-                  </div>
-                ))}
               </div>
             )}
-            <div className="relative">
-              <Textarea
-                ref={textareaRef}
-                value={input}
-                onChange={(e) => setInput(e.target.value)}
-                onKeyDown={handleKeyDown}
-                onDragEnter={handleDragEnter}
-                onDragLeave={handleDragLeave}
-                onDragOver={handleDragOver}
-                onDrop={handleDrop}
-                placeholder="Bir mesaj gönderin... (Enter tuşu gönderir, Shift+Enter yeni satır) Dosyaları sürükleyip bırakabilirsiniz"
-                className={cn(
-                  "pr-24 bg-sidebar rounded-lg",
-                  isDragging && "border-2 border-dashed border-primary"
-                )}
-                disabled={isLoading}
-                rows={3}
-              />
-              {isDragging && (
-                <div className="absolute inset-0 bg-primary/10 rounded-lg flex items-center justify-center pointer-events-none">
-                  <div className="text-sm text-primary font-medium">
-                    Dosyaları buraya bırakın
-                  </div>
-                </div>
-              )}
-              <div className="absolute right-2 top-1/2 -translate-y-1/2 flex items-center gap-1">
-                <input
-                  type="file"
-                  ref={fileInputRef}
-                  className="hidden"
-                  onChange={handleFileSelect}
-                  multiple
-                  accept="image/*,.pdf,.doc,.docx,.txt"
-                />
-                <Button
-                  type="button"
-                  size="icon"
-                  variant="ghost"
-                  onClick={() => fileInputRef.current?.click()}
-                  disabled={isLoading}
-                >
-                  <Plus className="h-4 w-4" />
-                </Button>
-                <Button
-                  type="submit"
-                  size="icon"
-                  variant="ghost"
-                  disabled={
-                    isLoading || (!input.trim() && attachments.length === 0)
-                  }
-                >
-                  <Send className="h-4 w-4" />
-                </Button>
-              </div>
-            </div>
-          </form>
+          </div>
         </div>
+      </ScrollArea>
+
+      {/* Input Alanı */}
+      <div className="p-4">
+        <form onSubmit={handleSubmit} className="max-w-3xl mx-auto">
+          {attachments.length > 0 && (
+            <div className="mb-2 flex flex-wrap gap-2">
+              {attachments.map((file, index) => (
+                <div
+                  key={index}
+                  className="flex items-center gap-2 bg-muted p-2 rounded-lg"
+                >
+                  {isImageFile(file.type) ? (
+                    <ImageIcon className="w-4 h-4" />
+                  ) : (
+                    <File className="w-4 h-4" />
+                  )}
+                  <span className="text-sm truncate max-w-[200px]">
+                    {file.name}
+                  </span>
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="icon"
+                    className="h-4 w-4"
+                    onClick={() => removeAttachment(index)}
+                  >
+                    <X className="h-3 w-3" />
+                  </Button>
+                </div>
+              ))}
+            </div>
+          )}
+          <div className="relative">
+            <Textarea
+              ref={textareaRef}
+              value={input}
+              onChange={(e) => setInput(e.target.value)}
+              onKeyDown={handleKeyDown}
+              onDragEnter={handleDragEnter}
+              onDragLeave={handleDragLeave}
+              onDragOver={handleDragOver}
+              onDrop={handleDrop}
+              placeholder="Bir mesaj gönderin... (Enter tuşu gönderir, Shift+Enter yeni satır) Dosyaları sürükleyip bırakabilirsiniz"
+              className={cn(
+                "pr-24 bg-sidebar rounded-lg",
+                isDragging && "border-2 border-dashed border-primary"
+              )}
+              disabled={isLoading}
+              rows={messages.length > 0 ? 3 : 6}
+            />
+            {isDragging && (
+              <div className="absolute inset-0 bg-primary/10 rounded-lg flex items-center justify-center pointer-events-none">
+                <div className="text-sm text-primary font-medium">
+                  Dosyaları buraya bırakın
+                </div>
+              </div>
+            )}
+            <div className="absolute right-2 top-1/2 -translate-y-1/2 flex items-center gap-1">
+              <input
+                type="file"
+                ref={fileInputRef}
+                className="hidden"
+                onChange={handleFileSelect}
+                multiple
+                accept="image/*,.pdf,.doc,.docx,.txt"
+              />
+              <Button
+                type="button"
+                size="icon"
+                variant="ghost"
+                onClick={() => fileInputRef.current?.click()}
+                disabled={isLoading}
+              >
+                <Plus className="h-4 w-4" />
+              </Button>
+              <Button
+                type="submit"
+                size="icon"
+                variant="ghost"
+                disabled={
+                  isLoading || (!input.trim() && attachments.length === 0)
+                }
+              >
+                <Send className="h-4 w-4" />
+              </Button>
+            </div>
+          </div>
+        </form>
       </div>
     </div>
   );

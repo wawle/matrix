@@ -12,7 +12,12 @@ export const getAgents = asyncFnService(async (): Promise<IAgent[]> => {
 export const getAgentById = asyncFnService(
   async (id: string): Promise<IAgent> => {
     await connectDB();
-    const agent = await Agent.findById(id);
+    const agent = await Agent.findById(id).populate({
+      path: "sessions",
+      populate: {
+        path: "chats",
+      },
+    });
     if (!agent) {
       throw new ErrorResponse("Agent bulunamadı", 404);
     }
@@ -59,12 +64,17 @@ export const deleteAgent = asyncFnService(
 
 export const executeAgent = asyncFnService(
   async (
+    userId: string,
     agentId: string,
     sessionId: string,
     message: string,
     attachments: File[]
   ) => {
+    await connectDB();
     const agent = await Agent.findById(agentId);
-    return await agent.execute(sessionId, message, attachments);
+    if (!agent) {
+      throw new ErrorResponse("Agent bulunamadı", 404);
+    }
+    return await agent.execute(userId, sessionId, message, attachments);
   }
 );

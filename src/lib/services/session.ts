@@ -12,7 +12,7 @@ export const getSessions = asyncFnService(async (): Promise<ISession[]> => {
 export const getSessionById = asyncFnService(
   async (id: string): Promise<ISession> => {
     await connectDB();
-    const session = await Session.findById(id);
+    const session = await Session.findById(id).populate("chats");
     if (!session) {
       throw new ErrorResponse("Session bulunamadı", 404);
     }

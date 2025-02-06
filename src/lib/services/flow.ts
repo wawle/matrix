@@ -4,6 +4,8 @@ import { FlowStep } from "../models/flowstep";
 import { Agent } from "../models/agent";
 import { asyncFnService } from "../middlewares/async";
 import { ErrorResponse } from "../middlewares/error";
+import { Node } from "../models/node";
+import { Edge } from "../models/edge";
 
 export const getFlows = asyncFnService(async (): Promise<IFlow[]> => {
   await connectDB();
@@ -24,7 +26,25 @@ export const getFlows = asyncFnService(async (): Promise<IFlow[]> => {
 export const getFlowById = asyncFnService(
   async (id: string): Promise<IFlow> => {
     await connectDB();
-    const flow = await Flow.findById(id);
+    const flow = await Flow.findById(id).populate([
+      {
+        path: "steps",
+        model: FlowStep,
+        select: "agent order",
+        populate: {
+          path: "agent",
+          model: Agent,
+        },
+      },
+      {
+        path: "nodes",
+        model: Node,
+      },
+      {
+        path: "edges",
+        model: Edge,
+      },
+    ]);
     if (!flow) {
       throw new ErrorResponse("Flow bulunamadı", 404);
     }
