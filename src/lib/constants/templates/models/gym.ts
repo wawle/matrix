@@ -11,6 +11,7 @@ export const gymModel: IVersion = {
     {
       id: "user",
       position: { x: 100, y: 100 },
+      type: "model",
       data: {
         name: "User",
         description: "Kullanıcı bilgilerini içeren şema",
@@ -50,6 +51,7 @@ export const gymModel: IVersion = {
     {
       id: "customer",
       position: { x: 100, y: 100 },
+      type: "model",
       data: {
         name: "Customer",
         description: "Müşteri bilgilerini içeren şema",
@@ -110,6 +112,7 @@ export const gymModel: IVersion = {
     {
       id: "membership",
       position: { x: 500, y: 100 },
+      type: "model",
       data: {
         name: "Membership",
         description: "Üyelik bilgilerini içeren şema",
@@ -156,6 +159,7 @@ export const gymModel: IVersion = {
     {
       id: "membershipType",
       position: { x: 900, y: 100 },
+      type: "model",
       data: {
         name: "MembershipType",
         description: "Üyelik paketlerini içeren şema",
@@ -195,6 +199,7 @@ export const gymModel: IVersion = {
     {
       id: "trainer",
       position: { x: 100, y: 400 },
+      type: "model",
       data: {
         name: "Trainer",
         description: "Eğitmen bilgilerini içeren şema",
@@ -235,6 +240,7 @@ export const gymModel: IVersion = {
     {
       id: "activity",
       position: { x: 500, y: 400 },
+      type: "model",
       data: {
         name: "Activity",
         description: "Grup dersleri ve aktiviteleri içeren şema",
@@ -316,6 +322,7 @@ export const gymModel: IVersion = {
     {
       id: "participant",
       position: { x: 900, y: 400 },
+      type: "model",
       data: {
         name: "Participant",
         description: "Katılımcı bilgilerini içeren şema",

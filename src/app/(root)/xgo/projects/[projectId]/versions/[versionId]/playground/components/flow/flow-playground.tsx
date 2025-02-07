@@ -32,6 +32,7 @@ import {
 import { toast } from "sonner";
 import { INode } from "@/lib/models/node";
 import { IEdge } from "@/lib/models/edge";
+import { useParams } from "next/navigation";
 
 interface Props {
   versions: IVersion[];
@@ -53,6 +54,7 @@ export default function FlowPlayground({
   project,
   defaultAutoSave,
 }: Props) {
+  const { versionId } = useParams();
   // Genel durum yönetimi
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [selectedPreset, setSelectedPreset] = useState<string>(
@@ -389,6 +391,7 @@ export default function FlowPlayground({
       // Generate a new version from the selected template
       const result = await generateVersionFromTemplate(
         selectedTemplate,
+        versionId as string,
         project.id
       );
       if (result.success && result.version) {
@@ -407,7 +410,7 @@ export default function FlowPlayground({
         nodes: nodes as INode[],
         edges: edges as IEdge[],
       };
-      const result = await updateAppFromVersion(updatedVersion, project.id);
+      const result = await updateAppFromVersion(updatedVersion);
       if (result.success) {
         toast.success("Proje başarıyla güncellendi.");
       }

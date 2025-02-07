@@ -5,7 +5,6 @@ export const service = {
 import { ${modelName}, I${modelName} } from "@/lib/models/${routeName}";
 import connectDB from "@/lib/db";
 import { asyncFnService } from "../middlewares/async";
-import { ErrorResponse } from "../middlewares/error";
 import { listing } from "../middlewares/listing";
 
 export const get${modelName}s = asyncFnService(

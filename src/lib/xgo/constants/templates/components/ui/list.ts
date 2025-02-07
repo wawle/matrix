@@ -40,7 +40,7 @@ export const ${name} = async() => {
       }
     >
       <DataTable
-        data={data}
+        data={data.data}
         onDelete={delete${modelName}Action}
         defaultColumnVisibility={${JSON.stringify(
           defaultColumnVisibility,

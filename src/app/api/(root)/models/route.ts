@@ -4,9 +4,15 @@ import { listing } from "@/lib/middlewares/listing";
 import { Model } from "@/lib/models/model";
 import { NextRequest } from "next/server";
 import { createModel } from "@/lib/services/model";
+import { Field } from "@/lib/models/field";
 
 export const GET = asyncFn(async (req: NextRequest) => {
-  const data = await listing(Model, req);
+  const data = await listing(Model, req, [
+    {
+      path: "fields",
+      model: Field,
+    },
+  ]);
   return NextResponse.json(data);
 });
 

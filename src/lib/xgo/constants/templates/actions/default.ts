@@ -11,10 +11,8 @@ import {
   create${modelName},
   update${modelName},
   delete${modelName},
-  execute${modelName},
 } from "@/lib/services/${routeName}";
 import { I${modelName} } from "@/lib/models/${routeName}";
-import { authSession } from "@/lib/dal";
 
 export async function fetch${modelName}s(): Promise<{
   data: {
@@ -65,7 +63,7 @@ export async function create${modelName}Action(data: any): Promise<{
   }
 }
 
-export async function updateAgentAction(
+export async function update${modelName}Action(
   id: string,
   data: any
 ): Promise<{

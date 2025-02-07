@@ -12,13 +12,14 @@ import { cookies } from "next/headers";
 import { Node } from "reactflow";
 import { IVersion } from "../models/version";
 import { convertTemplateToVersion } from "../utils";
-import { createModelAction, updateModelAction } from "./model";
+import { createModelAction, fetchModels, updateModelAction } from "./model";
 import { createFieldAction, updateFieldAction } from "./field";
 import { createNodeAction, updateNodeAction } from "./node";
 import { createEdgeAction, updateEdgeAction } from "./edge";
 import { fetchProject } from "./project";
 import { createNextProject } from "../xgo/generators/app";
 import { INodeField } from "../types/xgo";
+import mongoose from "mongoose";
 
 export async function fetchVersions() {
   try {
@@ -208,35 +209,24 @@ export async function generatePromptForVersion(prompt: string) {
 
 export const generateVersionFromTemplate = async (
   template: IVersion,
+  versionId: string,
   projectId: string
 ) => {
   try {
-    let newVersion = convertTemplateToVersion(template, projectId);
+    const updatedVersionBody = convertTemplateToVersion(template, versionId);
 
-    const newVersionBody = {
-      name: `${newVersion.name} - v1.0.0`,
-      description: newVersion.description,
-      is_active: true,
-      project: projectId,
-    };
-
-    const createdVersion = await createVersionAction(newVersionBody);
-
-    if (!createdVersion.success) {
-      throw new Error(createdVersion.error);
-    }
-
-    const newModelsBody = newVersion.models.map((model) => ({
+    const newModelsBody = updatedVersionBody.models.map((model) => ({
       name: model.name,
-      version: createdVersion.data.id,
+      version: versionId,
       description: model.description,
+      project: projectId,
     }));
 
-    const newNodesBody = newVersion.nodes.map((node) => ({
+    const newNodesBody = updatedVersionBody.nodes.map((node) => ({
       data: node.data,
       position: node.position,
       type: node.type,
-      version: createdVersion.data.id,
+      version: versionId,
     }));
 
     const [createdModels, createdNodes] = await Promise.all([
@@ -251,21 +241,21 @@ export const generateVersionFromTemplate = async (
       throw new Error("Model veya Node oluşturulurken bir hata oluştu");
     }
 
-    const newEdgesBody = newVersion.edges.map((edge) => {
+    const newEdgesBody = updatedVersionBody.edges.map((edge) => {
       const sourceNode = createdNodes.find(
-        (n) => n.data.data.name === edge.sourceName
-      );
+        (n) => n.data.data.name === edge.source
+      )?.data?.id;
       const targetNode = createdNodes.find(
-        (n) => n.data.data.name === edge.targetName
-      );
+        (n) => n.data.data.name === edge.target
+      )?.data?.id;
 
       return {
-        ...edge,
-        version: createdVersion.data.id,
-        source: sourceNode?.data.id,
-        target: targetNode?.data.id,
-        sourceName: sourceNode?.data.data.name,
-        targetName: targetNode?.data.data.name,
+        version: versionId,
+        source: sourceNode,
+        target: targetNode,
+        animated: edge.animated,
+        label: edge.label,
+        data: edge.data,
       };
     });
 
@@ -279,7 +269,7 @@ export const generateVersionFromTemplate = async (
       throw new Error("Edge oluşturulurken bir hata oluştu");
     }
 
-    const newFieldsBody = newVersion.models.flatMap((model) =>
+    const newFieldsBody = updatedVersionBody.models.flatMap((model) =>
       model.fields.map((field) => ({
         name: field.name,
         label: field.label,
@@ -299,7 +289,7 @@ export const generateVersionFromTemplate = async (
       throw new Error("Field oluşturulurken bir hata oluştu");
     }
 
-    const version = await fetchVersion(createdVersion.data.id);
+    const version = await fetchVersion(versionId);
 
     return { success: true, version: version.data };
   } catch (error) {
@@ -314,8 +304,7 @@ export const generateVersionFromTemplate = async (
 };
 
 export const updateAppFromVersion = async (
-  version: IVersion,
-  projectId: string
+  version: IVersion
 ): Promise<{
   success: boolean;
   error?: string;
@@ -332,6 +321,7 @@ export const updateAppFromVersion = async (
         isActive: node.data.isActive,
         fields: node.data.fields,
       },
+      type: node.type,
       position: node.position,
       version: node.version,
     }));
@@ -348,7 +338,7 @@ export const updateAppFromVersion = async (
       id: node.id,
       name: node.data.name,
       description: node.data.description,
-      project: projectId,
+      project: version.project,
     }));
 
     const updatedFieldsBody = nodes.flatMap((node) =>
@@ -372,14 +362,14 @@ export const updateAppFromVersion = async (
         ),
         Promise.all(
           updatedModelsBody.map((model) =>
-            model.id
+            mongoose.Types.ObjectId.isValid(model.id)
               ? updateModelAction(model.id, model)
               : createModelAction(model)
           )
         ),
         Promise.all(
           updatedFieldsBody.map((field) =>
-            field.id
+            mongoose.Types.ObjectId.isValid(field.id)
               ? updateFieldAction(field.id, field)
               : createFieldAction(field)
           )
@@ -423,16 +413,18 @@ export async function generateAppAction(
   projectName?: string;
 }> {
   try {
-    const [project, version] = await Promise.all([
+    const [project, version, models] = await Promise.all([
       fetchProject(projectId),
       fetchVersion(versionId),
+      fetchModels({ project: projectId }),
     ]);
 
     if (
       !version.success ||
       !project.success ||
       !version.data ||
-      !project.data
+      !project.data ||
+      !models.data
     ) {
       throw new Error(version.error || project.error);
     }
@@ -441,7 +433,7 @@ export async function generateAppAction(
       projectName: project.data.name,
       version: {
         name: version.data.name,
-        models: project.data.models,
+        models: models.data,
         relations: version.data.edges,
       },
     };

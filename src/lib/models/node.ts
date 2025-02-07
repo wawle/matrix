@@ -8,6 +8,7 @@ export interface INode {
   updatedAt?: Date;
   version?: IVersion;
   data: any;
+  type: "model" | "agent" | "page" | "screen";
   position: { x: number; y: number };
 }
 
@@ -24,6 +25,11 @@ export const nodeSchema = new mongoose.Schema<INode>(
     },
     position: {
       type: Object,
+      required: true,
+    },
+    type: {
+      type: String,
+      enum: ["model", "agent", "page", "screen"],
       required: true,
     },
   },

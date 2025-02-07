@@ -10,6 +10,7 @@ export const investTrackerModel: IVersion = {
     {
       id: "investment",
       position: { x: 100, y: 100 },
+      type: "model",
       data: {
         name: "Investment",
         description: "Investment",
@@ -26,6 +27,7 @@ export const investTrackerModel: IVersion = {
     {
       id: "category",
       position: { x: 500, y: 100 },
+      type: "model",
       data: {
         name: "Category",
         description: "Category",
@@ -39,6 +41,7 @@ export const investTrackerModel: IVersion = {
     {
       id: "user",
       position: { x: 100, y: 400 },
+      type: "model",
       data: {
         name: "User",
         description: "User",

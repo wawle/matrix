@@ -56,12 +56,8 @@ export const convertMongooseSchemaToZod = (mongooseSchema: Schema) => {
 
 export function convertTemplateToVersion(
   template: IVersion,
-  projectId: string
+  versionId: string
 ): {
-  name: string;
-  description: string;
-  is_active: boolean;
-  project: string;
   models: {
     name: string;
     description: string;
@@ -76,10 +72,6 @@ export function convertTemplateToVersion(
   edges: any[];
 } {
   return {
-    name: template.name,
-    description: template.description || "",
-    is_active: true,
-    project: projectId,
     models: template.nodes.map((node) => ({
       name: node.data.name,
       description: node.data.description,

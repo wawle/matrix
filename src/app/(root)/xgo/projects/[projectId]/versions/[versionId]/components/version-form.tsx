@@ -110,7 +110,7 @@ export function VersionForm({ defaultValues, versionId }: VersionFormProps) {
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="model">Model</SelectItem>
-                    <SelectItem value="flow">Flow</SelectItem>
+                    <SelectItem value="agent">Agent</SelectItem>
                     <SelectItem value="page">Page</SelectItem>
                     <SelectItem value="screen">Screen</SelectItem>
                   </SelectContent>

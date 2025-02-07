@@ -5,6 +5,7 @@ import { Node } from "../models/node";
 import { Edge } from "../models/edge";
 import { asyncFnService } from "../middlewares/async";
 import { ErrorResponse } from "../middlewares/error";
+import { Model } from "../models/model";
 
 export const getProjects = asyncFnService(async (): Promise<IProject[]> => {
   await connectDB();
@@ -21,22 +22,28 @@ export const getProjects = asyncFnService(async (): Promise<IProject[]> => {
 export const getProjectById = asyncFnService(
   async (id: string): Promise<IProject> => {
     await connectDB();
-    const project = await Project.findById(id).populate({
-      path: "versions",
-      model: Version,
-      populate: [
-        {
-          path: "nodes",
-          model: Node,
-          select: "position data",
-        },
-        {
-          path: "edges",
-          model: Edge,
-          select: "source target data label animated",
-        },
-      ],
-    });
+    const project = await Project.findById(id).populate([
+      {
+        path: "versions",
+        model: Version,
+        populate: [
+          {
+            path: "nodes",
+            model: Node,
+            select: "position data type",
+          },
+          {
+            path: "edges",
+            model: Edge,
+            select: "source target data label animated",
+          },
+        ],
+      },
+      {
+        path: "models",
+        model: Model,
+      },
+    ]);
     if (!project) {
       throw new ErrorResponse("Project bulunamadı", 404);
     }

@@ -28,7 +28,6 @@ export const FlowSidebar = ({
   onUpdateAgent,
   onDeleteAgent,
 }: FlowSidebarProps) => {
-  console.log({ isEditingAgent, selectedNode });
   if (!selectedNode) return null;
 
   const agent = selectedNode.data as IAgent;

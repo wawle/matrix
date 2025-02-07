@@ -11,6 +11,7 @@ export interface IField {
   type: string;
   model: IModel;
   validations?: {
+    optionLabel?: string;
     unique?: boolean;
     required?: boolean;
     min?: number;
@@ -44,6 +45,15 @@ export const fieldSchema = new mongoose.Schema<IField>(
     },
     type: {
       type: String,
+      enum: [
+        "string",
+        "number",
+        "boolean",
+        "date",
+        "array",
+        "object",
+        "reference",
+      ],
       required: true,
     },
     validations: {

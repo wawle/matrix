@@ -28,8 +28,6 @@ export default async function VersionPage({ params }: VersionPageProps) {
     project: projectId,
   };
 
-  console.log({ versionId });
-
   return (
     <div className="flex-1 overflow-auto p-8 flex justify-center gap-8">
       <Card className="w-[600px] hover:shadow-lg transition-all duration-300 hover:border-primary">

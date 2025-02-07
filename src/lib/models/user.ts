@@ -1,5 +1,4 @@
 import mongoose from "mongoose";
-import { Hiring } from "./hiring";
 import { Project } from "./project";
 import { Session } from "./session";
 import { Key } from "./key";
@@ -49,12 +48,6 @@ export const userSchema = new mongoose.Schema<IUser>(
   }
 );
 
-userSchema.virtual("contracts", {
-  ref: Hiring,
-  localField: "_id",
-  foreignField: "user",
-});
-
 userSchema.virtual("projects", {
   ref: Project,
   localField: "_id",
@@ -76,7 +69,6 @@ userSchema.virtual("keys", {
 userSchema.pre("findOneAndDelete", async function (next) {
   const { _id } = this.getQuery();
   await Promise.all([
-    Hiring.deleteMany({ user: _id }),
     Project.deleteMany({ user: _id }),
     Session.deleteMany({ user: _id }),
     Key.deleteMany({ user: _id }),

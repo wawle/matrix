@@ -39,7 +39,9 @@ export const edit = {
       placeholder: "${field.name} giriniz",
       options: ${
         field.type === "reference"
-          ? `${field.name}s.map((item) => ({ label: item.name, value: item.id }))`
+          ? `${field.name}s.data.map((item) => ({ label: item.${
+              field.validations?.optionLabel || "name"
+            }, value: item.id }))`
           : "[]"
       } }`;
     });
@@ -65,6 +67,7 @@ export async function ${name}(props: Props) {
   const { ${routeName}Id } = props;
   const { data } = await fetch${modelName}(${routeName}Id);
   ${fetchStr}
+  const isEdit = !!data?.id;
 
   
   const defaultValues = {
@@ -100,9 +103,9 @@ export async function ${name}(props: Props) {
     }
 
     let response;
-    if (data.id) {
+    if (isEdit) {
       // update ${modelName}
-      response = await update${modelName}Action(data.id, data);
+      response = await update${modelName}Action(${routeName}Id, data);
     } else {
       // create ${modelName}
       response = await create${modelName}Action(data);

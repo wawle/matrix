@@ -36,7 +36,7 @@ const VersionPlaygroundPage = async ({ params }: Props) => {
           defaultAutoSave={defaultAutoSave}
         />
       );
-    case "flow":
+    case "agent":
       const versions = project?.versions.filter((v) => v.type === type) || [];
       const defaultVersion = version || versions[0] || templates.flows[0];
       return (

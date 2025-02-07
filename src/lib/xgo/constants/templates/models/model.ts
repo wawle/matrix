@@ -21,6 +21,9 @@ export const model = {
           return `  
         ${field.name}: {
           type: ${field.type.charAt(0).toUpperCase() + field.type.slice(1)},
+          default: "${field.validations?.default}",
+          required: ${field.validations?.required || "false"},
+          unique: ${field.validations?.unique || "false"},
           validations: ${JSON.stringify(field.validations)},
         }`;
         }

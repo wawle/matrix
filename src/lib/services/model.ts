@@ -7,12 +7,10 @@ import { ErrorResponse } from "../middlewares/error";
 export const getModels = asyncFnService(
   async (query: any): Promise<IModel[]> => {
     await connectDB();
-    const models = await Model.find(query)
-      .populate({
-        path: "fields",
-        model: Field,
-      })
-      .sort({ createdAt: -1 });
+    const models = await Model.find(query).populate({
+      path: "fields",
+      model: Field,
+    });
     return models;
   }
 );

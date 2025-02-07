@@ -1,6 +1,5 @@
 import mongoose from "mongoose";
 import { IKey, Key } from "./key";
-import { Hiring, IHiring } from "./hiring";
 import { Family, IFamily } from "./family";
 import { ISession, Session } from "./session";
 import OpenAI from "openai";
@@ -28,7 +27,6 @@ export interface IAgent {
   project: IProject;
 
   children: IFamily[];
-  contracts: IHiring[];
   sessions: ISession[];
   getKey(): Promise<string>;
   getOpenAI(): Promise<OpenAI>;
@@ -243,22 +241,6 @@ agentSchema.methods.sendMessage = async function (
   return fullResponse;
 };
 
-agentSchema.methods.protect = async function (
-  userId: string
-): Promise<boolean> {
-  const agent = this as IAgent;
-  const contract = await Hiring.exists({
-    agent: agent._id,
-    user: userId,
-  });
-
-  if (!contract) {
-    throw new ErrorResponse("You are not authorized to use this agent", 403);
-  }
-
-  return true;
-};
-
 agentSchema.methods.execute = async function (
   userId: string,
   sessionId: string,
@@ -280,12 +262,6 @@ agentSchema.methods.execute = async function (
   return response;
 };
 
-agentSchema.virtual("contracts", {
-  ref: Hiring,
-  localField: "_id",
-  foreignField: "agent",
-});
-
 agentSchema.virtual("children", {
   ref: Family,
   localField: "_id",
@@ -301,7 +277,6 @@ agentSchema.virtual("sessions", {
 agentSchema.pre("findOneAndDelete", async function (next) {
   const { _id } = this.getQuery();
   await Promise.all([
-    Hiring.deleteMany({ agent: _id }),
     Family.deleteMany({ agent: _id }),
     Family.deleteMany({ parent: _id }),
     Session.deleteMany({ agent: _id }),

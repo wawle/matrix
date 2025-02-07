@@ -38,6 +38,7 @@ import {
 } from "@/lib/actions/version";
 import { INode } from "@/lib/models/node";
 import { IEdge } from "@/lib/models/edge";
+import { useParams } from "next/navigation";
 
 /**
  * @interface Props
@@ -65,6 +66,7 @@ export default function SchemaPlayground({
   project,
   defaultAutoSave,
 }: Props) {
+  const { versionId, projectId } = useParams();
   // Genel durum yönetimi
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [selectedPreset, setSelectedPreset] = useState<string>(
@@ -208,7 +210,8 @@ export default function SchemaPlayground({
       // Generate a new version from the selected template
       const result = await generateVersionFromTemplate(
         selectedTemplate,
-        project.id
+        versionId as string,
+        projectId as string
       );
       if (result.success && result.version) {
         setSelectedPreset(result.version.id);
@@ -226,10 +229,14 @@ export default function SchemaPlayground({
         nodes: nodes as INode[],
         edges: edges as IEdge[],
       };
-      const result = await updateAppFromVersion(updatedVersion, project.id);
-      if (result.success) {
-        toast.success("Proje başarıyla güncellendi.");
+      const result = await updateAppFromVersion(updatedVersion);
+
+      if (!result.success) {
+        toast.error("Proje güncellenirken bir hata oluştu.");
+        return;
       }
+
+      toast.success("Proje başarıyla güncellendi.");
     } catch (error) {
       toast.error("Proje güncellenirken bir hata oluştu.");
     }
@@ -331,7 +338,7 @@ export default function SchemaPlayground({
    */
   const nodeTypes = useMemo(
     () => ({
-      schema: SchemaNode,
+      model: SchemaNode,
     }),
     []
   );
@@ -440,7 +447,7 @@ export default function SchemaPlayground({
 
     const newNode: Node = {
       id: Date.now().toString(),
-      type: "schema",
+      type: "model",
       position: {
         x: Math.random() * 500,
         y: Math.random() * 500,

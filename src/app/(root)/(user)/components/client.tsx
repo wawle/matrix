@@ -53,8 +53,6 @@ const Client = ({ user }: Props) => {
       if (response.error) {
         throw new Error(response.error);
       }
-
-      console.log({ response });
     } catch (error) {
       console.error("Mesaj gönderme hatası:", error);
       toast.error("Mesaj gönderilemedi", {

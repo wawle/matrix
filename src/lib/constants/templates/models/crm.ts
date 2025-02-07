@@ -11,6 +11,7 @@ export const crmModel: IVersion = {
     {
       id: "User",
       position: { x: 100, y: 100 },
+      type: "model",
       data: {
         name: "User",
         description: "Müşteri ve potansiyel müşteri bilgilerini içeren şema",
@@ -27,14 +28,14 @@ export const crmModel: IVersion = {
             name: "email",
             type: "string",
             label: "Email",
-            validations: { required: true },
+            validations: { required: true, email: true, unique: true },
           },
           {
             id: "c4",
             name: "role",
             type: "string",
             label: "Role",
-            validations: { required: true },
+            validations: { required: true, default: "user" },
           },
           {
             id: "c5",
@@ -49,6 +50,7 @@ export const crmModel: IVersion = {
     {
       id: "Customer",
       position: { x: 500, y: 100 },
+      type: "model",
       data: {
         name: "Customer",
         description: "Customer bilgilerini içeren şema",
@@ -65,7 +67,7 @@ export const crmModel: IVersion = {
             name: "email",
             type: "string",
             label: "Email",
-            validations: { required: true },
+            validations: { required: true, email: true, unique: true },
           },
           {
             id: "co4",
@@ -76,17 +78,10 @@ export const crmModel: IVersion = {
           },
           {
             id: "co5",
-            name: "address",
-            type: "object",
-            label: "Address",
-            validations: { required: false },
-          },
-          {
-            id: "co6",
             name: "user",
             type: "reference",
             label: "User",
-            validations: { required: true },
+            validations: { required: true, optionLabel: "fullname" },
           },
         ],
       },
@@ -94,6 +89,7 @@ export const crmModel: IVersion = {
     {
       id: "Activity",
       position: { x: 100, y: 400 },
+      type: "model",
       data: {
         name: "Activity",
         description: "Activity bilgilerini içeren şema",
@@ -110,14 +106,14 @@ export const crmModel: IVersion = {
             name: "user",
             type: "reference",
             label: "User",
-            validations: { required: true },
+            validations: { required: true, optionLabel: "fullname" },
           },
           {
             id: "o4",
             name: "customer",
             type: "reference",
             label: "Customer",
-            validations: { required: true },
+            validations: { required: true, optionLabel: "fullname" },
           },
           {
             id: "o5",

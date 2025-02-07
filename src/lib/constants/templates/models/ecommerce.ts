@@ -11,6 +11,7 @@ export const eCommerceModel: IVersion = {
     {
       id: "product",
       position: { x: 100, y: 100 },
+      type: "model",
       data: {
         name: "Product",
         description: "Ürün bilgilerini içeren şema",
@@ -29,6 +30,7 @@ export const eCommerceModel: IVersion = {
     {
       id: "category",
       position: { x: 500, y: 100 },
+      type: "model",
       data: {
         name: "Category",
         description: "Ürün kategorilerini içeren şema",
@@ -49,6 +51,7 @@ export const eCommerceModel: IVersion = {
     {
       id: "customer",
       position: { x: 100, y: 400 },
+      type: "model",
       data: {
         name: "Customer",
         description: "Müşteri bilgilerini içeren şema",
@@ -81,6 +84,7 @@ export const eCommerceModel: IVersion = {
     {
       id: "order",
       position: { x: 500, y: 400 },
+      type: "model",
       data: {
         name: "Order",
         description: "Sipariş bilgilerini içeren şema",

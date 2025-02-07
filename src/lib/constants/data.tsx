@@ -90,13 +90,6 @@ export const adminSidebarData: ISidebarData = {
           isActive: false,
         },
         {
-          title: "Hirings",
-          url: "/admin/hirings",
-          icon: <UserRoundPen />,
-          isActive: false,
-        },
-
-        {
           title: "Familys",
           url: "/admin/familys",
           icon: <BookUser />,

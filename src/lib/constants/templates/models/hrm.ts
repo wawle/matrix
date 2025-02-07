@@ -11,6 +11,7 @@ export const hrmModel: IVersion = {
     {
       id: "employee",
       position: { x: 100, y: 100 },
+      type: "model",
       data: {
         name: "Employee",
         description: "Çalışan bilgilerini içeren şema",
@@ -29,6 +30,7 @@ export const hrmModel: IVersion = {
     {
       id: "department",
       position: { x: 500, y: 100 },
+      type: "model",
       data: {
         name: "Department",
         description: "Departman bilgilerini içeren şema",
@@ -43,6 +45,7 @@ export const hrmModel: IVersion = {
     {
       id: "position",
       position: { x: 100, y: 400 },
+      type: "model",
       data: {
         name: "Position",
         description: "Pozisyon bilgilerini içeren şema",
@@ -57,6 +60,7 @@ export const hrmModel: IVersion = {
     {
       id: "leave",
       position: { x: 500, y: 400 },
+      type: "model",
       data: {
         name: "Leave",
         description: "İzin kayıtlarını içeren şema",
