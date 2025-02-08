@@ -35,6 +35,17 @@ export const getAgentById = asyncFnService(
   }
 );
 
+export const getAgentBySlug = asyncFnService(
+  async (slug: string): Promise<IAgent> => {
+    await connectDB();
+    const agent = await Agent.findOne({ slug });
+    if (!agent) {
+      throw new ErrorResponse("Agent bulunamadı", 404);
+    }
+    return agent;
+  }
+);
+
 export const createAgent = asyncFnService(
   async (data: any): Promise<IAgent> => {
     await connectDB();

@@ -15,6 +15,8 @@ export type IAgentData = {
   photo: string;
   key: string;
   children: Node<IAgentData>[];
+  onWidthChange?: (width: number) => void;
+  onHeightChange?: (height: number) => void;
 };
 
 export type IAgentConnectionType =
@@ -23,6 +25,6 @@ export type IAgentConnectionType =
   | "conditional"
   | "child";
 
-export type IAgentConnectionData = {
+export type IAgentEdgeData = {
   type: IAgentConnectionType;
 };

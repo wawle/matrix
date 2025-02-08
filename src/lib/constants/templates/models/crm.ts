@@ -5,8 +5,8 @@ export const crmModel: IVersion<VersionType.MODEL> = {
   id: "crm",
   name: "CRM",
   description: "Müşteri ilişkileri yönetimi için temel veritabanı şemaları",
-  is_active: false,
   type: VersionType.MODEL,
+  slug: "crm",
   nodes: [
     {
       id: "User",
@@ -87,9 +87,7 @@ export const crmModel: IVersion<VersionType.MODEL> = {
             type: "reference",
             label: "User",
             required: true,
-            config: {
-              optionLabel: "fullname",
-            },
+            optionLabel: "fullname",
           },
         ],
       },
@@ -115,9 +113,7 @@ export const crmModel: IVersion<VersionType.MODEL> = {
             type: "reference",
             label: "User",
             required: true,
-            config: {
-              optionLabel: "fullname",
-            },
+            optionLabel: "fullname",
           },
           {
             id: "o4",
@@ -125,9 +121,7 @@ export const crmModel: IVersion<VersionType.MODEL> = {
             type: "reference",
             label: "Customer",
             required: true,
-            config: {
-              optionLabel: "fullname",
-            },
+            optionLabel: "fullname",
           },
           {
             id: "o5",

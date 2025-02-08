@@ -35,7 +35,7 @@ export default async function ProjectsPage() {
 
           {/* Mevcut Projeler */}
           {projects.map((project) => (
-            <Link key={project.id} href={`/xgo/projects/${project.id}`}>
+            <Link key={project.id} href={`/xgo/projects/${project.slug}`}>
               <Card className="h-[240px] hover:border-primary transition-all hover:shadow-md cursor-pointer">
                 <CardHeader className="space-y-2">
                   <div className="space-y-1">

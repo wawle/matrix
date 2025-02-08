@@ -7,6 +7,7 @@ import {
   createVersion,
   updateVersion,
   deleteVersion,
+  getVersionBySlug,
 } from "@/lib/services/version";
 import { cookies } from "next/headers";
 import { Node } from "reactflow";
@@ -30,6 +31,19 @@ export async function fetchVersion(id: string): Promise<{
 }> {
   try {
     const version = await getVersionById(id);
+    return { data: JSON.parse(JSON.stringify(version)), success: true };
+  } catch (error: any) {
+    return { error: error.message, success: false };
+  }
+}
+
+export async function fetchVersionBySlug(slug: string): Promise<{
+  data?: IVersion<VersionType>;
+  error?: string;
+  success: boolean;
+}> {
+  try {
+    const version = await getVersionBySlug(slug);
     return { data: JSON.parse(JSON.stringify(version)), success: true };
   } catch (error: any) {
     return { error: error.message, success: false };

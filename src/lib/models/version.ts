@@ -1,11 +1,10 @@
 import mongoose from "mongoose";
-import { Edge, IEdge } from "./edge";
-import { INode, Node } from "./node";
 import { IProject } from "./project";
-import { IModelConnectionType, IModelData } from "../types/xgo/models";
-import { IAgentConnectionType, IAgentData } from "../types/xgo/agents";
+import { IModelData, IModelEdgeData } from "../types/xgo/models";
+import { IAgentData, IAgentEdgeData } from "../types/xgo/agents";
 import { IPageData } from "../types/xgo/pages";
-
+import { Edge, Node } from "reactflow";
+import slugify from "slugify";
 export enum VersionType {
   MODEL = "model", // api
   AGENT = "agent", // agent
@@ -21,8 +20,8 @@ export type VersionNodeDataType = {
 };
 
 export type VersionEdgeDataType = {
-  [VersionType.MODEL]: IModelConnectionType;
-  [VersionType.AGENT]: IAgentConnectionType;
+  [VersionType.MODEL]: IModelEdgeData;
+  [VersionType.AGENT]: IAgentEdgeData;
   [VersionType.PAGE]: any;
   [VersionType.SCREEN]: any;
 };
@@ -34,14 +33,14 @@ export interface IVersion<T extends VersionType> {
   updatedAt?: Date;
   name: string;
   description?: string;
-  is_active: boolean;
   project?: IProject;
-  type: T;
-  nodes: INode<VersionNodeDataType[T]>[];
-  edges: IEdge<VersionEdgeDataType[T]>[];
+  type: VersionType;
+  slug: string;
+  nodes: Node<VersionNodeDataType[T]>[];
+  edges: Edge<VersionEdgeDataType[T]>[];
 }
 
-export const versionSchema = new mongoose.Schema<IVersion<any>>(
+export const versionSchema = new mongoose.Schema<IVersion<VersionType>>(
   {
     name: {
       type: String,
@@ -51,9 +50,10 @@ export const versionSchema = new mongoose.Schema<IVersion<any>>(
       type: String,
       required: false,
     },
-    is_active: {
-      type: Boolean,
+    slug: {
+      type: String,
       required: false,
+      default: "",
     },
     type: {
       type: String,
@@ -65,6 +65,12 @@ export const versionSchema = new mongoose.Schema<IVersion<any>>(
       ref: "Project",
       required: true,
     },
+    nodes: {
+      type: [{ type: mongoose.Schema.Types.Mixed }],
+    },
+    edges: {
+      type: [{ type: mongoose.Schema.Types.Mixed }],
+    },
   },
   {
     timestamps: true,
@@ -73,27 +79,17 @@ export const versionSchema = new mongoose.Schema<IVersion<any>>(
   }
 );
 
-versionSchema.virtual("nodes", {
-  ref: Node,
-  localField: "_id",
-  foreignField: "version",
+versionSchema.pre("save", function (next) {
+  this.slug = slugify(this.name, { lower: true });
+  next();
 });
 
-versionSchema.virtual("edges", {
-  ref: Edge,
-  localField: "_id",
-  foreignField: "version",
-});
-
-versionSchema.pre("findOneAndDelete", async function (next) {
-  const { _id } = this.getQuery();
-  await Promise.all([
-    Node.deleteMany({ version: _id }),
-    Edge.deleteMany({ version: _id }),
-  ]);
+versionSchema.pre("findOneAndUpdate", async function (next) {
+  const { name } = this.getQuery();
+  this.findOneAndUpdate({ name }, { slug: slugify(name, { lower: true }) });
   next();
 });
 
 export const Version =
-  mongoose.models.Version ||
-  mongoose.model<IVersion<any>>("Version", versionSchema);
+  mongoose.models?.Version ||
+  mongoose.model<IVersion<VersionType>>("Version", versionSchema);

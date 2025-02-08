@@ -1,7 +1,5 @@
 import { Version, IVersion, VersionType } from "@/lib/models/version";
 import connectDB from "@/lib/db";
-import { Edge } from "../models/edge";
-import { Node } from "../models/node";
 import { ErrorResponse } from "../middlewares/error";
 import { asyncFnService } from "../middlewares/async";
 
@@ -16,16 +14,18 @@ export const getVersions = asyncFnService(
 export const getVersionById = asyncFnService(
   async (id: string): Promise<IVersion<VersionType>> => {
     await connectDB();
-    const version = await Version.findById(id).populate([
-      {
-        path: "nodes",
-        model: Node,
-      },
-      {
-        path: "edges",
-        model: Edge,
-      },
-    ]);
+    const version = await Version.findById(id);
+    if (!version) {
+      throw new ErrorResponse("Version bulunamadı", 404);
+    }
+    return version;
+  }
+);
+
+export const getVersionBySlug = asyncFnService(
+  async (slug: string): Promise<IVersion<VersionType>> => {
+    await connectDB();
+    const version = await Version.findOne({ slug });
     if (!version) {
       throw new ErrorResponse("Version bulunamadı", 404);
     }

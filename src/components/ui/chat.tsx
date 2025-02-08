@@ -15,7 +15,7 @@ import {
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 import Image from "next/image";
-import { SessionNav } from "@/app/(root)/(user)/agents/[agentId]/sessions/[sessionId]/components/session-nav";
+import { SessionNav } from "@/app/(root)/(user)/agents/[agentSlug]/sessions/[sessionId]/components/session-nav";
 
 interface FileAttachment {
   id: string;

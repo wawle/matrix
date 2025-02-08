@@ -7,6 +7,7 @@ import {
   createProject,
   updateProject,
   deleteProject,
+  getProjectBySlug,
 } from "@/lib/services/project";
 import { IProject } from "../models/project";
 import { authSession } from "../dal";
@@ -30,6 +31,19 @@ export async function fetchProject(id: string): Promise<{
 }> {
   try {
     const project = await getProjectById(id);
+    return { data: JSON.parse(JSON.stringify(project)), success: true };
+  } catch (error: any) {
+    return { error: error.message, success: false };
+  }
+}
+
+export async function fetchProjectBySlug(slug: string): Promise<{
+  data?: IProject;
+  success: boolean;
+  error?: string;
+}> {
+  try {
+    const project = await getProjectBySlug(slug);
     return { data: JSON.parse(JSON.stringify(project)), success: true };
   } catch (error: any) {
     return { error: error.message, success: false };

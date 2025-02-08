@@ -1,6 +1,8 @@
 import mongoose from "mongoose";
 import { IUser } from "./user";
 import { IVersion, Version, VersionType } from "./version";
+import slugify from "slugify";
+import { ErrorResponse } from "../middlewares/error";
 
 export interface IProject {
   id: string;
@@ -10,6 +12,7 @@ export interface IProject {
   name: string;
   description: string;
   user: IUser;
+  slug: string;
   versions: IVersion<VersionType>[];
 }
 
@@ -28,6 +31,11 @@ export const projectSchema = new mongoose.Schema<IProject>(
       ref: "User",
       required: true,
     },
+    slug: {
+      type: String,
+      required: false,
+      default: "",
+    },
   },
   {
     timestamps: true,
@@ -35,6 +43,17 @@ export const projectSchema = new mongoose.Schema<IProject>(
     toObject: { virtuals: true },
   }
 );
+
+projectSchema.pre("save", function (next) {
+  this.slug = slugify(this.name, { lower: true });
+  next();
+});
+
+projectSchema.pre("findOneAndUpdate", async function (next) {
+  const { name } = this.getQuery();
+  this.findOneAndUpdate({ name }, { slug: slugify(name, { lower: true }) });
+  next();
+});
 
 projectSchema.virtual("versions", {
   ref: Version,

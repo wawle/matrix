@@ -8,6 +8,7 @@ import {
   updateAgent,
   deleteAgent,
   executeAgent,
+  getAgentBySlug,
 } from "@/lib/services/agent";
 import { IAgent } from "../models/agent";
 import { authSession } from "../dal";
@@ -41,6 +42,19 @@ export async function fetchAgent(id: string): Promise<{
 }> {
   try {
     const agent = await getAgentById(id);
+    return { data: JSON.parse(JSON.stringify(agent)), success: true };
+  } catch (error: any) {
+    return { error: error.message, success: false };
+  }
+}
+
+export async function fetchAgentBySlug(slug: string): Promise<{
+  data?: IAgent;
+  error?: string;
+  success: boolean;
+}> {
+  try {
+    const agent = await getAgentBySlug(slug);
     return { data: JSON.parse(JSON.stringify(agent)), success: true };
   } catch (error: any) {
     return { error: error.message, success: false };

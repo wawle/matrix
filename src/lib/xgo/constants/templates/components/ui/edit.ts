@@ -40,7 +40,7 @@ export const edit = {
       options: ${
         field.type === "reference"
           ? `${field.name}s.data.map((item) => ({ label: item.${
-              field.config?.optionLabel || "name"
+              field?.optionLabel || "name"
             }, value: item.id }))`
           : "[]"
       } }`;

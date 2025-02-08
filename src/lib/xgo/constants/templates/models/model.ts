@@ -10,35 +10,50 @@ export const model = {
     );
     const fields = model.data.schemas
       .map((field: any) => {
-        if (field.type === "reference") {
-          return `  
-        ${field.name}: {
+        let schema = ` ${field.name}: {`;
+
+        switch (field.type) {
+          case "reference":
+            schema += `  
           type: mongoose.Schema.Types.ObjectId,
-          ref: "${field.name.charAt(0).toUpperCase() + field.name.slice(1)}",
+          ref: "${field.ref}"`;
+          case "array":
+            schema += `  
+          type: [${field.type.charAt(0).toUpperCase() + field.type.slice(1)}],`;
+          case "object":
+            schema += `  
+          type: ${field.type.charAt(0).toUpperCase() + field.type.slice(1)},`;
+          case "date":
+            schema += `  
+          type: Date,`;
+          case "number":
+            schema += `  
+          type: Number,`;
+          case "boolean":
+            schema += `  
+          type: Boolean,`;
+          case "string":
+            schema += `  
+          type: String,`;
+          case "any":
+            schema += `  
+          type: mongoose.Schema.Types.Mixed,`;
+          default:
+            schema += `  
+          default: "${field.default}",
           required: ${field.required || "false"},
           unique: ${field.unique || "false"},
-          default: "${field.default}",
           match: ${field.match || "null"},
           min: ${field.min || "null"},
           max: ${field.max || "null"},
           minLength: ${field.minLength || "null"},
           maxLength: ${field.maxLength || "null"},
           enum: ${field.enum || "null"},
-        }`;
-        } else {
-          return `  
-        ${field.name}: {
-          type: ${field.type.charAt(0).toUpperCase() + field.type.slice(1)},
-          default: "${field.default}",
-          required: ${field.required || "false"},
-          unique: ${field.unique || "false"},
-          match: ${field.match || "null"},
-          min: ${field.min || "null"},
-          max: ${field.max || "null"},
-          minLength: ${field.minLength || "null"},
-          maxLength: ${field.maxLength || "null"},
-          enum: ${field.enum || "null"},
-        }`;
+          select: ${field.select || "false"},
+          index: ${field.index || "null"},
+          trim: ${field.trim || "false"},
+          regex: ${field.regex || "null"},
+          }`;
         }
       })
       .join(",\n");

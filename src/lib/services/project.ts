@@ -1,8 +1,6 @@
 import { Project, IProject } from "@/lib/models/project";
 import connectDB from "@/lib/db";
 import { Version } from "../models/version";
-import { Node } from "../models/node";
-import { Edge } from "../models/edge";
 import { asyncFnService } from "../middlewares/async";
 import { ErrorResponse } from "../middlewares/error";
 
@@ -25,20 +23,19 @@ export const getProjectById = asyncFnService(
       {
         path: "versions",
         model: Version,
-        populate: [
-          {
-            path: "nodes",
-            model: Node,
-            select: "position data type",
-          },
-          {
-            path: "edges",
-            model: Edge,
-            select: "source target data label animated",
-          },
-        ],
       },
     ]);
+    if (!project) {
+      throw new ErrorResponse("Project bulunamadı", 404);
+    }
+    return project;
+  }
+);
+
+export const getProjectBySlug = asyncFnService(
+  async (slug: string): Promise<IProject> => {
+    await connectDB();
+    const project = await Project.findOne({ slug });
     if (!project) {
       throw new ErrorResponse("Project bulunamadı", 404);
     }

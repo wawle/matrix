@@ -20,7 +20,10 @@ export interface ISchema {
   max?: number;
   trim?: boolean;
   regex?: string;
-  config?: ISchemaConfig;
+  select?: boolean;
+  index?: "2dsphere" | "2d" | "geoHaystack" | "text" | "hashed" | "2dsphere";
+  ref?: string;
+  optionLabel?: string;
 }
 
 // for schema middlewares
@@ -59,6 +62,6 @@ export type IModelConnectionType =
   | "manyToOne"
   | "manyToMany";
 
-export type IModelConnectionData = {
+export type IModelEdgeData = {
   type: IModelConnectionType;
 };

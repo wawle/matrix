@@ -6,6 +6,7 @@ import OpenAI from "openai";
 import { Chat, IChat } from "./chat";
 import { ErrorResponse } from "../middlewares/error";
 import { IProject } from "./project";
+import slugify from "slugify";
 
 export interface IAgent {
   id: string;
@@ -24,8 +25,8 @@ export interface IAgent {
   is_public: boolean;
   photo: string;
   key: IKey;
-  project: IProject;
-
+  project?: IProject;
+  slug: string;
   children: IFamily[];
   sessions: ISession[];
   getKey(): Promise<string>;
@@ -105,6 +106,11 @@ export const agentSchema = new mongoose.Schema<IAgent>(
       type: String,
       required: false,
     },
+    slug: {
+      type: String,
+      required: false,
+      default: "",
+    },
     key: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Key",
@@ -113,7 +119,7 @@ export const agentSchema = new mongoose.Schema<IAgent>(
     project: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Project",
-      required: true,
+      required: false,
     },
   },
   {
@@ -122,6 +128,17 @@ export const agentSchema = new mongoose.Schema<IAgent>(
     toObject: { virtuals: true },
   }
 );
+
+agentSchema.pre("save", function (next) {
+  this.slug = slugify(this.name, { lower: true });
+  next();
+});
+
+agentSchema.pre("findOneAndUpdate", async function (next) {
+  const { name } = this.getQuery();
+  this.findOneAndUpdate({ name }, { slug: slugify(name, { lower: true }) });
+  next();
+});
 
 agentSchema.methods.getKey = async function (): Promise<string> {
   const agent = this as IAgent;
