@@ -25,7 +25,7 @@ export const AgentList = async () => {
       }
     >
       <DataTable
-        data={data}
+        data={data.data}
         onDelete={deleteAgentAction}
         defaultColumnVisibility={{
           instructions: true,

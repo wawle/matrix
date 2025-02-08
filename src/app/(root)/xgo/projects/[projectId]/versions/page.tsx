@@ -21,16 +21,16 @@ import Link from "next/link";
 import React from "react";
 
 interface Props {
-  searchParams: {
+  searchParams: Promise<{
     type: string;
-  };
+  }>;
   params: Promise<{
     projectId: string;
   }>;
 }
 
-const VersionsPage = async ({ params, searchParams }: Props) => {
-  const { projectId } = await params;
+const VersionsPage = async (props: Props) => {
+  const { projectId } = await props.params;
   const { data: project } = await fetchProject(projectId);
   const versions = project?.versions;
   return (

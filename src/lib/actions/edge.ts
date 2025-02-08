@@ -9,6 +9,7 @@ import {
   deleteEdge,
 } from "@/lib/services/edge";
 import { IEdge } from "../models/edge";
+import { VersionType } from "../models/version";
 
 export async function fetchEdges() {
   try {
@@ -21,7 +22,7 @@ export async function fetchEdges() {
 
 export async function fetchEdge(
   id: string
-): Promise<{ data?: IEdge; error?: any; success: boolean }> {
+): Promise<{ data?: IEdge<VersionType>; error?: any; success: boolean }> {
   try {
     const edge = await getEdgeById(id);
     return { data: JSON.parse(JSON.stringify(edge)), success: true };

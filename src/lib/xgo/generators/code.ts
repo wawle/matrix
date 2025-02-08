@@ -4,7 +4,7 @@ import { generatePageStructure } from "./page";
 import templates from "../constants/templates";
 import { unlink } from "fs";
 import { templateBuilder } from "../constants/projects";
-import { IVersion } from "@/lib/models/version";
+import { IVersion, VersionType } from "@/lib/models/version";
 
 export interface GeneratedCode {
   path: string;
@@ -13,7 +13,7 @@ export interface GeneratedCode {
 
 export async function generateCode(
   projectName: string,
-  version: IVersion,
+  version: IVersion<VersionType.MODEL>,
   outputPath: string
 ) {
   try {

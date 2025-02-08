@@ -1,11 +1,11 @@
-import { IField } from "@/lib/models/field";
+import { ISchema } from "@/lib/types/xgo/models";
 
 export const edit = {
   template: (name: string, props: Record<string, any>): string => {
     const className = props.className || "";
     const modelName = props.modelName;
     const routeName = modelName.toLowerCase();
-    const fields = props.fields as IField[];
+    const fields = props.fields as ISchema[];
     const title = props.title || `${modelName} Düzenle`;
     const description =
       props.description || `${modelName} bilgilerini düzenleyebilirsiniz.`;
@@ -40,7 +40,7 @@ export const edit = {
       options: ${
         field.type === "reference"
           ? `${field.name}s.data.map((item) => ({ label: item.${
-              field.validations?.optionLabel || "name"
+              field.config?.optionLabel || "name"
             }, value: item.id }))`
           : "[]"
       } }`;

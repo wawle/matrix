@@ -1,11 +1,11 @@
 import { dirname, join } from "path";
 import { mkdir, writeFile } from "fs/promises";
-import { ComponentNode, PageNode } from "@/lib/types/xgo";
+import { IComponentData, IPageData } from "@/lib/types/xgo/pages";
 import templates from "../constants/templates";
 
 // Recursive olarak child component'leri oluşturan yardımcı fonksiyon
 async function generateChildComponents(
-  child: any,
+  child: IComponentData,
   currentPath: string = ""
 ): Promise<{ imports: string; usage: string }> {
   let imports = "";
@@ -41,7 +41,7 @@ async function generateChildComponents(
 // Component içeriğini oluşturan ana fonksiyon
 export async function generateComponentContent(
   filePath: string,
-  comp: ComponentNode
+  comp: IComponentData
 ): Promise<string> {
   const [templateName, templateType] = comp.template.split(".");
   const templateDef = (templates.components as any)[templateName][templateType];
@@ -73,7 +73,7 @@ export async function generateComponentContent(
 
 export async function generateComponentFile(
   filePath: string,
-  comp: ComponentNode
+  comp: IComponentData
 ) {
   // Önce child component'i oluştur
   const componentContent = await generateComponentContent(filePath, comp);
@@ -87,14 +87,14 @@ export async function generateComponentFile(
 
 export async function generateComponent(
   filePath: string,
-  props: { children: PageNode[] }
+  props: { children: IPageData[] }
 ) {
   let componentImports = "";
   let componentUsage = "";
   const components = props.children;
   for (const comp of components) {
     if (comp.template) {
-      await generateComponentFile(filePath, comp as ComponentNode);
+      await generateComponentFile(filePath, comp as IComponentData);
 
       // Import ve kullanım kodlarını ekle
       componentImports += `import { ${comp.name} } from './components/${comp.name}';\n`;

@@ -1,16 +1,16 @@
-import { IVersion } from "@/lib/models/version";
+import { IVersion, VersionType } from "@/lib/models/version";
 
-export const investTrackerModel: IVersion = {
+export const investTrackerModel: IVersion<VersionType.MODEL> = {
   id: "investTracker",
   name: "Invest Tracker",
   description: "Invest Tracker",
   is_active: false,
-  type: "model",
+  type: VersionType.MODEL,
   nodes: [
     {
       id: "investment",
       position: { x: 100, y: 100 },
-      type: "model",
+      type: VersionType.MODEL,
       data: {
         name: "Investment",
         description: "Investment",
@@ -27,7 +27,7 @@ export const investTrackerModel: IVersion = {
     {
       id: "category",
       position: { x: 500, y: 100 },
-      type: "model",
+      type: VersionType.MODEL,
       data: {
         name: "Category",
         description: "Category",
@@ -41,7 +41,7 @@ export const investTrackerModel: IVersion = {
     {
       id: "user",
       position: { x: 100, y: 400 },
-      type: "model",
+      type: VersionType.MODEL,
       data: {
         name: "User",
         description: "User",
@@ -62,7 +62,8 @@ export const investTrackerModel: IVersion = {
       target: "category",
       animated: true,
       label: "N:1",
-      data: { relationType: "oneToMany" },
+      type: VersionType.MODEL,
+      data: { type: "oneToMany" },
     },
     {
       id: "e2",
@@ -70,7 +71,8 @@ export const investTrackerModel: IVersion = {
       target: "investment",
       animated: true,
       label: "N:1",
-      data: { relationType: "oneToMany" },
+      type: VersionType.MODEL,
+      data: { type: "oneToMany" },
     },
   ],
 };

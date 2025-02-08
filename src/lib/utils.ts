@@ -2,8 +2,6 @@ import { type ClassValue, clsx } from "clsx";
 import { twMerge } from "tailwind-merge";
 import { Schema } from "mongoose";
 import { z } from "zod";
-import { IVersion } from "./models/version";
-import { IField } from "./models/field";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -53,36 +51,3 @@ export const convertMongooseSchemaToZod = (mongooseSchema: Schema) => {
 
   return z.object(zodShape);
 };
-
-export function convertTemplateToVersion(
-  template: IVersion,
-  versionId: string
-): {
-  models: {
-    name: string;
-    description: string;
-    fields: {
-      name: string;
-      type: string;
-      label: string;
-      validations: any;
-    }[];
-  }[];
-  nodes: any[];
-  edges: any[];
-} {
-  return {
-    models: template.nodes.map((node) => ({
-      name: node.data.name,
-      description: node.data.description,
-      fields: node.data.fields.map((field: IField) => ({
-        name: field.name,
-        type: field.type,
-        label: field.label,
-        validations: field?.validations || {},
-      })),
-    })),
-    nodes: template.nodes,
-    edges: template.edges,
-  };
-}

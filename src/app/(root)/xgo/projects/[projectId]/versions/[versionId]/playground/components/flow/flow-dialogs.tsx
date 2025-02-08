@@ -21,7 +21,9 @@ import {
 import { IAgent } from "@/lib/models/agent";
 import { Maximize2, Minimize2 } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { IAgentConnectionType, IAgentNode } from "@/lib/types/xgo/agents";
+import { IAgentConnectionType } from "@/lib/types/xgo/agents";
+import { INode } from "@/lib/models/node";
+import { VersionType } from "@/lib/models/version";
 
 interface FlowDialogsProps {
   isDialogOpen: boolean;
@@ -39,7 +41,7 @@ interface FlowDialogsProps {
   setPromptText: (value: string) => void;
   setIsDialogOpen: (value: boolean) => void;
   setIsAIPromptDialogOpen: (value: boolean) => void;
-  setNewAgent: React.Dispatch<React.SetStateAction<IAgentNode>>;
+  setNewAgent: React.Dispatch<React.SetStateAction<INode<VersionType.AGENT>>>;
   onAddNewAgent: () => void;
   setIsConnectionDialogOpen: (value: boolean) => void;
   setConnectionType: (value: IAgentConnectionType) => void;
@@ -97,7 +99,7 @@ export const FlowDialogs = ({
               <Input
                 value={newAgent.name}
                 onChange={(e) =>
-                  setNewAgent((prevAgent: IAgentNode) => ({
+                  setNewAgent((prevAgent: INode<VersionType.AGENT>) => ({
                     ...prevAgent,
                     data: { ...prevAgent.data, name: e.target.value },
                   }))
@@ -109,7 +111,7 @@ export const FlowDialogs = ({
               <Input
                 value={newAgent.title}
                 onChange={(e) =>
-                  setNewAgent((prevAgent: IAgentNode) => ({
+                  setNewAgent((prevAgent: INode<VersionType.AGENT>) => ({
                     ...prevAgent,
                     data: { ...prevAgent.data, title: e.target.value },
                   }))
@@ -121,7 +123,7 @@ export const FlowDialogs = ({
               <Textarea
                 value={newAgent.instructions}
                 onChange={(e) =>
-                  setNewAgent((prevAgent: IAgentNode) => ({
+                  setNewAgent((prevAgent: INode<VersionType.AGENT>) => ({
                     ...prevAgent,
                     data: { ...prevAgent.data, instructions: e.target.value },
                   }))
@@ -134,7 +136,7 @@ export const FlowDialogs = ({
               <Select
                 value={newAgent.model_provider}
                 onValueChange={(value) =>
-                  setNewAgent((prevAgent: IAgentNode) => ({
+                  setNewAgent((prevAgent: INode<VersionType.AGENT>) => ({
                     ...prevAgent,
                     data: { ...prevAgent.data, model_provider: value },
                   }))
@@ -154,7 +156,7 @@ export const FlowDialogs = ({
               <Select
                 value={newAgent.model_name}
                 onValueChange={(value) =>
-                  setNewAgent((prevAgent: IAgentNode) => ({
+                  setNewAgent((prevAgent: INode<VersionType.AGENT>) => ({
                     ...prevAgent,
                     data: { ...prevAgent.data, model_name: value },
                   }))

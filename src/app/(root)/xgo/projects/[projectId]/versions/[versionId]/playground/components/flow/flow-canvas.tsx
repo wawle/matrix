@@ -10,6 +10,7 @@ import ReactFlow, {
   OnConnect,
   Panel,
   useReactFlow,
+  OnSelectionChangeFunc,
 } from "reactflow";
 import { Button } from "@/components/ui/button";
 
@@ -17,12 +18,12 @@ interface FlowCanvasProps {
   nodes: Node[];
   edges: Edge[];
   isFullscreen: boolean;
+  nodeTypes: NodeTypes;
   onNodesChange: OnNodesChange;
   onEdgesChange: OnEdgesChange;
   onConnect: OnConnect;
-  onSelectionChange: any;
+  onSelectionChange?: OnSelectionChangeFunc;
   onEdgeDelete: (edgeId: string) => void;
-  nodeTypes: NodeTypes;
 }
 
 export const FlowCanvas = ({

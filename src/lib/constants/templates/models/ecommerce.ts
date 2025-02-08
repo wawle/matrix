@@ -1,17 +1,17 @@
-import { IVersion } from "@/lib/models/version";
+import { IVersion, VersionType } from "@/lib/models/version";
 
 // E-Ticaret Şablonu
-export const eCommerceModel: IVersion = {
+export const eCommerceModel: IVersion<VersionType.MODEL> = {
   id: "e-commerce",
   name: "E-Ticaret",
   description: "E-ticaret sistemi için temel veritabanı şemaları",
   is_active: true,
-  type: "model",
+  type: VersionType.MODEL,
   nodes: [
     {
       id: "product",
       position: { x: 100, y: 100 },
-      type: "model",
+      type: VersionType.MODEL,
       data: {
         name: "Product",
         description: "Ürün bilgilerini içeren şema",
@@ -30,7 +30,7 @@ export const eCommerceModel: IVersion = {
     {
       id: "category",
       position: { x: 500, y: 100 },
-      type: "model",
+      type: VersionType.MODEL,
       data: {
         name: "Category",
         description: "Ürün kategorilerini içeren şema",
@@ -51,7 +51,7 @@ export const eCommerceModel: IVersion = {
     {
       id: "customer",
       position: { x: 100, y: 400 },
-      type: "model",
+      type: VersionType.MODEL,
       data: {
         name: "Customer",
         description: "Müşteri bilgilerini içeren şema",
@@ -84,7 +84,7 @@ export const eCommerceModel: IVersion = {
     {
       id: "order",
       position: { x: 500, y: 400 },
-      type: "model",
+      type: VersionType.MODEL,
       data: {
         name: "Order",
         description: "Sipariş bilgilerini içeren şema",
@@ -134,28 +134,28 @@ export const eCommerceModel: IVersion = {
       id: "e1",
       source: "product",
       target: "category",
-
+      type: VersionType.MODEL,
       animated: true,
       label: "N:1",
-      data: { relationType: "oneToMany" },
+      data: { type: "oneToMany" },
     },
     {
       id: "e2",
       source: "order",
       target: "customer",
-
+      type: VersionType.MODEL,
       animated: true,
       label: "N:1",
-      data: { relationType: "oneToMany" },
+      data: { type: "oneToMany" },
     },
     {
       id: "e3",
       source: "order",
       target: "product",
-
+      type: VersionType.MODEL,
       animated: true,
       label: "N:N",
-      data: { relationType: "manyToMany" },
+      data: { type: "manyToMany" },
     },
   ],
 };

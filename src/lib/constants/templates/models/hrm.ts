@@ -1,17 +1,17 @@
-import { IVersion } from "@/lib/models/version";
+import { IVersion, VersionType } from "@/lib/models/version";
 
 // İK Şablonu
-export const hrmModel: IVersion = {
+export const hrmModel: IVersion<VersionType.MODEL> = {
   id: "hrm",
   name: "İK",
   description: "İnsan kaynakları yönetimi için temel veritabanı şemaları",
   is_active: false,
-  type: "model",
+  type: VersionType.MODEL,
   nodes: [
     {
       id: "employee",
       position: { x: 100, y: 100 },
-      type: "model",
+      type: VersionType.MODEL,
       data: {
         name: "Employee",
         description: "Çalışan bilgilerini içeren şema",
@@ -30,7 +30,7 @@ export const hrmModel: IVersion = {
     {
       id: "department",
       position: { x: 500, y: 100 },
-      type: "model",
+      type: VersionType.MODEL,
       data: {
         name: "Department",
         description: "Departman bilgilerini içeren şema",
@@ -45,7 +45,7 @@ export const hrmModel: IVersion = {
     {
       id: "position",
       position: { x: 100, y: 400 },
-      type: "model",
+      type: VersionType.MODEL,
       data: {
         name: "Position",
         description: "Pozisyon bilgilerini içeren şema",
@@ -60,7 +60,7 @@ export const hrmModel: IVersion = {
     {
       id: "leave",
       position: { x: 500, y: 400 },
-      type: "model",
+      type: VersionType.MODEL,
       data: {
         name: "Leave",
         description: "İzin kayıtlarını içeren şema",
@@ -81,37 +81,37 @@ export const hrmModel: IVersion = {
       id: "e1",
       source: "employee",
       target: "department",
-
+      type: VersionType.MODEL,
       animated: true,
       label: "N:1",
-      data: { relationType: "oneToMany" },
+      data: { type: "oneToMany" },
     },
     {
       id: "e2",
       source: "employee",
       target: "position",
-
+      type: VersionType.MODEL,
       animated: true,
       label: "N:1",
-      data: { relationType: "oneToMany" },
+      data: { type: "oneToMany" },
     },
     {
       id: "e3",
       source: "position",
       target: "department",
-
+      type: VersionType.MODEL,
       animated: true,
       label: "N:1",
-      data: { relationType: "oneToMany" },
+      data: { type: "oneToMany" },
     },
     {
       id: "e4",
       source: "leave",
       target: "employee",
-
+      type: VersionType.MODEL,
       animated: true,
       label: "N:1",
-      data: { relationType: "oneToMany" },
+      data: { type: "oneToMany" },
     },
   ],
 };

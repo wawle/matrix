@@ -5,8 +5,13 @@ export const asyncHandler =
   (fn: any) => (req: NextRequest, res: NextResponse, next: any) =>
     Promise.resolve(fn(req, res, next)).catch(errorHandler);
 
-export const asyncFn = (fn: any) => async (req: NextRequest, props: any) =>
-  Promise.resolve(fn(req, props)).catch(errorHandler);
+export const asyncFn = (fn: any) => async (req: NextRequest) => {
+  try {
+    return await fn(req);
+  } catch (error: any) {
+    return errorHandler(error);
+  }
+};
 
 export const asyncFnService =
   <T>(fn: (...props: any) => Promise<T>) =>

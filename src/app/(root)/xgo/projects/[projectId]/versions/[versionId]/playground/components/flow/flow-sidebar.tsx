@@ -1,5 +1,4 @@
 import React from "react";
-import { Node } from "reactflow";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -12,9 +11,11 @@ import {
   SheetTitle,
 } from "@/components/ui/sheet";
 import { IAgent } from "@/lib/models/agent";
+import { INode } from "@/lib/models/node";
+import { VersionType } from "@/lib/models/version";
 
 interface FlowSidebarProps {
-  selectedNode: Node | null;
+  selectedNode: INode<VersionType.AGENT> | null;
   isEditingAgent: boolean;
   setIsEditingAgent: (value: boolean) => void;
   onUpdateAgent: (updates: Partial<IAgent>) => void;

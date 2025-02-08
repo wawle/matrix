@@ -4,7 +4,7 @@ import { join } from "path";
 import { generateComponent } from "./component";
 import { access, constants } from "fs/promises";
 import templates from "../constants/templates";
-import { PageNode } from "@/lib/types/xgo";
+import { IPageData } from "@/lib/types/xgo/pages";
 
 // Dizinin var olup olmadığını kontrol eden yardımcı fonksiyon
 export async function directoryExists(path: string): Promise<boolean> {
@@ -27,7 +27,7 @@ export async function fileExists(path: string): Promise<boolean> {
 }
 
 export async function generatePageStructure(
-  nodes: PageNode[],
+  nodes: IPageData[],
   basePath: string,
   currentPath: string = ""
 ): Promise<void> {

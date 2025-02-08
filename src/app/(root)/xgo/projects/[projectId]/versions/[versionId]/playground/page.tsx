@@ -4,6 +4,7 @@ import { fetchProject } from "@/lib/actions/project";
 import { templates } from "@/lib/constants/templates";
 import { notFound } from "next/navigation";
 import { getAutoSaveState } from "@/lib/actions/version";
+import { IVersion, VersionType } from "@/lib/models/version";
 
 interface Props {
   params: Promise<{
@@ -23,26 +24,26 @@ const VersionPlaygroundPage = async ({ params }: Props) => {
   const defaultAutoSave = await getAutoSaveState();
 
   switch (type) {
-    case "model":
+    case VersionType.MODEL:
       const modelVersions =
         project?.versions.filter((v) => v.type === type) || [];
       const defaultModelVersion =
         version || modelVersions[0] || templates.models[0];
       return (
         <SchemaPlayground
-          versions={modelVersions}
-          defaultVersion={defaultModelVersion}
+          versions={modelVersions as IVersion<VersionType.MODEL>[]}
+          defaultVersion={defaultModelVersion as IVersion<VersionType.MODEL>}
           project={project}
           defaultAutoSave={defaultAutoSave}
         />
       );
-    case "agent":
+    case VersionType.AGENT:
       const versions = project?.versions.filter((v) => v.type === type) || [];
       const defaultVersion = version || versions[0] || templates.flows[0];
       return (
         <FlowPlayground
-          versions={versions}
-          defaultVersion={defaultVersion}
+          versions={versions as IVersion<VersionType.AGENT>[]}
+          defaultVersion={defaultVersion as IVersion<VersionType.AGENT>}
           project={project}
           defaultAutoSave={defaultAutoSave}
         />

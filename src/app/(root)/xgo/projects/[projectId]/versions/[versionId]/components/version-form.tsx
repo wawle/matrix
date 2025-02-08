@@ -29,13 +29,19 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
+import { VersionType } from "@/lib/models/version";
 
 const formSchema = z.object({
   name: z.string().min(3, {
     message: "Proje adı en az 3 karakter olmalıdır.",
   }),
   description: z.string().optional(),
-  type: z.enum(["model", "agent", "page", "screen"]),
+  type: z.enum([
+    VersionType.MODEL,
+    VersionType.AGENT,
+    VersionType.PAGE,
+    VersionType.SCREEN,
+  ]),
   is_active: z.boolean(),
   project: z.string(),
 });
@@ -104,7 +110,7 @@ export function VersionForm({ defaultValues, versionId }: VersionFormProps) {
             <FormItem>
               <FormLabel>Type</FormLabel>
               <FormControl>
-                <Select {...field}>
+                <Select {...field} onValueChange={field.onChange}>
                   <SelectTrigger>
                     <SelectValue placeholder="Select a type" />
                   </SelectTrigger>

@@ -5,7 +5,6 @@ import { Node } from "../models/node";
 import { Edge } from "../models/edge";
 import { asyncFnService } from "../middlewares/async";
 import { ErrorResponse } from "../middlewares/error";
-import { Model } from "../models/model";
 
 export const getProjects = asyncFnService(async (): Promise<IProject[]> => {
   await connectDB();
@@ -38,10 +37,6 @@ export const getProjectById = asyncFnService(
             select: "source target data label animated",
           },
         ],
-      },
-      {
-        path: "models",
-        model: Model,
       },
     ]);
     if (!project) {

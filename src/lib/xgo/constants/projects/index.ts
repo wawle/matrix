@@ -1,20 +1,31 @@
-import { IPageNode } from "@/lib/types/xgo/pages";
 import { INode } from "@/lib/models/node";
+import { VersionType } from "@/lib/models/version";
+import { IModelData } from "@/lib/types/xgo/models";
+import { IPageData } from "@/lib/types/xgo/pages";
+import { Node } from "reactflow";
 
 export const templateBuilder = {
   initiate: (
     template: "crm",
-    props: { projectName: string; version: string; models: INode[] }
+    props: {
+      projectName: string;
+      version: string;
+      models: INode<VersionType.MODEL>[];
+    }
   ) => {
     const { projectName, version, models } = props;
 
     return templateBuilder[template]({ projectName, version, models });
   },
-  crm: (props: { projectName: string; version: string; models: INode[] }) => {
+  crm: (props: {
+    projectName: string;
+    version: string;
+    models: Node<IModelData>[];
+  }) => {
     const { projectName, version, models } = props;
     // Model-specific sayfaları oluştur
-    const modelPages: IPageNode[] = models.map((model) => {
-      const routeName = model.name.toLowerCase();
+    const modelPages: IPageData[] = models.map((model) => {
+      const routeName = model.data.name.toLowerCase();
       return {
         name: `${routeName}s`,
         children: [
@@ -36,11 +47,11 @@ export const templateBuilder = {
             props: {
               children: [
                 {
-                  name: `${model.name}List`,
+                  name: `${model.data.name}List`,
                   template: "ui.list",
                   props: {
-                    modelName: model.name,
-                    defaultColumnVisibility: model.schemas
+                    modelName: model.data.name,
+                    defaultColumnVisibility: model.data.schemas
                       .filter(
                         (field) =>
                           field.name !== "id" &&
@@ -77,14 +88,14 @@ export const templateBuilder = {
                 props: {
                   children: [
                     {
-                      name: `${model.name}Edit`,
+                      name: `${model.data.name}Edit`,
                       template: "ui.edit",
                       props: {
                         dynamics: {
                           [`${routeName}Id`]: `params.${routeName}Id`,
                         },
-                        modelName: model.name,
-                        fields: model.schemas,
+                        modelName: model.data.name,
+                        fields: model.data.schemas,
                       },
                     },
                   ],
@@ -96,7 +107,7 @@ export const templateBuilder = {
       };
     });
 
-    const adminDashboardPages: IPageNode[] = [
+    const adminDashboardPages: IPageData[] = [
       {
         name: "(root)",
         children: [

@@ -1,26 +1,15 @@
 "use client";
 
 import React, { useState } from "react";
-import { Handle, Position, NodeProps } from "reactflow";
+import { Handle, Position, NodeProps, Node } from "reactflow";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { ChevronDown, ChevronUp } from "lucide-react";
 import { Resizable } from "re-resizable";
-import { IField } from "@/lib/models/field";
 import { SchemaNodeMenu } from "./schema-node-menu";
-
-interface SchemaNodeData {
-  name: string;
-  description?: string;
-  isActive: boolean;
-  fields: IField[];
-  width?: number;
-  height?: number;
-  onWidthChange?: (width: number) => void;
-  onHeightChange?: (height: number) => void;
-}
+import { IModelData } from "@/lib/types/xgo/models";
 
 // Field type'ları için renk ve etiket tanımlamaları
 const fieldTypeBadgeVariants: Record<
@@ -40,9 +29,9 @@ const fieldTypeBadgeVariants: Record<
 };
 
 export const SchemaNode = React.memo(
-  ({ data, selected }: NodeProps<SchemaNodeData>) => {
+  ({ data: node, selected }: NodeProps<Node<IModelData>>) => {
     const [isExpanded, setIsExpanded] = useState(true);
-    const [width, setWidth] = useState(data.width || 300);
+    const [width, setWidth] = useState(node.width || 300);
     const [height, setHeight] = useState<string | number>("auto");
     const [minHeight, setMinHeight] = useState(100);
     const cardRef = React.useRef<HTMLDivElement>(null);
@@ -69,7 +58,7 @@ export const SchemaNode = React.memo(
           }
         };
       }
-    }, [isExpanded, data.fields]);
+    }, [isExpanded, node.data.schemas]);
 
     const handleResizeStop = (
       e: MouseEvent | TouchEvent,
@@ -83,11 +72,11 @@ export const SchemaNode = React.memo(
       setWidth(newWidth);
       setHeight(newHeight);
 
-      if (data.onWidthChange) {
-        data.onWidthChange(newWidth);
+      if (node.data.onWidthChange) {
+        node.data.onWidthChange(newWidth);
       }
-      if (data.onHeightChange) {
-        data.onHeightChange(newHeight);
+      if (node.data.onHeightChange) {
+        node.data.onHeightChange(newHeight);
       }
     };
 
@@ -136,42 +125,35 @@ export const SchemaNode = React.memo(
                         <ChevronDown className="h-4 w-4" />
                       )}
                     </Button>
-                    <CardTitle className="text-lg">{data.name}</CardTitle>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    {data.isActive && (
-                      <Badge variant="outline" className="bg-primary/10">
-                        Aktif
-                      </Badge>
-                    )}
+                    <CardTitle className="text-lg">{node.data.name}</CardTitle>
                   </div>
                 </div>
               </CardHeader>
               {isExpanded && (
                 <CardContent className="p-4 pt-0">
                   <div className="space-y-4">
-                    {data.fields.map((field, index) => (
-                      <React.Fragment key={field.id}>
+                    {node.data.schemas.map((schema, index) => (
+                      <React.Fragment key={schema.id}>
                         {index > 0 && <Separator className="my-2" />}
                         <div className="flex flex-col gap-2">
                           <div className="flex items-center justify-between">
                             <span className="font-medium text-base">
-                              {field.name}
+                              {schema.name}
                             </span>
                           </div>
 
                           <div className="flex items-center gap-2 flex-wrap">
                             <Badge
                               variant={
-                                fieldTypeBadgeVariants[field.type]?.variant ||
+                                fieldTypeBadgeVariants[schema.type]?.variant ||
                                 "default"
                               }
                             >
-                              {fieldTypeBadgeVariants[field.type]?.label ||
-                                field.type}
+                              {fieldTypeBadgeVariants[schema.type]?.label ||
+                                schema.type}
                             </Badge>
 
-                            {field.validations?.required ? (
+                            {schema?.required ? (
                               <Badge className="h-5">Zorunlu</Badge>
                             ) : (
                               <Badge variant="secondary" className="h-5">
@@ -179,34 +161,31 @@ export const SchemaNode = React.memo(
                               </Badge>
                             )}
 
-                            {field.type === "reference" && field.label && (
+                            {schema.type === "reference" && schema.label && (
                               <Badge variant="outline" className="h-5">
-                                {field.label}
+                                {schema.label}
                               </Badge>
                             )}
 
-                            {Boolean(
-                              field.validations?.default?.toString()
-                            ) && (
+                            {Boolean(schema?.default?.toString()) && (
                               <Badge variant="outline" className="h-5">
-                                Varsayılan:{" "}
-                                {field.validations?.default.toString()}
+                                Varsayılan: {schema?.default.toString()}
                               </Badge>
                             )}
 
-                            {field.validations?.regex && (
+                            {schema?.regex && (
                               <Badge variant="outline" className="h-5">
-                                Pattern: {field.validations?.regex}
+                                Pattern: {schema?.regex}
                               </Badge>
                             )}
-                            {field.validations?.min !== undefined && (
+                            {schema?.min !== undefined && (
                               <Badge variant="outline" className="h-5">
-                                Min: {field.validations?.min}
+                                Min: {schema?.min}
                               </Badge>
                             )}
-                            {field.validations?.max !== undefined && (
+                            {schema?.max !== undefined && (
                               <Badge variant="outline" className="h-5">
-                                Max: {field.validations?.max}
+                                Max: {schema?.max}
                               </Badge>
                             )}
                           </div>

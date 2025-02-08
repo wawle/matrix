@@ -1,8 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
-import { createAgent } from "@/lib/services/agent";
+import { createAgent, getAgents } from "@/lib/services/agent";
 import { asyncFn } from "@/lib/middlewares/async";
-import { listing } from "@/lib/middlewares/listing";
-import { Agent } from "@/lib/models/agent";
 
 export const POST = asyncFn(async (req: NextRequest) => {
   const body = await req.json();
@@ -11,6 +9,7 @@ export const POST = asyncFn(async (req: NextRequest) => {
 });
 
 export const GET = asyncFn(async (req: NextRequest) => {
-  const data = await listing(Agent, req);
+  const searchParams = Object.fromEntries(req.nextUrl.searchParams);
+  const data = await getAgents(searchParams);
   return NextResponse.json(data);
 });

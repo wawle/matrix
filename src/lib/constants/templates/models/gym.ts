@@ -1,17 +1,17 @@
-import { IVersion } from "@/lib/models/version";
+import { IVersion, VersionType } from "@/lib/models/version";
 
 // Spor Salonu Şablonu
-export const gymModel: IVersion = {
+export const gymModel: IVersion<VersionType.MODEL> = {
   id: "gym",
   name: "Spor Salonu",
   description: "Spor salonu yönetimi için temel veritabanı şemaları",
   is_active: false,
-  type: "model",
+  type: VersionType.MODEL,
   nodes: [
     {
       id: "user",
       position: { x: 100, y: 100 },
-      type: "model",
+      type: VersionType.MODEL,
       data: {
         name: "User",
         description: "Kullanıcı bilgilerini içeren şema",
@@ -51,7 +51,7 @@ export const gymModel: IVersion = {
     {
       id: "customer",
       position: { x: 100, y: 100 },
-      type: "model",
+      type: VersionType.MODEL,
       data: {
         name: "Customer",
         description: "Müşteri bilgilerini içeren şema",
@@ -112,7 +112,7 @@ export const gymModel: IVersion = {
     {
       id: "membership",
       position: { x: 500, y: 100 },
-      type: "model",
+      type: VersionType.MODEL,
       data: {
         name: "Membership",
         description: "Üyelik bilgilerini içeren şema",
@@ -159,7 +159,7 @@ export const gymModel: IVersion = {
     {
       id: "membershipType",
       position: { x: 900, y: 100 },
-      type: "model",
+      type: VersionType.MODEL,
       data: {
         name: "MembershipType",
         description: "Üyelik paketlerini içeren şema",
@@ -199,7 +199,7 @@ export const gymModel: IVersion = {
     {
       id: "trainer",
       position: { x: 100, y: 400 },
-      type: "model",
+      type: VersionType.MODEL,
       data: {
         name: "Trainer",
         description: "Eğitmen bilgilerini içeren şema",
@@ -240,7 +240,7 @@ export const gymModel: IVersion = {
     {
       id: "activity",
       position: { x: 500, y: 400 },
-      type: "model",
+      type: VersionType.MODEL,
       data: {
         name: "Activity",
         description: "Grup dersleri ve aktiviteleri içeren şema",
@@ -322,7 +322,7 @@ export const gymModel: IVersion = {
     {
       id: "participant",
       position: { x: 900, y: 400 },
-      type: "model",
+      type: VersionType.MODEL,
       data: {
         name: "Participant",
         description: "Katılımcı bilgilerini içeren şema",
@@ -353,7 +353,8 @@ export const gymModel: IVersion = {
       target: "customer",
       animated: true,
       label: "N:1",
-      data: { relationType: "oneToMany" },
+      type: VersionType.MODEL,
+      data: { type: "oneToMany" },
     },
     {
       id: "e2",
@@ -361,7 +362,8 @@ export const gymModel: IVersion = {
       target: "membershipType",
       animated: true,
       label: "N:1",
-      data: { relationType: "oneToMany" },
+      type: VersionType.MODEL,
+      data: { type: "oneToMany" },
     },
     {
       id: "e3",
@@ -369,7 +371,8 @@ export const gymModel: IVersion = {
       target: "customer",
       animated: true,
       label: "N:1",
-      data: { relationType: "oneToMany" },
+      type: VersionType.MODEL,
+      data: { type: "oneToMany" },
     },
     {
       id: "e4",
@@ -377,7 +380,8 @@ export const gymModel: IVersion = {
       target: "trainer",
       animated: true,
       label: "N:1",
-      data: { relationType: "oneToMany" },
+      type: VersionType.MODEL,
+      data: { type: "oneToMany" },
     },
     {
       id: "e5",
@@ -385,7 +389,8 @@ export const gymModel: IVersion = {
       target: "user",
       animated: true,
       label: "N:1",
-      data: { relationType: "oneToMany" },
+      type: VersionType.MODEL,
+      data: { type: "oneToMany" },
     },
     {
       id: "e6",
@@ -393,7 +398,8 @@ export const gymModel: IVersion = {
       target: "activity",
       animated: true,
       label: "N:1",
-      data: { relationType: "oneToMany" },
+      type: VersionType.MODEL,
+      data: { type: "oneToMany" },
     },
   ],
 };

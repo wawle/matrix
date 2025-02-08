@@ -2,13 +2,14 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import Link from "next/link";
 import { VersionForm } from "./components/version-form";
 import { fetchVersion } from "@/lib/actions/version";
+import { VersionType } from "@/lib/models/version";
 
 interface VersionPageProps {
   params: Promise<{ projectId: string; versionId: string }>;
 }
 
-export default async function VersionPage({ params }: VersionPageProps) {
-  const { projectId, versionId } = await params;
+export default async function VersionPage(props: VersionPageProps) {
+  const { projectId, versionId } = await props.params;
   const version =
     versionId === "new" ? undefined : (await fetchVersion(versionId)).data;
 
@@ -23,7 +24,7 @@ export default async function VersionPage({ params }: VersionPageProps) {
   const defaultValues = {
     name: version?.name || "",
     description: version?.description || "",
-    type: version?.type || "model",
+    type: version?.type || VersionType.MODEL,
     is_active: version?.is_active || false,
     project: projectId,
   };

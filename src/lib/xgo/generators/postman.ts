@@ -1,6 +1,8 @@
+import { IVersion, VersionType } from "@/lib/models/version";
+import { IModelData } from "@/lib/types/xgo/models";
 import fs from "fs";
 import path from "path";
-import { MongoDBModel, Version } from "../types";
+import { Node } from "reactflow";
 import util from "util";
 
 const writeFilePromise = util.promisify(fs.writeFile);
@@ -71,7 +73,7 @@ export async function uploadCollection() {
   console.log("Collection ID:", collectionId);
 }
 
-export function getPostmanItem(models: MongoDBModel[]): any[] {
+export function getPostmanItem(nodes: Node<IModelData>[]): any[] {
   const methods = ["GET", "GETID", "POST", "PUT", "DELETE"];
   const header = [
     {
@@ -86,18 +88,18 @@ export function getPostmanItem(models: MongoDBModel[]): any[] {
       value: "Bearer {{token}}",
     },
   ];
-  const modelRoutes = models
+  const modelRoutes = nodes
     .map((model) => {
-      const routeName = model.name.toLowerCase();
+      const routeName = model.data.name.toLowerCase();
 
       const rawBody: any = {};
-      model.fields.forEach((field) => {
+      model.data.schemas.forEach((field) => {
         rawBody[field.name] = `{{${field.name}}}`;
       });
       return {
         name: routeName,
         type: "folder",
-        description: `${model.name} endpoints`,
+        description: `${model.data.name} endpoints`,
         item: methods.map((method) => {
           switch (method) {
             case "GET":
@@ -241,9 +243,9 @@ export function getPostmanItem(models: MongoDBModel[]): any[] {
 export async function buildPostmanCollection(
   projectPath: string,
   projectName: string,
-  activeVersion: Version
+  activeVersion: IVersion<VersionType.MODEL>
 ) {
-  const item = getPostmanItem(activeVersion.models);
+  const item = getPostmanItem(activeVersion.nodes);
 
   // implement the model routes to postman collection
   const collection = {

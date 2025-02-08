@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
 import { IUser } from "./user";
-import { IVersion, Version } from "./version";
+import { IVersion, Version, VersionType } from "./version";
 
 export interface IProject {
   id: string;
@@ -10,7 +10,7 @@ export interface IProject {
   name: string;
   description: string;
   user: IUser;
-  versions: IVersion[];
+  versions: IVersion<VersionType>[];
 }
 
 export const projectSchema = new mongoose.Schema<IProject>(

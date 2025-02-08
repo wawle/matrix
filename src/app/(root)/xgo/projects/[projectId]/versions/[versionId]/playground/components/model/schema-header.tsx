@@ -31,12 +31,12 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { cn } from "@/lib/utils";
-import { IVersion } from "@/lib/models/version";
+import { IVersion, VersionType } from "@/lib/models/version";
 import { templates } from "@/lib/constants/templates";
 
 interface SchemaHeaderProps {
   selectedPreset: string;
-  versions: IVersion[];
+  versions: IVersion<VersionType.MODEL>[];
   isAutoSaveEnabled: boolean;
   selectedNode: any | null;
   isGeneratingApp: boolean;

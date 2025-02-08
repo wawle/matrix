@@ -14,10 +14,7 @@ export const GET = asyncFn(async (request: Request) => {
   const dbUser = await getMe(user.id);
 
   if (!dbUser) {
-    return NextResponse.json(
-      { message: "Kullanıcı bulunamadı" },
-      { status: 404 }
-    );
+    throw new ErrorResponse("Kullanıcı bulunamadı", 404);
   }
 
   return NextResponse.json(dbUser);

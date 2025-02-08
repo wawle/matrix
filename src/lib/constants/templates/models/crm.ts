@@ -1,17 +1,17 @@
-import { IVersion } from "@/lib/models/version";
+import { IVersion, VersionType } from "@/lib/models/version";
 
 // CRM Şablonu
-export const crmModel: IVersion = {
+export const crmModel: IVersion<VersionType.MODEL> = {
   id: "crm",
   name: "CRM",
   description: "Müşteri ilişkileri yönetimi için temel veritabanı şemaları",
   is_active: false,
-  type: "model",
+  type: VersionType.MODEL,
   nodes: [
     {
       id: "User",
       position: { x: 100, y: 100 },
-      type: "model",
+      type: VersionType.MODEL,
       data: {
         name: "User",
         description: "Müşteri ve potansiyel müşteri bilgilerini içeren şema",
@@ -53,7 +53,7 @@ export const crmModel: IVersion = {
     {
       id: "Customer",
       position: { x: 500, y: 100 },
-      type: "model",
+      type: VersionType.MODEL,
       data: {
         name: "Customer",
         description: "Customer bilgilerini içeren şema",
@@ -97,7 +97,7 @@ export const crmModel: IVersion = {
     {
       id: "Activity",
       position: { x: 100, y: 400 },
-      type: "model",
+      type: VersionType.MODEL,
       data: {
         name: "Activity",
         description: "Activity bilgilerini içeren şema",
@@ -175,25 +175,32 @@ export const crmModel: IVersion = {
       target: "User",
       animated: true,
       label: "N:1",
-      type: "oneToMany",
+      type: VersionType.MODEL,
+      data: {
+        type: "oneToMany",
+      },
     },
     {
       id: "e2",
       source: "Activity",
       target: "User",
-
+      type: VersionType.MODEL,
       animated: true,
       label: "N:1",
-      type: "oneToMany",
+      data: {
+        type: "oneToMany",
+      },
     },
     {
       id: "e3",
       source: "Activity",
       target: "Customer",
-
+      type: VersionType.MODEL,
       animated: true,
       label: "N:1",
-      type: "oneToMany",
+      data: {
+        type: "oneToMany",
+      },
     },
   ],
 };

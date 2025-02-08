@@ -2,8 +2,32 @@ import mongoose from "mongoose";
 import { Edge, IEdge } from "./edge";
 import { INode, Node } from "./node";
 import { IProject } from "./project";
+import { IModelConnectionType, IModelData } from "../types/xgo/models";
+import { IAgentConnectionType, IAgentData } from "../types/xgo/agents";
+import { IPageData } from "../types/xgo/pages";
 
-export interface IVersion {
+export enum VersionType {
+  MODEL = "model", // api
+  AGENT = "agent", // agent
+  PAGE = "page", // web
+  SCREEN = "screen", // app
+}
+
+export type VersionNodeDataType = {
+  [VersionType.MODEL]: IModelData;
+  [VersionType.AGENT]: IAgentData;
+  [VersionType.PAGE]: IPageData;
+  [VersionType.SCREEN]: any; // IScreenData tipini import edip buraya ekleyebilirsiniz
+};
+
+export type VersionEdgeDataType = {
+  [VersionType.MODEL]: IModelConnectionType;
+  [VersionType.AGENT]: IAgentConnectionType;
+  [VersionType.PAGE]: any;
+  [VersionType.SCREEN]: any;
+};
+
+export interface IVersion<T extends VersionType> {
   id: string;
   _id?: string;
   createdAt?: Date;
@@ -12,12 +36,12 @@ export interface IVersion {
   description?: string;
   is_active: boolean;
   project?: IProject;
-  type: "model" | "agent" | "page" | "screen";
-  nodes: INode[];
-  edges: IEdge[];
+  type: T;
+  nodes: INode<VersionNodeDataType[T]>[];
+  edges: IEdge<VersionEdgeDataType[T]>[];
 }
 
-export const versionSchema = new mongoose.Schema<IVersion>(
+export const versionSchema = new mongoose.Schema<IVersion<any>>(
   {
     name: {
       type: String,
@@ -71,4 +95,5 @@ versionSchema.pre("findOneAndDelete", async function (next) {
 });
 
 export const Version =
-  mongoose.models.Version || mongoose.model<IVersion>("Version", versionSchema);
+  mongoose.models.Version ||
+  mongoose.model<IVersion<any>>("Version", versionSchema);

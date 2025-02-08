@@ -1,13 +1,10 @@
-import { IEdge } from "@/lib/models/edge";
-import { INode } from "@/lib/models/node";
 import { IModelData } from "@/lib/types/xgo/models";
+import { Edge, Node } from "reactflow";
 
 export const model = {
   template: (name: string, props: any): string => {
-    const {
-      model,
-      relations,
-    }: { model: INode<IModelData>; relations: IEdge[] } = props;
+    const { model, relations }: { model: Node<IModelData>; relations: Edge[] } =
+      props;
     const relatedRelations = relations.filter(
       (rel) => rel.type === "oneToMany" && rel.target === model.data.name
     );
@@ -50,7 +47,7 @@ export const model = {
       ?.filter((rel) => rel.data.relationType === "oneToMany")
       ?.map(
         (rel) => `
-        ${model.name.toLowerCase()}Schema.virtual("${rel.source.toLowerCase()}s", {
+        ${model.data.name.toLowerCase()}Schema.virtual("${rel.source.toLowerCase()}s", {
           ref: "${rel.source}",
           localField: "_id",
           foreignField: "${rel.target.toLowerCase()}"
@@ -59,7 +56,7 @@ export const model = {
       .join("\n");
 
     let imports = "";
-    const interfaceFields = model.schemas
+    const interfaceFields = model.data.schemas
       .map((field) => {
         const modelName =
           field.name.charAt(0).toUpperCase() + field.name.slice(1);
@@ -98,7 +95,7 @@ export const model = {
 import mongoose from "mongoose";
 ${imports}
 
-export interface I${model.name} {
+export interface I${model.data.name} {
   id: string;
   _id: string;
   createdAt?: Date;
@@ -107,8 +104,8 @@ export interface I${model.name} {
   ${relationalInterfaceFields}
 }
 
-export const ${model.name.toLowerCase()}Schema = new mongoose.Schema<I${
-      model.name
+export const ${model.data.name.toLowerCase()}Schema = new mongoose.Schema<I${
+      model.data.name
     }>(
   {
 ${fields}
@@ -121,10 +118,10 @@ ${fields}
 );
 ${virtualRelationships || ""}
 
-export const ${model.name} =
-  mongoose.models.${model.name} || mongoose.model<I${model.name}>("${
-      model.name
-    }", ${model.name.toLowerCase()}Schema);
+export const ${model.data.name} =
+  mongoose.models.${model.data.name} || mongoose.model<I${model.data.name}>("${
+      model.data.name
+    }", ${model.data.name.toLowerCase()}Schema);
       `;
 
     return modelStr;

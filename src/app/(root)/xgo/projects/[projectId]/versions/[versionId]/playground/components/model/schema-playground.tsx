@@ -12,8 +12,8 @@ import {
   useEdgesState,
   useNodesState,
   Connection,
-  Edge,
   Node,
+  Edge,
 } from "reactflow";
 import "reactflow/dist/style.css";
 
@@ -23,7 +23,7 @@ import { SchemaHeader } from "./schema-header";
 import { SchemaCanvas } from "./schema-canvas";
 import { SchemaSidebar } from "./schema-sidebar";
 import { SchemaDialogs } from "./schema-dialogs";
-import { IVersion } from "@/lib/models/version";
+import { IVersion, VersionType } from "@/lib/models/version";
 import { IProject } from "@/lib/models/project";
 import { toast } from "sonner";
 import { templates } from "@/lib/constants/templates";
@@ -32,9 +32,8 @@ import {
   generateAppAction,
   generatePromptForVersion,
   generateVersionAction,
-  generateVersionFromTemplate,
   setAutoSaveState,
-  updateAppFromVersion,
+  updateVersionAction,
 } from "@/lib/actions/version";
 import { INode } from "@/lib/models/node";
 import { IEdge } from "@/lib/models/edge";
@@ -49,8 +48,8 @@ import { useParams } from "next/navigation";
  * @property {boolean} defaultAutoSave - Varsayılan otomatik kaydetme özelliği
  */
 interface Props {
-  versions: IVersion[];
-  defaultVersion: IVersion;
+  versions: IVersion<VersionType.MODEL>[];
+  defaultVersion: IVersion<VersionType.MODEL>;
   project: IProject;
   defaultAutoSave: boolean;
 }
@@ -74,8 +73,8 @@ export default function SchemaPlayground({
   );
   const [isAutoSaveEnabled, setIsAutoSaveEnabled] = useState(defaultAutoSave);
   const [initialVersion, setInitialVersion] = useState<{
-    nodes: Node[];
-    edges: Edge[];
+    nodes: INode<VersionType.MODEL>[];
+    edges: IEdge<VersionType.MODEL>[];
   }>({
     nodes: defaultVersion.nodes.map((node) => ({
       ...node,
@@ -132,10 +131,12 @@ export default function SchemaPlayground({
   );
 
   // Seçim ve düzenleme durumları
-  const [selectedNode, setSelectedNode] = useState<Node | null>(null);
+  const [selectedNode, setSelectedNode] =
+    useState<INode<VersionType.MODEL> | null>(null);
   const [selectedField, setSelectedField] = useState<any | null>(null);
   const [isEditingField, setIsEditingField] = useState(false);
-  const [selectedEdge, setSelectedEdge] = useState<Edge | null>(null);
+  const [selectedEdge, setSelectedEdge] =
+    useState<IEdge<VersionType.MODEL> | null>(null);
 
   // Dialog durumları
   const [isDialogOpen, setIsDialogOpen] = useState(false);
@@ -208,13 +209,13 @@ export default function SchemaPlayground({
       }
 
       // Generate a new version from the selected template
-      const result = await generateVersionFromTemplate(
-        selectedTemplate,
+      const result = await updateVersionAction(
         versionId as string,
-        projectId as string
+        selectedTemplate
       );
-      if (result.success && result.version) {
-        setSelectedPreset(result.version.id);
+
+      if (result.success && result.data) {
+        setSelectedPreset(result.data.id);
 
         toast.success("Yeni şema oluşturuldu.");
       } else {
@@ -226,10 +227,13 @@ export default function SchemaPlayground({
     try {
       const updatedVersion = {
         ...selectedVersion,
-        nodes: nodes as INode[],
-        edges: edges as IEdge[],
+        nodes: nodes as INode<VersionType.MODEL>[],
+        edges: edges as IEdge<VersionType.MODEL>[],
       };
-      const result = await updateAppFromVersion(updatedVersion);
+      const result = await updateVersionAction(
+        versionId as string,
+        updatedVersion
+      );
 
       if (!result.success) {
         toast.error("Proje güncellenirken bir hata oluştu.");
@@ -317,7 +321,10 @@ export default function SchemaPlayground({
     const autoSaveInterval = setInterval(async () => {
       if (hasVersionChanged()) {
         await updateProject();
-        setInitialVersion({ nodes: nodes, edges: edges });
+        setInitialVersion({
+          nodes: nodes as INode<VersionType.MODEL>[],
+          edges: edges as IEdge<VersionType.MODEL>[],
+        });
         toast.success("Değişiklikler otomatik olarak kaydedildi.");
       }
     }, 3 * 60 * 1000);
@@ -394,11 +401,12 @@ export default function SchemaPlayground({
    */
   const createConnection = useCallback(() => {
     if (!pendingConnection?.source || !pendingConnection?.target) return;
-    const newEdge: Edge = {
+    const newEdge: IEdge<VersionType.MODEL> = {
       id: `${pendingConnection.source}-${pendingConnection.target}`,
       source: pendingConnection.source,
       target: pendingConnection.target,
       animated: true,
+      type: VersionType.MODEL,
       label:
         newConnectionType === "oneToOne"
           ? "1:1"
@@ -406,7 +414,7 @@ export default function SchemaPlayground({
           ? "1:N"
           : "N:N",
       data: {
-        relationType: newConnectionType,
+        type: newConnectionType,
       },
       style: { stroke: "hsl(var(--primary))" },
     };
@@ -425,10 +433,10 @@ export default function SchemaPlayground({
    */
   const onSelectionChange = useCallback(
     ({ nodes: selectedNodes }: { nodes: Node[] }) => {
-      const selected = selectedNodes[0];
+      const selected: any = selectedNodes[0];
       if (selected) {
         const currentNode = nodes.find((n) => n.id === selected.id);
-        setSelectedNode(currentNode || null);
+        setSelectedNode(currentNode as INode<VersionType.MODEL> | null);
       } else {
         setSelectedNode(null);
       }
@@ -445,9 +453,9 @@ export default function SchemaPlayground({
   const addNewModule = useCallback(() => {
     if (!newModule.name) return;
 
-    const newNode: Node = {
+    const newNode: INode<VersionType.MODEL> = {
       id: Date.now().toString(),
-      type: "model",
+      type: VersionType.MODEL,
       position: {
         x: Math.random() * 500,
         y: Math.random() * 500,
@@ -456,7 +464,7 @@ export default function SchemaPlayground({
         name: newModule.name,
         description: newModule.description,
         isActive: newModule.isActive,
-        fields: [],
+        schemas: [],
       },
     };
 
@@ -862,7 +870,7 @@ ${fields}
    * @param {Edge} edge - Tıklanan edge
    */
   const onEdgeClick = useCallback((event: React.MouseEvent, edge: Edge) => {
-    setSelectedEdge(edge);
+    setSelectedEdge(edge as IEdge<VersionType.MODEL>);
   }, []);
 
   const onGenerateApp = useCallback(async () => {
@@ -925,7 +933,7 @@ ${fields}
           onEditModule={(id) => {
             const node = nodes.find((n) => n.id === id);
             if (node) {
-              setSelectedNode(node);
+              setSelectedNode(node as INode<VersionType.MODEL>);
               setIsOpen(true);
             }
             setContextMenu(null);

@@ -1,16 +1,16 @@
-import { IVersion } from "@/lib/models/version";
+import { IVersion, VersionType } from "@/lib/models/version";
 
-export const matrixModel: IVersion = {
+export const matrixModel: IVersion<VersionType.MODEL> = {
   id: "matrixModel",
   name: "Matrix",
   description: "Matrix Model",
   is_active: false,
-  type: "model",
+  type: VersionType.MODEL,
   nodes: [
     {
       id: "User",
       position: { x: 100, y: 100 },
-      type: "model",
+      type: VersionType.MODEL,
       data: {
         name: "User",
         description: "Müşteri ve potansiyel müşteri bilgilerini içeren şema",
@@ -56,7 +56,7 @@ export const matrixModel: IVersion = {
     {
       id: "Project",
       position: { x: 500, y: 100 },
-      type: "model",
+      type: VersionType.MODEL,
       data: {
         name: "Project",
         description: "Proje bilgilerini içeren şema",
@@ -88,7 +88,7 @@ export const matrixModel: IVersion = {
     {
       id: "Version",
       position: { x: 100, y: 400 },
-      type: "model",
+      type: VersionType.MODEL,
       data: {
         name: "Version",
         description: "Versiyon bilgilerini içeren şema",
@@ -134,7 +134,7 @@ export const matrixModel: IVersion = {
     {
       id: "Node",
       position: { x: 500, y: 400 },
-      type: "model",
+      type: VersionType.MODEL,
       data: {
         name: "Node",
         description: "Düğüm bilgilerini içeren şema",
@@ -173,7 +173,7 @@ export const matrixModel: IVersion = {
     {
       id: "Edge",
       position: { x: 100, y: 800 },
-      type: "model",
+      type: VersionType.MODEL,
       data: {
         name: "Edge",
         description: "Kenar bilgilerini içeren şema",
@@ -226,7 +226,7 @@ export const matrixModel: IVersion = {
     {
       id: "Screen",
       position: { x: 500, y: 800 },
-      type: "model",
+      type: VersionType.MODEL,
       data: {
         name: "Screen",
         description: "Ekran bilgilerini içeren şema",
@@ -265,7 +265,7 @@ export const matrixModel: IVersion = {
     {
       id: "Page",
       position: { x: 500, y: 800 },
-      type: "model",
+      type: VersionType.MODEL,
       data: {
         name: "Page",
         description: "Sayfa bilgilerini içeren şema",
@@ -305,7 +305,7 @@ export const matrixModel: IVersion = {
     {
       id: "Agent",
       position: { x: 500, y: 800 },
-      type: "model",
+      type: VersionType.MODEL,
       data: {
         name: "Agent",
         description: "Agent bilgilerini içeren şema",
@@ -407,7 +407,7 @@ export const matrixModel: IVersion = {
     {
       id: "Key",
       position: { x: 500, y: 800 },
-      type: "model",
+      type: VersionType.MODEL,
       data: {
         name: "Key",
         description: "Key bilgilerini içeren şema",
@@ -454,7 +454,7 @@ export const matrixModel: IVersion = {
     {
       id: "Chat",
       position: { x: 500, y: 800 },
-      type: "model",
+      type: VersionType.MODEL,
       data: {
         name: "Chat",
         description: "Chat bilgilerini içeren şema",
@@ -493,7 +493,7 @@ export const matrixModel: IVersion = {
     {
       id: "Session",
       position: { x: 500, y: 800 },
-      type: "model",
+      type: VersionType.MODEL,
       data: {
         name: "Session",
         description: "Session bilgilerini içeren şema",
@@ -518,7 +518,7 @@ export const matrixModel: IVersion = {
     {
       id: "Family",
       position: { x: 500, y: 800 },
-      type: "model",
+      type: VersionType.MODEL,
       data: {
         name: "Family",
         description: "Family bilgilerini içeren şema",
@@ -550,7 +550,7 @@ export const matrixModel: IVersion = {
     {
       id: "Model",
       position: { x: 500, y: 800 },
-      type: "model",
+      type: VersionType.MODEL,
       data: {
         name: "Model",
         description: "Model bilgilerini içeren şema",
@@ -582,7 +582,7 @@ export const matrixModel: IVersion = {
     {
       id: "Field",
       position: { x: 500, y: 800 },
-      type: "model",
+      type: VersionType.MODEL,
       data: {
         name: "Field",
         description: "Field bilgilerini içeren şema",
@@ -633,8 +633,9 @@ export const matrixModel: IVersion = {
       target: "Agent",
       animated: true,
       label: "N:1",
+      type: VersionType.MODEL,
       data: {
-        relationType: "oneToMany",
+        type: "oneToMany",
       },
     },
     {
@@ -643,8 +644,9 @@ export const matrixModel: IVersion = {
       target: "Agent",
       animated: true,
       label: "N:1",
+      type: VersionType.MODEL,
       data: {
-        relationType: "oneToMany",
+        type: "oneToMany",
       },
     },
     {
@@ -653,8 +655,9 @@ export const matrixModel: IVersion = {
       target: "Chat",
       animated: true,
       label: "N:1",
+      type: VersionType.MODEL,
       data: {
-        relationType: "oneToMany",
+        type: "oneToMany",
       },
     },
     {
@@ -663,8 +666,9 @@ export const matrixModel: IVersion = {
       target: "Edge",
       animated: true,
       label: "N:1",
+      type: VersionType.MODEL,
       data: {
-        relationType: "oneToMany",
+        type: "oneToMany",
       },
     },
     {
@@ -673,8 +677,9 @@ export const matrixModel: IVersion = {
       target: "Agent",
       animated: true,
       label: "N:1",
+      type: VersionType.MODEL,
       data: {
-        relationType: "oneToMany",
+        type: "oneToMany",
       },
     },
     {
@@ -683,8 +688,9 @@ export const matrixModel: IVersion = {
       target: "Field",
       animated: true,
       label: "N:1",
+      type: VersionType.MODEL,
       data: {
-        relationType: "oneToMany",
+        type: "oneToMany",
       },
     },
 
@@ -694,8 +700,9 @@ export const matrixModel: IVersion = {
       target: "Key",
       animated: true,
       label: "N:1",
+      type: VersionType.MODEL,
       data: {
-        relationType: "oneToMany",
+        type: "oneToMany",
       },
     },
     {
@@ -704,8 +711,9 @@ export const matrixModel: IVersion = {
       target: "Model",
       animated: true,
       label: "N:1",
+      type: VersionType.MODEL,
       data: {
-        relationType: "oneToMany",
+        type: "oneToMany",
       },
     },
     {
@@ -714,8 +722,9 @@ export const matrixModel: IVersion = {
       target: "Node",
       animated: true,
       label: "N:1",
+      type: VersionType.MODEL,
       data: {
-        relationType: "oneToMany",
+        type: "oneToMany",
       },
     },
     {
@@ -724,8 +733,9 @@ export const matrixModel: IVersion = {
       target: "Page",
       animated: true,
       label: "N:1",
+      type: VersionType.MODEL,
       data: {
-        relationType: "oneToMany",
+        type: "oneToMany",
       },
     },
     {
@@ -734,8 +744,9 @@ export const matrixModel: IVersion = {
       target: "Project",
       animated: true,
       label: "N:1",
+      type: VersionType.MODEL,
       data: {
-        relationType: "oneToMany",
+        type: "oneToMany",
       },
     },
     {
@@ -744,8 +755,9 @@ export const matrixModel: IVersion = {
       target: "Screen",
       animated: true,
       label: "N:1",
+      type: VersionType.MODEL,
       data: {
-        relationType: "oneToMany",
+        type: "oneToMany",
       },
     },
     {
@@ -754,8 +766,9 @@ export const matrixModel: IVersion = {
       target: "Session",
       animated: true,
       label: "N:1",
+      type: VersionType.MODEL,
       data: {
-        relationType: "oneToMany",
+        type: "oneToMany",
       },
     },
     {
@@ -764,8 +777,9 @@ export const matrixModel: IVersion = {
       target: "Session",
       animated: true,
       label: "N:1",
+      type: VersionType.MODEL,
       data: {
-        relationType: "oneToMany",
+        type: "oneToMany",
       },
     },
     {
@@ -774,8 +788,9 @@ export const matrixModel: IVersion = {
       target: "Version",
       animated: true,
       label: "N:1",
+      type: VersionType.MODEL,
       data: {
-        relationType: "oneToMany",
+        type: "oneToMany",
       },
     },
   ],

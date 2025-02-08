@@ -18,37 +18,31 @@ import { FlowHeader } from "./flow-header";
 import { FlowCanvas } from "./flow-canvas";
 import { FlowSidebar } from "./flow-sidebar";
 import { FlowDialogs } from "./flow-dialogs";
-import { IAgent } from "@/lib/models/agent";
-import { IVersion } from "@/lib/models/version";
+import { IVersion, VersionType } from "@/lib/models/version";
 import { IProject } from "@/lib/models/project";
 import { templates } from "@/lib/constants/templates";
 import {
   generatePromptForVersion,
   generateVersionAction,
-  generateVersionFromTemplate,
   setAutoSaveState,
-  updateAppFromVersion,
+  updateVersionAction,
 } from "@/lib/actions/version";
 import { toast } from "sonner";
 import { INode } from "@/lib/models/node";
 import { IEdge } from "@/lib/models/edge";
 import { useParams } from "next/navigation";
-import {
-  IAgentConnectionType,
-  IAgentEdge,
-  IAgentNode,
-} from "@/lib/types/xgo/agents";
+import { IAgentConnectionType } from "@/lib/types/xgo/agents";
 
 interface Props {
-  versions: IVersion[];
-  defaultVersion: IVersion;
+  versions: IVersion<VersionType.AGENT>[];
+  defaultVersion: IVersion<VersionType.AGENT>;
   project: IProject;
   defaultAutoSave: boolean;
 }
 
-const defaultAgentNode: IAgentNode = {
+const defaultAgentNode: INode<VersionType.AGENT> = {
   id: "",
-  type: "agent",
+  type: VersionType.AGENT,
   position: {
     x: 0,
     y: 0,
@@ -99,7 +93,8 @@ export default function FlowPlayground({
 
   // Agent durumları
   const [isEditingAgent, setIsEditingAgent] = useState(false);
-  const [newAgent, setNewAgent] = useState<IAgentNode>(defaultAgentNode);
+  const [newAgent, setNewAgent] =
+    useState<INode<VersionType.AGENT>>(defaultAgentNode);
 
   // Bağlantı durumları
   const [pendingConnection, setPendingConnection] = useState<Connection | null>(
@@ -110,12 +105,13 @@ export default function FlowPlayground({
   const [connectionCondition, setConnectionCondition] = useState<string>("");
 
   // ReactFlow durumları
-  const [selectedNode, setSelectedNode] = useState<Node | null>(null);
+  const [selectedNode, setSelectedNode] =
+    useState<INode<VersionType.AGENT> | null>(null);
   const [nodes, setNodes, onNodesChange] = useNodesState(
-    defaultVersion.nodes.map((node: any) => {
+    defaultVersion.nodes.map((node) => {
       const flowNode = {
         ...node,
-        type: "agent",
+        type: VersionType.AGENT,
         data: {
           ...node.data,
           onWidthChange: (width: number) =>
@@ -183,12 +179,15 @@ export default function FlowPlayground({
     (type: IAgentConnectionType, condition?: string) => {
       if (!pendingConnection?.source || !pendingConnection?.target) return;
 
-      const newEdge: IAgentEdge = {
+      const newEdge: IEdge<VersionType.AGENT> = {
         id: `${pendingConnection.source}-${pendingConnection.target}`,
         source: pendingConnection.source,
         target: pendingConnection.target,
         animated: true,
-        type: type,
+        type: VersionType.AGENT,
+        data: {
+          type: type,
+        },
         style: {
           stroke:
             type === "sequential"
@@ -220,31 +219,29 @@ export default function FlowPlayground({
 
   // Edge güncelleme
   const updateEdge = useCallback(
-    (edgeId: string, updates: Partial<IAgentEdge>) => {
+    (edgeId: string, updates: IEdge<VersionType.AGENT>) => {
       setEdges((eds) =>
         eds.map((edge) => {
           if (edge.id === edgeId) {
-            const currentData = (edge as IAgentEdge).data || {
-              type: "sequential" as IAgentConnectionType,
-            };
-            const updatedEdge: IAgentEdge = {
+            const type = updates.data.type;
+            const updatedEdge: IEdge<VersionType.AGENT> = {
               ...edge,
-              type: updates.type || currentData.type,
+              type: VersionType.AGENT,
+              data: {
+                ...edge.data,
+                type: type,
+              },
               style: {
                 ...edge.style,
                 stroke:
-                  updates.type === "sequential"
+                  type === "sequential"
                     ? "hsl(var(--primary))"
-                    : updates.type === "parallel"
+                    : type === "parallel"
                     ? "hsl(var(--success))"
                     : "hsl(var(--warning))",
               },
               label:
-                updates.type === "sequential"
-                  ? "→"
-                  : updates.type === "parallel"
-                  ? "⇉"
-                  : "?",
+                type === "sequential" ? "→" : type === "parallel" ? "⇉" : "?",
             };
             return updatedEdge;
           }
@@ -258,10 +255,10 @@ export default function FlowPlayground({
   // Node seçimi
   const onSelectionChange = useCallback(
     ({ nodes: selectedNodes }: { nodes: Node[] }) => {
-      const selected = selectedNodes[0];
+      const selected: any = selectedNodes[0];
       if (selected) {
         const currentNode = nodes.find((n) => n.id === selected.id);
-        setSelectedNode(currentNode || null);
+        setSelectedNode(currentNode as INode<VersionType.AGENT> | null);
       } else {
         setSelectedNode(null);
       }
@@ -280,7 +277,7 @@ export default function FlowPlayground({
 
   // Agent güncelleme
   const updateAgent = useCallback(
-    (updates: Partial<IAgent>) => {
+    (updates: Partial<INode<VersionType.AGENT>>) => {
       if (!selectedNode) return;
 
       setNodes((nds) =>
@@ -292,7 +289,7 @@ export default function FlowPlayground({
                 ...node.data,
                 ...updates,
                 onEdit: () => {
-                  setSelectedNode(node);
+                  setSelectedNode(node as INode<VersionType.AGENT>);
                   setIsEditingAgent((prev) => !prev);
                 },
               },
@@ -328,16 +325,18 @@ export default function FlowPlayground({
       const defaultTemplate = templates.flows.find((t) => t.id === value);
       if (defaultTemplate) {
         const clonedNodes = JSON.parse(JSON.stringify(defaultTemplate.nodes));
-        const nodesWithHandlers = clonedNodes.map((node: any) => ({
-          ...node,
-          data: {
-            ...node.data,
-            onWidthChange: (width: number) =>
-              updateNodeDimensions(node.id, width),
-            onHeightChange: (height: number) =>
-              updateNodeDimensions(node.id, undefined, height),
-          },
-        }));
+        const nodesWithHandlers = clonedNodes.map(
+          (node: INode<VersionType.AGENT>) => ({
+            ...node,
+            data: {
+              ...node.data,
+              onWidthChange: (width: number) =>
+                updateNodeDimensions(node.id, width),
+              onHeightChange: (height: number) =>
+                updateNodeDimensions(node.id, undefined, height),
+            },
+          })
+        );
         setNodes(nodesWithHandlers);
         setEdges(JSON.parse(JSON.stringify(defaultTemplate.edges)));
         setSelectedPreset(value);
@@ -379,13 +378,12 @@ export default function FlowPlayground({
       }
 
       // Generate a new version from the selected template
-      const result = await generateVersionFromTemplate(
-        selectedTemplate,
-        versionId as string,
-        project.id
-      );
-      if (result.success && result.version) {
-        setSelectedPreset(result.version.id);
+      const result = await updateVersionAction(versionId as string, {
+        nodes: nodes as INode<VersionType.AGENT>[],
+        edges: edges as IEdge<VersionType.AGENT>[],
+      });
+      if (result.success && result.data) {
+        setSelectedPreset(result.data.id);
 
         toast.success("Yeni şema oluşturuldu.");
       } else {
@@ -397,10 +395,13 @@ export default function FlowPlayground({
     try {
       const updatedVersion = {
         ...selectedVersion,
-        nodes: nodes as INode[],
-        edges: edges as IEdge[],
+        nodes: nodes as INode<VersionType.AGENT>[],
+        edges: edges as IEdge<VersionType.AGENT>[],
       };
-      const result = await updateAppFromVersion(updatedVersion);
+      const result = await updateVersionAction(
+        versionId as string,
+        updatedVersion
+      );
       if (result.success) {
         toast.success("Proje başarıyla güncellendi.");
       }
@@ -459,12 +460,15 @@ export default function FlowPlayground({
 
         const flattenedEdges = JSON.parse(
           JSON.stringify(
-            result.version.nodes.reduce((acc: any[], node: any) => {
-              if (node.data.edges) {
-                return [...acc, ...node.data.edges];
-              }
-              return [...acc, ...(result.version.edges || [])];
-            }, [])
+            result.version.nodes.reduce(
+              (acc: any[], node: INode<VersionType.AGENT>) => {
+                if (node.data.edges) {
+                  return [...acc, ...node.data.edges];
+                }
+                return [...acc, ...(result.version.edges || [])];
+              },
+              []
+            )
           )
         );
 

@@ -1,5 +1,3 @@
-import { Edge, Node } from "reactflow";
-
 // for schema config
 export interface ISchemaConfig {
   optionLabel?: string;
@@ -21,6 +19,7 @@ export interface ISchema {
   min?: number;
   max?: number;
   trim?: boolean;
+  regex?: string;
   config?: ISchemaConfig;
 }
 
@@ -50,6 +49,8 @@ export type IModelData = {
   schemas: ISchema[];
   middlewares?: IMiddleware[];
   methods?: IMethod[];
+  onWidthChange?: (width: number) => void;
+  onHeightChange?: (height: number) => void;
 };
 
 export type IModelConnectionType =
@@ -58,6 +59,6 @@ export type IModelConnectionType =
   | "manyToOne"
   | "manyToMany";
 
-export type IModelEdge = Edge<{
+export type IModelConnectionData = {
   type: IModelConnectionType;
-}>;
+};

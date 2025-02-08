@@ -36,7 +36,7 @@ export async function fetchUser(id: string): Promise<{
   }
 }
 
-export async function createUserAction(data: IUser): Promise<{
+export async function createUserAction(data: any): Promise<{
   data?: IUser;
   error?: any;
   success: boolean;
@@ -52,7 +52,7 @@ export async function createUserAction(data: IUser): Promise<{
 
 export async function updateUserAction(
   id: string,
-  data: IUser
+  data: any
 ): Promise<{
   data?: IUser;
   error?: any;

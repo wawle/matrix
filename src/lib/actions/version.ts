@@ -10,16 +10,9 @@ import {
 } from "@/lib/services/version";
 import { cookies } from "next/headers";
 import { Node } from "reactflow";
-import { IVersion } from "../models/version";
-import { convertTemplateToVersion } from "../utils";
-import { createModelAction, fetchModels, updateModelAction } from "./model";
-import { createFieldAction, updateFieldAction } from "./field";
-import { createNodeAction, updateNodeAction } from "./node";
-import { createEdgeAction, updateEdgeAction } from "./edge";
+import { IVersion, VersionType } from "../models/version";
 import { fetchProject } from "./project";
 import { createNextProject } from "../xgo/generators/app";
-import { INodeField } from "../types/xgo";
-import mongoose from "mongoose";
 
 export async function fetchVersions() {
   try {
@@ -31,7 +24,7 @@ export async function fetchVersions() {
 }
 
 export async function fetchVersion(id: string): Promise<{
-  data?: IVersion;
+  data?: IVersion<VersionType>;
   error?: string;
   success: boolean;
 }> {
@@ -207,203 +200,6 @@ export async function generatePromptForVersion(prompt: string) {
   }
 }
 
-export const generateVersionFromTemplate = async (
-  template: IVersion,
-  versionId: string,
-  projectId: string
-) => {
-  try {
-    const updatedVersionBody = convertTemplateToVersion(template, versionId);
-
-    const newModelsBody = updatedVersionBody.models.map((model) => ({
-      name: model.name,
-      version: versionId,
-      description: model.description,
-      project: projectId,
-    }));
-
-    const newNodesBody = updatedVersionBody.nodes.map((node) => ({
-      data: node.data,
-      position: node.position,
-      type: node.type,
-      version: versionId,
-    }));
-
-    const [createdModels, createdNodes] = await Promise.all([
-      Promise.all(newModelsBody.map((model) => createModelAction(model))),
-      Promise.all(newNodesBody.map((node) => createNodeAction(node))),
-    ]);
-
-    const allModelsSuccess = createdModels.every((model) => model.success);
-    const allNodesSuccess = createdNodes.every((node) => node.success);
-
-    if (!allModelsSuccess || !allNodesSuccess) {
-      throw new Error("Model veya Node oluşturulurken bir hata oluştu");
-    }
-
-    const newEdgesBody = updatedVersionBody.edges.map((edge) => {
-      const sourceNode = createdNodes.find(
-        (n) => n.data.data.name === edge.source
-      )?.data?.id;
-      const targetNode = createdNodes.find(
-        (n) => n.data.data.name === edge.target
-      )?.data?.id;
-
-      return {
-        version: versionId,
-        source: sourceNode,
-        target: targetNode,
-        animated: edge.animated,
-        label: edge.label,
-        data: edge.data,
-      };
-    });
-
-    const createdEdges = await Promise.all(
-      newEdgesBody.map((edge) => createEdgeAction(edge))
-    );
-
-    const allEdgesSuccess = createdEdges.every((edge) => edge.success);
-
-    if (!allEdgesSuccess) {
-      throw new Error("Edge oluşturulurken bir hata oluştu");
-    }
-
-    const newFieldsBody = updatedVersionBody.models.flatMap((model) =>
-      model.fields.map((field) => ({
-        name: field.name,
-        label: field.label,
-        type: field.type,
-        validations: field?.validations,
-        model: createdModels.find((m) => m.data.name === model.name)?.data.id,
-      }))
-    );
-
-    const createdFields = await Promise.all(
-      newFieldsBody.map((field) => createFieldAction(field))
-    );
-
-    const allFieldsSuccess = createdFields.every((field) => field.success);
-
-    if (!allFieldsSuccess) {
-      throw new Error("Field oluşturulurken bir hata oluştu");
-    }
-
-    const version = await fetchVersion(versionId);
-
-    return { success: true, version: version.data };
-  } catch (error) {
-    return {
-      success: false,
-      error:
-        error instanceof Error
-          ? error.message
-          : "Version oluşturulurken bir hata oluştu",
-    };
-  }
-};
-
-export const updateAppFromVersion = async (
-  version: IVersion
-): Promise<{
-  success: boolean;
-  error?: string;
-  projectName?: string;
-}> => {
-  try {
-    const { edges, nodes } = version;
-
-    const updatedNodesBody = nodes.map((node) => ({
-      id: node.id,
-      data: {
-        name: node.data.name,
-        description: node.data.description,
-        isActive: node.data.isActive,
-        fields: node.data.fields,
-      },
-      type: node.type,
-      position: node.position,
-      version: node.version,
-    }));
-
-    const updatedEdgesBody = edges.map((edge) => ({
-      id: edge.id,
-      data: edge.data,
-      source: edge.source,
-      target: edge.target,
-      version: edge.version,
-    }));
-
-    const updatedModelsBody = nodes.map((node) => ({
-      id: node.id,
-      name: node.data.name,
-      description: node.data.description,
-      project: version.project,
-    }));
-
-    const updatedFieldsBody = nodes.flatMap((node) =>
-      node.data.fields.map((field: INodeField) => ({
-        id: field.id,
-        name: field.name,
-        label: field.label,
-        type: field.type,
-        validations: field.validations,
-        model: updatedModelsBody.find((m) => m.name === node.data.name)?.id,
-      }))
-    );
-
-    const [updateNodes, updateEdges, updateModels, updateFields] =
-      await Promise.all([
-        Promise.all(
-          updatedNodesBody.map((node) => updateNodeAction(node.id, node))
-        ),
-        Promise.all(
-          updatedEdgesBody.map((edge) => updateEdgeAction(edge.id, edge))
-        ),
-        Promise.all(
-          updatedModelsBody.map((model) =>
-            mongoose.Types.ObjectId.isValid(model.id)
-              ? updateModelAction(model.id, model)
-              : createModelAction(model)
-          )
-        ),
-        Promise.all(
-          updatedFieldsBody.map((field) =>
-            mongoose.Types.ObjectId.isValid(field.id)
-              ? updateFieldAction(field.id, field)
-              : createFieldAction(field)
-          )
-        ),
-      ]);
-
-    const allNodesSuccess = updateNodes.every((node) => node.success);
-    const allEdgesSuccess = updateEdges.every((edge) => edge.success);
-    const allModelsSuccess = updateModels.every((model) => model.success);
-    const allFieldsSuccess = updateFields.every((field) => field.success);
-
-    if (
-      !allNodesSuccess ||
-      !allEdgesSuccess ||
-      !allModelsSuccess ||
-      !allFieldsSuccess
-    ) {
-      throw new Error(
-        "Node veya Edge veya Model veya Field güncellenirken bir hata oluştu"
-      );
-    }
-
-    return { success: true };
-  } catch (error) {
-    return {
-      success: false,
-      error:
-        error instanceof Error
-          ? error.message
-          : "Version oluşturulurken bir hata oluştu",
-    };
-  }
-};
-
 export async function generateAppAction(
   versionId: string,
   projectId: string
@@ -413,29 +209,23 @@ export async function generateAppAction(
   projectName?: string;
 }> {
   try {
-    const [project, version, models] = await Promise.all([
+    const [project, version] = await Promise.all([
       fetchProject(projectId),
       fetchVersion(versionId),
-      fetchModels({ project: projectId }),
     ]);
 
     if (
       !version.success ||
       !project.success ||
       !version.data ||
-      !project.data ||
-      !models.data
+      !project.data
     ) {
       throw new Error(version.error || project.error);
     }
 
     const appData = {
       projectName: project.data.name,
-      version: {
-        name: version.data.name,
-        models: models.data,
-        relations: version.data.edges,
-      },
+      version: version.data as IVersion<VersionType.MODEL>,
     };
 
     const result = await createNextProject(appData);

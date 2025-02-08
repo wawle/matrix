@@ -1,4 +1,4 @@
-import { Edge, Node } from "reactflow";
+import { Node } from "reactflow";
 
 // for agents
 export type IAgentData = {
@@ -23,6 +23,6 @@ export type IAgentConnectionType =
   | "conditional"
   | "child";
 
-export type IAgentEdge = Edge & {
+export type IAgentConnectionData = {
   type: IAgentConnectionType;
 };

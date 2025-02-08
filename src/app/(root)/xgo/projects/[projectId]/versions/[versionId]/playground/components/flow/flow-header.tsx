@@ -10,7 +10,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
-import { IVersion } from "@/lib/models/version";
+import { IVersion, VersionType } from "@/lib/models/version";
 import { templates } from "@/lib/constants/templates";
 import { Plus, Save, Wand2 } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
@@ -21,12 +21,13 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { cn } from "@/lib/utils";
+import { INode } from "@/lib/models/node";
 
 interface FlowHeaderProps {
   selectedPreset: string;
-  versions: IVersion[];
+  versions: IVersion<VersionType.AGENT>[];
   isAutoSaveEnabled: boolean;
-  selectedNode: any | null;
+  selectedNode: INode<VersionType.AGENT> | null;
 
   onPresetChange: (value: string) => void;
   onAutoSaveChange: (value: boolean) => void;
