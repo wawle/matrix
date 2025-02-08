@@ -21,13 +21,14 @@ import {
 import { IAgent } from "@/lib/models/agent";
 import { Maximize2, Minimize2 } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { IAgentConnectionType, IAgentNode } from "@/lib/types/xgo/agents";
 
 interface FlowDialogsProps {
   isDialogOpen: boolean;
   isAIPromptDialogOpen: boolean;
   newAgent: Partial<IAgent>;
   isConnectionDialogOpen: boolean;
-  connectionType: "sequential" | "parallel" | "conditional";
+  connectionType: IAgentConnectionType;
   connectionCondition: string;
   isPromptExpanded: boolean;
   promptText: string;
@@ -38,17 +39,17 @@ interface FlowDialogsProps {
   setPromptText: (value: string) => void;
   setIsDialogOpen: (value: boolean) => void;
   setIsAIPromptDialogOpen: (value: boolean) => void;
-  setNewAgent: (value: Partial<IAgent>) => void;
+  setNewAgent: React.Dispatch<React.SetStateAction<IAgentNode>>;
   onAddNewAgent: () => void;
   setIsConnectionDialogOpen: (value: boolean) => void;
-  setConnectionType: (value: "sequential" | "parallel" | "conditional") => void;
+  setConnectionType: (value: IAgentConnectionType) => void;
   setConnectionCondition: (value: string) => void;
   onOptimizePrompt: () => void;
   onGenerateSchema: () => void;
   setIsUpdatingExisting: (value: boolean) => void;
   setIsPromptExpanded: (value: boolean) => void;
   onCompleteConnection: (
-    type: "sequential" | "parallel" | "conditional",
+    type: IAgentConnectionType,
     condition?: string
   ) => void;
 }
@@ -96,7 +97,10 @@ export const FlowDialogs = ({
               <Input
                 value={newAgent.name}
                 onChange={(e) =>
-                  setNewAgent({ ...newAgent, name: e.target.value })
+                  setNewAgent((prevAgent: IAgentNode) => ({
+                    ...prevAgent,
+                    data: { ...prevAgent.data, name: e.target.value },
+                  }))
                 }
               />
             </div>
@@ -105,7 +109,10 @@ export const FlowDialogs = ({
               <Input
                 value={newAgent.title}
                 onChange={(e) =>
-                  setNewAgent({ ...newAgent, title: e.target.value })
+                  setNewAgent((prevAgent: IAgentNode) => ({
+                    ...prevAgent,
+                    data: { ...prevAgent.data, title: e.target.value },
+                  }))
                 }
               />
             </div>
@@ -114,7 +121,10 @@ export const FlowDialogs = ({
               <Textarea
                 value={newAgent.instructions}
                 onChange={(e) =>
-                  setNewAgent({ ...newAgent, instructions: e.target.value })
+                  setNewAgent((prevAgent: IAgentNode) => ({
+                    ...prevAgent,
+                    data: { ...prevAgent.data, instructions: e.target.value },
+                  }))
                 }
                 rows={5}
               />
@@ -124,7 +134,10 @@ export const FlowDialogs = ({
               <Select
                 value={newAgent.model_provider}
                 onValueChange={(value) =>
-                  setNewAgent({ ...newAgent, model_provider: value })
+                  setNewAgent((prevAgent: IAgentNode) => ({
+                    ...prevAgent,
+                    data: { ...prevAgent.data, model_provider: value },
+                  }))
                 }
               >
                 <SelectTrigger>
@@ -141,7 +154,10 @@ export const FlowDialogs = ({
               <Select
                 value={newAgent.model_name}
                 onValueChange={(value) =>
-                  setNewAgent({ ...newAgent, model_name: value })
+                  setNewAgent((prevAgent: IAgentNode) => ({
+                    ...prevAgent,
+                    data: { ...prevAgent.data, model_name: value },
+                  }))
                 }
               >
                 <SelectTrigger>

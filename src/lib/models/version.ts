@@ -1,5 +1,4 @@
 import mongoose from "mongoose";
-import { Model } from "./model";
 import { Edge, IEdge } from "./edge";
 import { INode, Node } from "./node";
 import { IProject } from "./project";

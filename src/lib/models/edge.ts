@@ -1,18 +1,18 @@
 import mongoose from "mongoose";
 import { IVersion } from "./version";
+import { IModelEdge } from "@/lib/types/xgo/models";
+import { IAgentEdge } from "@/lib/types/xgo/agents";
+import { Edge as EdgeType } from "reactflow";
 
-export interface IEdge {
+export type TEdge = IModelEdge | IAgentEdge;
+
+export type IEdge = EdgeType<TEdge> & {
   id: string;
   _id?: string;
   createdAt?: Date;
   updatedAt?: Date;
   version?: IVersion;
-  data: any;
-  source: string;
-  target: string;
-  animated: boolean;
-  label: string;
-}
+};
 
 export const edgeSchema = new mongoose.Schema<IEdge>(
   {

@@ -4,9 +4,7 @@ import { generatePageStructure } from "./page";
 import templates from "../constants/templates";
 import { unlink } from "fs";
 import { templateBuilder } from "../constants/projects";
-import { PageNode } from "@/lib/types/xgo";
-import { IModel } from "@/lib/models/model";
-import { IEdge } from "@/lib/models/edge";
+import { IVersion } from "@/lib/models/version";
 
 export interface GeneratedCode {
   path: string;
@@ -15,18 +13,16 @@ export interface GeneratedCode {
 
 export async function generateCode(
   projectName: string,
-  version: {
-    name: string;
-    models: IModel[];
-    relations: IEdge[];
-  },
+  version: IVersion,
   outputPath: string
 ) {
   try {
-    const adminDashboardPages: PageNode[] = templateBuilder.initiate("crm", {
+    const models = version.nodes;
+    const relations = version.edges;
+    const adminDashboardPages = templateBuilder.initiate("crm", {
       projectName,
       version: version.name,
-      models: version.models,
+      models,
     });
 
     // Ana dizinleri oluştur
@@ -56,8 +52,8 @@ export async function generateCode(
     await generatePageStructure(adminDashboardPages, `${outputPath}/app/`);
 
     // Her model için dosyaları oluştur
-    for (const model of version.models) {
-      const routeName = model.name.toLowerCase();
+    for (const model of models) {
+      const routeName = model.data.name.toLowerCase();
 
       // Model-specific dizinleri oluştur
       await Promise.all([
@@ -82,15 +78,15 @@ export async function generateCode(
         // Models
         writeFile(
           join(outputPath, "lib/models", `${routeName}.ts`),
-          templates.model.default.template(model.name, {
+          templates.model.default.template(model.data.name, {
             model,
-            relations: version.relations,
+            relations: relations,
           })
         ),
         // API
         writeFile(
           join(outputPath, "app/api/(root)", `${routeName}s`, "route.ts"),
-          templates.route.default.template(model.name, {})
+          templates.route.default.template(model.data.name, {})
         ),
         // API ID
         writeFile(
@@ -101,22 +97,22 @@ export async function generateCode(
             `[${routeName}Id]`,
             "route.ts"
           ),
-          templates.route.id.template(model.name, {})
+          templates.route.id.template(model.data.name, {})
         ),
         // Services
         writeFile(
           join(outputPath, "lib/services", `${routeName}.ts`),
-          templates.service.default.template(model.name, {})
+          templates.service.default.template(model.data.name, {})
         ),
         // Actions
         writeFile(
           join(outputPath, "lib/actions", `${routeName}.ts`),
-          templates.action.default.template(model.name, {})
+          templates.action.default.template(model.data.name, {})
         ),
         // Schemas
         writeFile(
           join(outputPath, "lib/schemas", `${routeName}.ts`),
-          templates.schema.default.template(model.name, { model })
+          templates.schema.default.template(model.data.name, { model })
         ),
       ]);
     }
@@ -199,7 +195,7 @@ export async function generateCode(
       writeFile(
         join(outputPath, "components/sidebar/app-sidebar.tsx"),
         templates.components.sidebar.default.template("", {
-          models: version.models,
+          models: models,
         })
       ),
 

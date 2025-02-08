@@ -5,8 +5,7 @@ import { generateCode } from "./code";
 import util from "util";
 import templates from "../constants/templates";
 import { buildPostmanCollection } from "./postman";
-import { IModel } from "@/lib/models/model";
-import { IEdge } from "@/lib/models/edge";
+import { IVersion } from "@/lib/models/version";
 
 const execPromise = util.promisify(exec);
 const writeFilePromise = util.promisify(writeFile);
@@ -14,11 +13,7 @@ const writeFilePromise = util.promisify(writeFile);
 // Next.js projesi oluşturma fonksiyonu
 export async function createNextProject(appData: {
   projectName: string;
-  version: {
-    name: string;
-    models: IModel[];
-    relations: IEdge[];
-  };
+  version: IVersion;
 }): Promise<{ success: boolean; error?: string }> {
   const { projectName, version } = appData;
   const projectPath = path.resolve(process.cwd(), projectName);

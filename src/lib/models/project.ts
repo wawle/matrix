@@ -1,10 +1,6 @@
-import mongoose, { Model } from "mongoose";
+import mongoose from "mongoose";
 import { IUser } from "./user";
 import { IVersion, Version } from "./version";
-import { IModel } from "./model";
-import { IPage, Page } from "./page";
-import { IScreen, Screen } from "./screen";
-import { Agent, IAgent } from "./agent";
 
 export interface IProject {
   id: string;
@@ -14,10 +10,6 @@ export interface IProject {
   name: string;
   description: string;
   user: IUser;
-  models: IModel[];
-  agents: IAgent[];
-  pages: IPage[];
-  screens: IScreen[];
   versions: IVersion[];
 }
 
@@ -50,39 +42,9 @@ projectSchema.virtual("versions", {
   foreignField: "project",
 });
 
-projectSchema.virtual("models", {
-  ref: Model,
-  localField: "_id",
-  foreignField: "project",
-});
-
-projectSchema.virtual("agents", {
-  ref: Agent,
-  localField: "_id",
-  foreignField: "project",
-});
-
-projectSchema.virtual("pages", {
-  ref: Page,
-  localField: "_id",
-  foreignField: "project",
-});
-
-projectSchema.virtual("screens", {
-  ref: Screen,
-  localField: "_id",
-  foreignField: "project",
-});
-
 projectSchema.pre("findOneAndDelete", async function (next) {
   const { _id } = this.getQuery();
-  await Promise.all([
-    Version.deleteMany({ project: _id }),
-    Model.deleteMany({ project: _id }),
-    Agent.deleteMany({ project: _id }),
-    Page.deleteMany({ project: _id }),
-    Screen.deleteMany({ project: _id }),
-  ]);
+  await Promise.all([Version.deleteMany({ project: _id })]);
   next();
 });
 

@@ -33,6 +33,11 @@ import { toast } from "sonner";
 import { INode } from "@/lib/models/node";
 import { IEdge } from "@/lib/models/edge";
 import { useParams } from "next/navigation";
+import {
+  IAgentConnectionType,
+  IAgentEdge,
+  IAgentNode,
+} from "@/lib/types/xgo/agents";
 
 interface Props {
   versions: IVersion[];
@@ -41,12 +46,29 @@ interface Props {
   defaultAutoSave: boolean;
 }
 
-type ConnectionType = "sequential" | "parallel" | "conditional";
-
-interface CustomEdgeData {
-  type: ConnectionType;
-  condition?: string;
-}
+const defaultAgentNode: IAgentNode = {
+  id: "",
+  type: "agent",
+  position: {
+    x: 0,
+    y: 0,
+  },
+  data: {
+    instructions: "",
+    stream: false,
+    model_provider: "openai",
+    model_name: "gpt-3.5-turbo",
+    max_tokens: 1000,
+    temperature: 0.5,
+    seed: 1,
+    name: "",
+    title: "",
+    is_public: false,
+    photo: "",
+    key: "",
+    children: [],
+  },
+};
 
 export default function FlowPlayground({
   versions,
@@ -77,21 +99,14 @@ export default function FlowPlayground({
 
   // Agent durumları
   const [isEditingAgent, setIsEditingAgent] = useState(false);
-  const [newAgent, setNewAgent] = useState<Partial<IAgent>>({
-    name: "",
-    title: "",
-    instructions: "",
-    is_public: false,
-    model_provider: "openai",
-    model_name: "gpt-3.5-turbo",
-  });
+  const [newAgent, setNewAgent] = useState<IAgentNode>(defaultAgentNode);
 
   // Bağlantı durumları
   const [pendingConnection, setPendingConnection] = useState<Connection | null>(
     null
   );
   const [connectionType, setConnectionType] =
-    useState<ConnectionType>("sequential");
+    useState<IAgentConnectionType>("sequential");
   const [connectionCondition, setConnectionCondition] = useState<string>("");
 
   // ReactFlow durumları
@@ -165,19 +180,15 @@ export default function FlowPlayground({
 
   // Bağlantı tamamlama
   const completeConnection = useCallback(
-    (type: ConnectionType, condition?: string) => {
+    (type: IAgentConnectionType, condition?: string) => {
       if (!pendingConnection?.source || !pendingConnection?.target) return;
 
-      const newEdge: Edge<CustomEdgeData> = {
+      const newEdge: IAgentEdge = {
         id: `${pendingConnection.source}-${pendingConnection.target}`,
         source: pendingConnection.source,
         target: pendingConnection.target,
-        type: "custom",
         animated: true,
-        data: {
-          type,
-          condition,
-        },
+        type: type,
         style: {
           stroke:
             type === "sequential"
@@ -209,20 +220,16 @@ export default function FlowPlayground({
 
   // Edge güncelleme
   const updateEdge = useCallback(
-    (edgeId: string, updates: Partial<CustomEdgeData>) => {
+    (edgeId: string, updates: Partial<IAgentEdge>) => {
       setEdges((eds) =>
         eds.map((edge) => {
           if (edge.id === edgeId) {
-            const currentData = (edge as Edge<CustomEdgeData>).data || {
-              type: "sequential" as ConnectionType,
+            const currentData = (edge as IAgentEdge).data || {
+              type: "sequential" as IAgentConnectionType,
             };
-            const updatedEdge: Edge<CustomEdgeData> = {
+            const updatedEdge: IAgentEdge = {
               ...edge,
-              data: {
-                ...currentData,
-                type: updates.type || currentData.type,
-                condition: updates.condition,
-              },
+              type: updates.type || currentData.type,
               style: {
                 ...edge.style,
                 stroke:
@@ -264,27 +271,10 @@ export default function FlowPlayground({
 
   // Yeni agent ekleme
   const addNewAgent = useCallback(() => {
-    if (!newAgent.name) return;
+    if (!newAgent.data.name) return;
 
-    const newNode: Node = {
-      id: Date.now().toString(),
-      type: "agent",
-      position: {
-        x: Math.random() * 500,
-        y: Math.random() * 500,
-      },
-      data: newAgent,
-    };
-
-    setNodes((nds) => [...nds, newNode]);
-    setNewAgent({
-      name: "",
-      title: "",
-      instructions: "",
-      is_public: false,
-      model_provider: "openai",
-      model_name: "gpt-3.5-turbo",
-    });
+    setNodes((nds) => [...nds, newAgent]);
+    setNewAgent(defaultAgentNode);
     setIsDialogOpen(false);
   }, [newAgent]);
 

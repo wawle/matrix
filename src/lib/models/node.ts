@@ -1,18 +1,18 @@
 import mongoose from "mongoose";
 import { IVersion } from "./version";
+import { Node as NodeType } from "reactflow";
 
-export interface INode {
+export interface INode<T> extends NodeType<T> {
   id: string;
   _id?: string;
   createdAt?: Date;
   updatedAt?: Date;
   version?: IVersion;
-  data: any;
   type: "model" | "agent" | "page" | "screen";
-  position: { x: number; y: number };
+  data: T;
 }
 
-export const nodeSchema = new mongoose.Schema<INode>(
+export const nodeSchema = new mongoose.Schema<INode<any>>(
   {
     version: {
       type: mongoose.Schema.Types.ObjectId,
@@ -41,4 +41,4 @@ export const nodeSchema = new mongoose.Schema<INode>(
 );
 
 export const Node =
-  mongoose.models.Node || mongoose.model<INode>("Node", nodeSchema);
+  mongoose.models.Node || mongoose.model<INode<any>>("Node", nodeSchema);

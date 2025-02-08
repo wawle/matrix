@@ -1,30 +1,46 @@
 import { IEdge } from "@/lib/models/edge";
-import { IModel } from "@/lib/models/model";
+import { INode } from "@/lib/models/node";
+import { IModelData } from "@/lib/types/xgo/models";
 
 export const model = {
   template: (name: string, props: any): string => {
-    const { model, relations }: { model: IModel; relations: IEdge[] } = props;
+    const {
+      model,
+      relations,
+    }: { model: INode<IModelData>; relations: IEdge[] } = props;
     const relatedRelations = relations.filter(
-      (rel) =>
-        rel.data.relationType === "oneToMany" && rel.target === model.name
+      (rel) => rel.type === "oneToMany" && rel.target === model.data.name
     );
-    const fields = model.fields
+    const fields = model.data.schemas
       .map((field: any) => {
         if (field.type === "reference") {
           return `  
         ${field.name}: {
           type: mongoose.Schema.Types.ObjectId,
           ref: "${field.name.charAt(0).toUpperCase() + field.name.slice(1)}",
-          validations: ${JSON.stringify(field.validations)},
+          required: ${field.required || "false"},
+          unique: ${field.unique || "false"},
+          default: "${field.default}",
+          match: ${field.match || "null"},
+          min: ${field.min || "null"},
+          max: ${field.max || "null"},
+          minLength: ${field.minLength || "null"},
+          maxLength: ${field.maxLength || "null"},
+          enum: ${field.enum || "null"},
         }`;
         } else {
           return `  
         ${field.name}: {
           type: ${field.type.charAt(0).toUpperCase() + field.type.slice(1)},
-          default: "${field.validations?.default}",
-          required: ${field.validations?.required || "false"},
-          unique: ${field.validations?.unique || "false"},
-          validations: ${JSON.stringify(field.validations)},
+          default: "${field.default}",
+          required: ${field.required || "false"},
+          unique: ${field.unique || "false"},
+          match: ${field.match || "null"},
+          min: ${field.min || "null"},
+          max: ${field.max || "null"},
+          minLength: ${field.minLength || "null"},
+          maxLength: ${field.maxLength || "null"},
+          enum: ${field.enum || "null"},
         }`;
         }
       })
@@ -43,7 +59,7 @@ export const model = {
       .join("\n");
 
     let imports = "";
-    const interfaceFields = model.fields
+    const interfaceFields = model.schemas
       .map((field) => {
         const modelName =
           field.name.charAt(0).toUpperCase() + field.name.slice(1);

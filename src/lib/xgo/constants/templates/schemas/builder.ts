@@ -1,79 +1,72 @@
-import { IModel } from "@/lib/models/model";
+import { ISchema } from "@/lib/types/xgo/models";
 
-export function schemaBuilder(model: IModel): string {
+export function schemaBuilder(schemas: ISchema[]): string {
   const fields = [
     {
       name: "id",
       type: "string",
-      validations: {
-        required: false,
-        default: "",
-      },
+      required: false,
+      default: "",
     },
-    ...model.fields,
-  ].map((field) => {
-    return {
-      ...field,
-      validations: field.validations || {},
-    };
-  });
+    ...schemas,
+  ];
 
   const schemaDefinition = fields
     .map((field) => {
       switch (field.type) {
         case "string":
-          const strOpt = field.validations.required
-            ? ".min(1, 'Required')"
-            : ".optional()";
+          const strOpt = field.required ? ".min(1, 'Required')" : ".optional()";
           const strDefault =
-            field.validations.default !== undefined
-              ? `.default(${JSON.stringify(field.validations.default)})`
+            field.default !== undefined
+              ? `.default(${JSON.stringify(field.default)})`
               : "";
           return `  ${field.name}: z.string()${strOpt}${strDefault}`;
         case "number":
-          const numberOpt = field.validations.required ? "" : ".optional()";
+          const numberOpt = field.required
+            ? ".min(1, 'Required')"
+            : ".optional()";
           const numberDefault =
-            field.validations.default !== undefined
-              ? `.default(${Number(field.validations.default)})`
+            field.default !== undefined
+              ? `.default(${Number(field.default)})`
               : "";
           return `  ${field.name}: z.number()${numberOpt}${numberDefault}`;
         case "boolean":
-          const booleanOpt = field.validations.required ? "" : ".optional()";
+          const booleanOpt = field.required ? "" : ".optional()";
           const booleanDefault =
-            field.validations.default !== undefined
-              ? `.default(${Boolean(field.validations.default)})`
+            field.default !== undefined
+              ? `.default(${Boolean(field.default)})`
               : "";
           return `  ${field.name}: z.boolean()${booleanOpt}${booleanDefault}`;
         case "date":
-          const dateOpt = field.validations.required ? "" : ".optional()";
+          const dateOpt = field.required ? "" : ".optional()";
           const dateDefault =
-            field.validations.default !== undefined
-              ? `.default(${new Date(field.validations.default)})`
+            field.default !== undefined
+              ? `.default(${new Date(field.default)})`
               : "";
           return `  ${field.name}: z.date()${dateOpt}${dateDefault}`;
         case "array":
-          const arrayOpt = field.validations.required
+          const arrayOpt = field.required
             ? ".min(1, 'Required')"
             : ".optional()";
           const arrayDefault =
-            field.validations.default !== undefined
-              ? `.default(${JSON.stringify(field.validations.default)})`
+            field.default !== undefined
+              ? `.default(${JSON.stringify(field.default)})`
               : "";
           return `  ${field.name}: z.array(z.any())${arrayOpt}${arrayDefault}`;
         case "object":
-          const objectOpt = field.validations.required ? "" : ".optional()";
+          const objectOpt = field.required ? "" : ".optional()";
           const objectDefault =
-            field.validations.default !== undefined
-              ? `.default(${JSON.stringify(field.validations.default)})`
+            field.default !== undefined
+              ? `.default(${JSON.stringify(field.default)})`
               : "";
           return `  ${field.name}: z.object({})${objectOpt}${objectDefault}`;
         case "reference":
-          const referenceOpt = field.validations.required
+          const referenceOpt = field.required
             ? ".min(1, 'Required')"
             : ".optional()";
           const referenceDefault =
-            field.validations.default !== undefined
-              ? `.default(${JSON.stringify(field.validations.default)})`
+            field.default !== undefined
+              ? `.default(${JSON.stringify(field.default)})`
               : "";
           return `  ${field.name}: z.string()${referenceOpt}${referenceDefault}`;
         default:

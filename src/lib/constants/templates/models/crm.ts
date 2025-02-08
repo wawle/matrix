@@ -15,34 +15,37 @@ export const crmModel: IVersion = {
       data: {
         name: "User",
         description: "Müşteri ve potansiyel müşteri bilgilerini içeren şema",
-        fields: [
+        schemas: [
           {
             id: "c1",
             name: "fullname",
             type: "string",
             label: "Full Name",
-            validations: { required: true },
+            required: true,
           },
           {
             id: "c2",
             name: "email",
             type: "string",
             label: "Email",
-            validations: { required: true, email: true, unique: true },
+            required: true,
+            unique: true,
+            match: "/^w+([.-]?w+)*@w+([.-]?w+)*(.w{2,3})+$/",
           },
           {
             id: "c4",
             name: "role",
             type: "string",
             label: "Role",
-            validations: { required: true, default: "user" },
+            required: true,
+            default: "user",
           },
           {
             id: "c5",
             name: "password",
             type: "string",
             label: "Password",
-            validations: { required: true },
+            required: true,
           },
         ],
       },
@@ -54,34 +57,39 @@ export const crmModel: IVersion = {
       data: {
         name: "Customer",
         description: "Customer bilgilerini içeren şema",
-        fields: [
+        schemas: [
           {
             id: "co2",
             name: "fullname",
             type: "string",
             label: "Full Name",
-            validations: { required: true },
+            required: true,
           },
           {
             id: "co3",
             name: "email",
             type: "string",
             label: "Email",
-            validations: { required: true, email: true, unique: true },
+            required: true,
+            unique: true,
+            match: "/^w+([.-]?w+)*@w+([.-]?w+)*(.w{2,3})+$/",
           },
           {
             id: "co4",
             name: "phone",
             type: "string",
             label: "Phone",
-            validations: { required: false },
+            required: false,
           },
           {
             id: "co5",
             name: "user",
             type: "reference",
             label: "User",
-            validations: { required: true, optionLabel: "fullname" },
+            required: true,
+            config: {
+              optionLabel: "fullname",
+            },
           },
         ],
       },
@@ -93,62 +101,68 @@ export const crmModel: IVersion = {
       data: {
         name: "Activity",
         description: "Activity bilgilerini içeren şema",
-        fields: [
+        schemas: [
           {
             id: "o2",
             name: "title",
             type: "string",
             label: "Title",
-            validations: { required: true },
+            required: true,
           },
           {
             id: "o3",
             name: "user",
             type: "reference",
             label: "User",
-            validations: { required: true, optionLabel: "fullname" },
+            required: true,
+            config: {
+              optionLabel: "fullname",
+            },
           },
           {
             id: "o4",
             name: "customer",
             type: "reference",
             label: "Customer",
-            validations: { required: true, optionLabel: "fullname" },
+            required: true,
+            config: {
+              optionLabel: "fullname",
+            },
           },
           {
             id: "o5",
             name: "status",
             type: "string",
             label: "Status",
-            validations: { required: true },
+            required: true,
           },
           {
             id: "o6",
             name: "description",
             type: "string",
             label: "Description",
-            validations: { required: false },
+            required: false,
           },
           {
             id: "o7",
             name: "date",
             type: "date",
             label: "Date",
-            validations: { required: true },
+            required: true,
           },
           {
             id: "o8",
             name: "type",
             type: "string",
             label: "Type",
-            validations: { required: true },
+            required: true,
           },
           {
             id: "o9",
             name: "priority",
             type: "string",
             label: "Priority",
-            validations: { required: true },
+            required: true,
           },
         ],
       },
@@ -159,10 +173,9 @@ export const crmModel: IVersion = {
       id: "e1",
       source: "Customer",
       target: "User",
-
       animated: true,
       label: "N:1",
-      data: { relationType: "oneToMany" },
+      type: "oneToMany",
     },
     {
       id: "e2",
@@ -171,7 +184,7 @@ export const crmModel: IVersion = {
 
       animated: true,
       label: "N:1",
-      data: { relationType: "oneToMany" },
+      type: "oneToMany",
     },
     {
       id: "e3",
@@ -180,7 +193,7 @@ export const crmModel: IVersion = {
 
       animated: true,
       label: "N:1",
-      data: { relationType: "oneToMany" },
+      type: "oneToMany",
     },
   ],
 };

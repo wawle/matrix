@@ -1,19 +1,19 @@
-import { IModel } from "@/lib/models/model";
-import { PageNode } from "@/lib/types/xgo";
+import { IPageNode } from "@/lib/types/xgo/pages";
+import { INode } from "@/lib/models/node";
 
 export const templateBuilder = {
   initiate: (
     template: "crm",
-    props: { projectName: string; version: string; models: IModel[] }
+    props: { projectName: string; version: string; models: INode[] }
   ) => {
     const { projectName, version, models } = props;
 
     return templateBuilder[template]({ projectName, version, models });
   },
-  crm: (props: { projectName: string; version: string; models: IModel[] }) => {
+  crm: (props: { projectName: string; version: string; models: INode[] }) => {
     const { projectName, version, models } = props;
     // Model-specific sayfaları oluştur
-    const modelPages: PageNode[] = models.map((model) => {
+    const modelPages: IPageNode[] = models.map((model) => {
       const routeName = model.name.toLowerCase();
       return {
         name: `${routeName}s`,
@@ -40,7 +40,7 @@ export const templateBuilder = {
                   template: "ui.list",
                   props: {
                     modelName: model.name,
-                    defaultColumnVisibility: model.fields
+                    defaultColumnVisibility: model.schemas
                       .filter(
                         (field) =>
                           field.name !== "id" &&
@@ -84,7 +84,7 @@ export const templateBuilder = {
                           [`${routeName}Id`]: `params.${routeName}Id`,
                         },
                         modelName: model.name,
-                        fields: model.fields,
+                        fields: model.schemas,
                       },
                     },
                   ],
@@ -96,7 +96,7 @@ export const templateBuilder = {
       };
     });
 
-    const adminDashboardPages: PageNode[] = [
+    const adminDashboardPages: IPageNode[] = [
       {
         name: "(root)",
         children: [
