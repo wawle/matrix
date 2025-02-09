@@ -5,6 +5,7 @@ import { templates } from "@/lib/constants/templates";
 import { notFound } from "next/navigation";
 import { fetchVersionBySlug, getAutoSaveState } from "@/lib/actions/version";
 import { IVersion, VersionType } from "@/lib/models/version";
+import { INode } from "@/lib/models/node";
 
 interface Props {
   params: Promise<{
@@ -25,6 +26,16 @@ const VersionPlaygroundPage = async ({ params }: Props) => {
   switch (type) {
     case VersionType.MODEL:
       const defaultModelVersion = version || templates.models[0];
+      defaultModelVersion.nodes = defaultModelVersion.nodes
+        ? (defaultModelVersion.nodes.map((node) => ({
+            ...node,
+            id: node.name,
+          })) as INode<VersionType.MODEL>[])
+        : [];
+      defaultModelVersion.edges = defaultModelVersion.edges
+        ? defaultModelVersion.edges
+        : [];
+
       return (
         <SchemaPlayground
           version={defaultModelVersion as IVersion<VersionType.MODEL>}
@@ -34,6 +45,8 @@ const VersionPlaygroundPage = async ({ params }: Props) => {
       );
     case VersionType.AGENT:
       const defaultVersion = version || templates.flows[0];
+      defaultVersion.nodes = defaultVersion.nodes ? defaultVersion.nodes : [];
+      defaultVersion.edges = defaultVersion.edges ? defaultVersion.edges : [];
       return (
         <FlowPlayground
           version={defaultVersion as IVersion<VersionType.AGENT>}

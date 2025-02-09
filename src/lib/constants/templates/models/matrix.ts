@@ -9,6 +9,7 @@ export const matrixModel: IVersion<VersionType.MODEL> = {
   nodes: [
     {
       id: "User",
+      name: "User",
       position: { x: 100, y: 100 },
       type: VersionType.MODEL,
       data: {
@@ -62,6 +63,7 @@ export const matrixModel: IVersion<VersionType.MODEL> = {
     },
     {
       id: "Project",
+      name: "Project",
       position: { x: 500, y: 100 },
       type: VersionType.MODEL,
       data: {
@@ -107,6 +109,7 @@ export const matrixModel: IVersion<VersionType.MODEL> = {
     },
     {
       id: "Version",
+      name: "Version",
       position: { x: 100, y: 400 },
       type: VersionType.MODEL,
       data: {
@@ -156,6 +159,7 @@ export const matrixModel: IVersion<VersionType.MODEL> = {
     },
     {
       id: "Agent",
+      name: "Agent",
       position: { x: 500, y: 800 },
       type: VersionType.MODEL,
       data: {
@@ -281,6 +285,7 @@ export const matrixModel: IVersion<VersionType.MODEL> = {
     },
     {
       id: "Key",
+      name: "Key",
       position: { x: 500, y: 800 },
       type: VersionType.MODEL,
       data: {
@@ -332,6 +337,7 @@ export const matrixModel: IVersion<VersionType.MODEL> = {
     },
     {
       id: "Chat",
+      name: "Chat",
       position: { x: 500, y: 800 },
       type: VersionType.MODEL,
       data: {
@@ -374,6 +380,7 @@ export const matrixModel: IVersion<VersionType.MODEL> = {
     },
     {
       id: "Session",
+      name: "Session",
       position: { x: 500, y: 800 },
       type: VersionType.MODEL,
       data: {
@@ -401,6 +408,7 @@ export const matrixModel: IVersion<VersionType.MODEL> = {
     },
     {
       id: "Family",
+      name: "Family",
       position: { x: 500, y: 800 },
       type: VersionType.MODEL,
       data: {
@@ -428,6 +436,7 @@ export const matrixModel: IVersion<VersionType.MODEL> = {
     },
     {
       id: "Node",
+      name: "Node",
       position: { x: 500, y: 800 },
       type: VersionType.MODEL,
       data: {
@@ -580,6 +589,7 @@ export const matrixModel: IVersion<VersionType.MODEL> = {
     },
     {
       id: "Edge",
+      name: "Edge",
       position: { x: 500, y: 800 },
       type: VersionType.MODEL,
       data: {
@@ -658,8 +668,8 @@ export const matrixModel: IVersion<VersionType.MODEL> = {
   edges: [
     {
       id: "e1",
-      source: "Key",
-      target: "Agent",
+      source: "Agent",
+      target: "Key",
       animated: true,
       label: "N:1",
       type: VersionType.MODEL,
@@ -669,8 +679,8 @@ export const matrixModel: IVersion<VersionType.MODEL> = {
     },
     {
       id: "e2",
-      source: "Project",
-      target: "Agent",
+      source: "Agent",
+      target: "Project",
       animated: true,
       label: "N:1",
       type: VersionType.MODEL,
@@ -680,8 +690,8 @@ export const matrixModel: IVersion<VersionType.MODEL> = {
     },
     {
       id: "e3",
-      source: "Session",
-      target: "Chat",
+      source: "Chat",
+      target: "Session",
       animated: true,
       label: "N:1",
       type: VersionType.MODEL,
@@ -691,8 +701,8 @@ export const matrixModel: IVersion<VersionType.MODEL> = {
     },
     {
       id: "e4",
-      source: "Version",
-      target: "Edge",
+      source: "Edge",
+      target: "Version",
       animated: true,
       label: "N:1",
       type: VersionType.MODEL,
@@ -702,8 +712,8 @@ export const matrixModel: IVersion<VersionType.MODEL> = {
     },
     {
       id: "e5",
-      source: "Family",
-      target: "Agent",
+      source: "Agent",
+      target: "Family",
       animated: true,
       label: "N:1",
       type: VersionType.MODEL,
@@ -714,8 +724,8 @@ export const matrixModel: IVersion<VersionType.MODEL> = {
 
     {
       id: "e7",
-      source: "User",
-      target: "Key",
+      source: "Key",
+      target: "User",
       animated: true,
       label: "N:1",
       type: VersionType.MODEL,
@@ -726,8 +736,8 @@ export const matrixModel: IVersion<VersionType.MODEL> = {
 
     {
       id: "e9",
-      source: "Version",
-      target: "Node",
+      source: "Node",
+      target: "Version",
       animated: true,
       label: "N:1",
       type: VersionType.MODEL,
@@ -738,8 +748,8 @@ export const matrixModel: IVersion<VersionType.MODEL> = {
 
     {
       id: "e11",
-      source: "User",
-      target: "Project",
+      source: "Project",
+      target: "User",
       animated: true,
       label: "N:1",
       type: VersionType.MODEL,
@@ -750,8 +760,8 @@ export const matrixModel: IVersion<VersionType.MODEL> = {
 
     {
       id: "e13",
-      source: "Agent",
-      target: "Session",
+      source: "Session",
+      target: "Agent",
       animated: true,
       label: "N:1",
       type: VersionType.MODEL,
@@ -761,8 +771,8 @@ export const matrixModel: IVersion<VersionType.MODEL> = {
     },
     {
       id: "e14",
-      source: "User",
-      target: "Session",
+      source: "Session",
+      target: "User",
       animated: true,
       label: "N:1",
       type: VersionType.MODEL,
@@ -772,8 +782,8 @@ export const matrixModel: IVersion<VersionType.MODEL> = {
     },
     {
       id: "e15",
-      source: "Project",
-      target: "Version",
+      source: "Version",
+      target: "Project",
       animated: true,
       label: "N:1",
       type: VersionType.MODEL,

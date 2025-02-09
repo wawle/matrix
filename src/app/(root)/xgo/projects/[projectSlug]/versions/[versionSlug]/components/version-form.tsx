@@ -22,6 +22,7 @@ import {
 } from "@/lib/actions/version";
 
 import { VersionType } from "@/lib/models/version";
+import Link from "next/link";
 
 const formSchema = z.object({
   name: z.string().min(3, {
@@ -46,7 +47,8 @@ interface VersionFormProps {
 
 export function VersionForm({ defaultValues, versionId }: VersionFormProps) {
   const router = useRouter();
-  const { projectSlug } = useParams();
+  const { projectSlug, versionSlug } = useParams();
+
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     defaultValues,
@@ -112,9 +114,16 @@ export function VersionForm({ defaultValues, versionId }: VersionFormProps) {
           )}
         />
 
-        <Button type="submit">
-          {versionId ? "Version Güncelle" : "Version Oluştur"}
-        </Button>
+        <div className="flex items-center justify-between">
+          <Button type="submit">
+            {versionId ? "Version Güncelle" : "Version Oluştur"}
+          </Button>
+          <Link
+            href={`/xgo/projects/${projectSlug}/versions/${versionSlug}/playground`}
+          >
+            <Button variant="link">Playground'a Git</Button>
+          </Link>
+        </div>
       </form>
     </Form>
   );

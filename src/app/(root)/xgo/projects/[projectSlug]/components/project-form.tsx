@@ -107,13 +107,17 @@ export function ProjectForm({ defaultValues, projectId }: ProjectFormProps) {
           <Button type="submit">
             {projectId ? "Proje Güncelle" : "Proje Oluştur"}
           </Button>
-          <Button
-            variant="link"
-            type="button"
-            onClick={() => router.push(`/xgo/projects/${projectSlug}/versions`)}
-          >
-            Versions
-          </Button>
+          {projectId && (
+            <Button
+              variant="link"
+              type="button"
+              onClick={() =>
+                router.push(`/xgo/projects/${projectSlug}/versions`)
+              }
+            >
+              Versions
+            </Button>
+          )}
         </div>
       </form>
     </Form>

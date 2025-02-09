@@ -13,17 +13,7 @@ import {
 } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
 import { Separator } from "@/components/ui/separator";
-import {
-  Save,
-  Share2,
-  Trash2,
-  Wand2,
-  Database,
-  FileJson,
-  Plus,
-  Cpu,
-  Loader2,
-} from "lucide-react";
+import { Save, Wand2, Plus, Cpu, Loader2 } from "lucide-react";
 import {
   Tooltip,
   TooltipContent,
@@ -35,34 +25,24 @@ import { templates } from "@/lib/constants/templates";
 import { useParams } from "next/navigation";
 
 interface SchemaHeaderProps {
-  selectedPreset: string;
   isAutoSaveEnabled: boolean;
-  selectedNode: any | null;
   isGeneratingApp: boolean;
+  isSaving: boolean;
   onPresetChange: (value: string) => void;
   onAutoSaveChange: (checked: boolean) => void;
   onSave: () => void;
-  onExport: () => void;
-  onDelete: (versionId: string) => void;
-  onGenerateMongoSchema: () => void;
-  onGenerateTypeScript: () => void;
   onNewSchema: () => void;
   onAIPrompt: () => void;
   onGenerateApp: () => void;
 }
 
 export function SchemaHeader({
-  selectedPreset,
   isAutoSaveEnabled,
-  selectedNode,
   isGeneratingApp,
+  isSaving,
   onPresetChange,
   onAutoSaveChange,
   onSave,
-  onExport,
-  onDelete,
-  onGenerateMongoSchema,
-  onGenerateTypeScript,
   onNewSchema,
   onAIPrompt,
   onGenerateApp,
@@ -100,37 +80,15 @@ export function SchemaHeader({
             size="icon"
             title="Kaydet"
             onClick={onSave}
+            disabled={isSaving}
             className="h-7 w-7"
           >
-            <Save className="h-4 w-4" />
+            {isSaving ? (
+              <Loader2 className="h-4 w-4 animate-spin" />
+            ) : (
+              <Save className="h-4 w-4" />
+            )}
           </Button>
-
-          <Separator orientation="vertical" className="h-7" />
-
-          <Button
-            variant="ghost"
-            size="icon"
-            title="Dışa Aktar"
-            onClick={onExport}
-            className="h-7 w-7"
-          >
-            <Share2 className="h-4 w-4" />
-          </Button>
-
-          {selectedPreset && (
-            <>
-              <Separator orientation="vertical" className="h-7" />
-              <Button
-                variant="ghost"
-                size="icon"
-                title="Şablonu Sil"
-                className="h-7 w-7"
-                onClick={() => onDelete(selectedPreset)}
-              >
-                <Trash2 className="h-4 w-4" />
-              </Button>
-            </>
-          )}
 
           <Separator orientation="vertical" className="h-7" />
 
@@ -180,40 +138,6 @@ export function SchemaHeader({
             </TooltipTrigger>
             <TooltipContent side="bottom">
               <p>AI ile Şema Oluştur</p>
-            </TooltipContent>
-          </Tooltip>
-
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={onGenerateMongoSchema}
-                disabled={!selectedNode}
-              >
-                <Database className="mr-2 h-4 w-4" />
-                MongoDB
-              </Button>
-            </TooltipTrigger>
-            <TooltipContent side="bottom">
-              <p>MongoDB Şeması Oluştur</p>
-            </TooltipContent>
-          </Tooltip>
-
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={onGenerateTypeScript}
-                disabled={!selectedNode}
-              >
-                <FileJson className="mr-2 h-4 w-4" />
-                TypeScript
-              </Button>
-            </TooltipTrigger>
-            <TooltipContent side="bottom">
-              <p>TypeScript Tiplerini Oluştur</p>
             </TooltipContent>
           </Tooltip>
 

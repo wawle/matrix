@@ -4,8 +4,6 @@ export const errorHandler = (err: any) => {
   let error = { ...err };
   error.message = err.message;
 
-  console.log({ err });
-
   // Mongoose bad ObjectId
   if (err.message.includes("Cast to ObjectId")) {
     const message = `Resource not found`;

@@ -13,8 +13,6 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
       ? undefined
       : (await fetchProjectBySlug(projectSlug)).data;
 
-  console.log(project);
-
   const title = projectSlug === "new" ? "Yeni Proje Oluştur" : "Proje Güncelle";
 
   const description =

@@ -74,8 +74,7 @@ export async function updateVersionAction(
 }> {
   try {
     const version = await updateVersion(id, data);
-    revalidatePath("/versions");
-    revalidatePath(`/xgo/projects/${version.project}/versions/${version.id}`);
+    revalidatePath("/admin/versions");
     return { data: JSON.parse(JSON.stringify(version)), success: true };
   } catch (error: any) {
     return { error: error.message, success: false };
@@ -89,7 +88,7 @@ export async function deleteVersionAction(id: string): Promise<{
 }> {
   try {
     const version = await deleteVersion(id);
-    revalidatePath("/versions");
+    revalidatePath("/admin/versions");
     return { data: JSON.parse(JSON.stringify(version)), success: true };
   } catch (error: any) {
     return { error: error.message, success: false };

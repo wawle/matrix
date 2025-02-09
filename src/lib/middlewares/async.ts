@@ -7,9 +7,9 @@ export const asyncHandler =
 
 export const asyncFn =
   (fn: any) =>
-  async (req: NextRequest): Promise<NextResponse> => {
+  async (req: NextRequest, props: any): Promise<NextResponse> => {
     try {
-      return await fn(req);
+      return await fn(req, props);
     } catch (error: any) {
       return errorHandler(error);
     }

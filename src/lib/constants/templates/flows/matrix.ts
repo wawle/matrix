@@ -5,7 +5,7 @@ export const matrixFlow: IVersion<VersionType.AGENT> = {
   id: "matrix",
   name: "Matrix",
   description: "Matrix flow",
-  is_active: false,
+  slug: "matrix",
   type: VersionType.AGENT,
   nodes: [],
   edges: [],

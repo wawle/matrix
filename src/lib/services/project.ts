@@ -35,7 +35,10 @@ export const getProjectById = asyncFnService(
 export const getProjectBySlug = asyncFnService(
   async (slug: string): Promise<IProject> => {
     await connectDB();
-    const project = await Project.findOne({ slug });
+    const project = await Project.findOne({ slug }).populate({
+      path: "versions",
+      model: Version,
+    });
     if (!project) {
       throw new ErrorResponse("Project bulunamadı", 404);
     }

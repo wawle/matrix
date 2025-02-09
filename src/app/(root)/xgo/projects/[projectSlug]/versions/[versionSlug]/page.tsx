@@ -57,19 +57,6 @@ export default async function VersionPage(props: VersionPageProps) {
           <VersionForm defaultValues={defaultValues} versionId={version?.id} />
         </CardContent>
       </Card>
-      {versionSlug !== "new" && (
-        <Link
-          href={`/xgo/projects/${projectSlug}/versions/${versionSlug}/playground`}
-        >
-          <Card className="w-[600px] h-full hover:shadow-lg transition-all duration-300 hover:border-primary">
-            <CardHeader className="space-y-1 pb-2">
-              <CardTitle className="text-2xl font-bold text-center">
-                Playground
-              </CardTitle>
-            </CardHeader>
-          </Card>
-        </Link>
-      )}
     </div>
   );
 }

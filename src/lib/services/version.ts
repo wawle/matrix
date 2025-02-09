@@ -25,7 +25,7 @@ export const getVersionById = asyncFnService(
 export const getVersionBySlug = asyncFnService(
   async (slug: string): Promise<IVersion<VersionType>> => {
     await connectDB();
-    const version = await Version.findOne({ slug });
+    const version = await Version.findOne({ slug }).populate("nodes edges");
     if (!version) {
       throw new ErrorResponse("Version bulunamadı", 404);
     }
@@ -47,11 +47,7 @@ export const createVersion = asyncFnService(
 export const updateVersion = asyncFnService(
   async (id: string, data: any): Promise<IVersion<VersionType>> => {
     await connectDB();
-    const version = await Version.findByIdAndUpdate(
-      id,
-      { $set: data },
-      { new: true, runValidators: true }
-    );
+    const version = await Version.findByIdAndUpdate(id, data);
     if (!version) {
       throw new ErrorResponse("Version bulunamadı", 404);
     }

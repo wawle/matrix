@@ -184,6 +184,8 @@ export default function SchemaPlayground({
   // App oluşturma işlemi durumları
   const [isGeneratingApp, setIsGeneratingApp] = useState(false);
 
+  // save version states
+  const [isSaving, setIsSaving] = useState(false);
   const handleAutoSaveChange = useCallback(async (state: boolean) => {
     setIsAutoSaveEnabled(state);
     await setAutoSaveState(state);
@@ -194,42 +196,35 @@ export default function SchemaPlayground({
    * @description Projeyi güncelleyerek değişiklikleri kaydeder
    */
   const updateProject = useCallback(async () => {
-    const selectedVersion = templates.models.find(
-      (t) => t.id === selectedPreset
-    );
-
-    // If selected version is not found, generate a new version from template
-    if (!selectedVersion) {
-      // Find the selected template
-      const selectedTemplate = templates.models.find(
-        (t) => t.id === selectedPreset
-      );
-
-      // If selected template is not found, show an error message
-      if (!selectedTemplate) {
-        toast.error("Seçili şablon bulunamadı.");
-        return;
-      }
-
-      // Generate a new version from the selected template
-      const result = await updateVersionAction(version.id, selectedTemplate);
-
-      if (result.success && result.data) {
-        setSelectedPreset(result.data.id);
-
-        toast.success("Yeni şema oluşturuldu.");
-      } else {
-        toast.error("Yeni şema oluşturulurken bir hata oluştu.");
-      }
-      return;
-    }
-
+    setIsSaving(true);
     try {
       const updatedVersion = {
-        ...selectedVersion,
-        nodes: nodes as Node<IModelData>[],
-        edges: edges as Edge<IModelEdgeData>[],
+        ...version,
+        nodes: nodes.map((node) => ({
+          name: node.data.name,
+          id: node.id,
+          position: node.position,
+          type: node.type,
+          width: node.width,
+          height: node.height,
+          positionAbsolute: node.positionAbsolute,
+          data: {
+            name: node.data.name,
+            description: node.data.description,
+            schemas: node.data.schemas,
+          },
+        })),
+        edges: edges.map((edge) => ({
+          data: edge.data,
+          type: edge.type,
+          source: edge.source,
+          target: edge.target,
+          style: edge.style,
+          animated: edge.animated,
+          label: edge.label,
+        })),
       };
+
       const result = await updateVersionAction(version.id, updatedVersion);
 
       if (!result.success) {
@@ -240,6 +235,8 @@ export default function SchemaPlayground({
       toast.success("Proje başarıyla güncellendi.");
     } catch (error) {
       toast.error("Proje güncellenirken bir hata oluştu.");
+    } finally {
+      setIsSaving(false);
     }
   }, [selectedPreset, project.id, toast, nodes, edges]);
 
@@ -625,9 +622,9 @@ export default function SchemaPlayground({
               ...updates,
             },
             label:
-              updates.relationType === "oneToOne"
+              updates.type === "oneToOne"
                 ? "1:1"
-                : updates.relationType === "oneToMany"
+                : updates.type === "oneToMany"
                 ? "1:N"
                 : "N:N",
           };
@@ -645,79 +642,6 @@ export default function SchemaPlayground({
   const deleteRelation = useCallback((edgeId: string) => {
     setEdges((eds) => eds.filter((edge) => edge.id !== edgeId));
   }, []);
-
-  /**
-   * @function generateMongoDBSchema
-   * @description Seçili node için MongoDB şeması oluşturur ve panoya kopyalar
-   */
-  const generateMongoDBSchema = useCallback(() => {
-    if (!selectedNode) return;
-
-    const schema = {
-      name: selectedNode.data.name,
-      fields: selectedNode.data.schemas.reduce((acc: any, schema: any) => {
-        let fieldDef: any = {
-          type: schema.type === "reference" ? "ObjectId" : schema.type,
-          required: schema.required,
-        };
-
-        if (schema.type === "reference") {
-          fieldDef.ref = schema.name || "Schema";
-        }
-
-        if (schema.min) fieldDef.min = schema.min;
-        if (schema.max) fieldDef.max = schema.max;
-        if (schema.match) fieldDef.match = schema.match;
-        if (schema.enum) fieldDef.enum = schema.enum;
-        if (schema.unique) fieldDef.unique = schema.unique;
-        if (schema.default) fieldDef.default = schema.default;
-        if (schema.minLength) fieldDef.minLength = schema.minLength;
-        if (schema.maxLength) fieldDef.maxLength = schema.maxLength;
-
-        acc[schema.name] = fieldDef;
-        return acc;
-      }, {}),
-      timestamps: true,
-    };
-
-    navigator.clipboard.writeText(JSON.stringify(schema, null, 2));
-    toast.success("MongoDB Şeması Kopyalandı");
-  }, [selectedNode]);
-
-  /**
-   * @function generateTypeScriptTypes
-   * @description Seçili node için TypeScript tiplerini oluşturur ve panoya kopyalar
-   */
-  const generateTypeScriptTypes = useCallback(() => {
-    if (!selectedNode) return;
-
-    const typeMap: { [key: string]: string } = {
-      string: "string",
-      number: "number",
-      date: "Date",
-      boolean: "boolean",
-      object: "Record<string, any>",
-      array: "any[]",
-      reference: "string",
-    };
-
-    const interfaceName = selectedNode.data.name.replace(/\s+/g, "");
-    const fields = selectedNode.data.schemas
-      .map((schema: any) => {
-        const optional = schema.required ? "" : "?";
-        return `  ${schema.name}${optional}: ${typeMap[schema.type]};`;
-      })
-      .join("\n");
-
-    const typeDefinition = `interface ${interfaceName} {
-${fields}
-  createdAt: Date;
-  updatedAt: Date;
-}`;
-
-    navigator.clipboard.writeText(typeDefinition);
-    toast.success("TypeScript Tipleri Kopyalandı");
-  }, [selectedNode]);
 
   /**
    * @function handleDeleteTemplate
@@ -893,23 +817,15 @@ ${fields}
     <div className={`flex flex-col h-[calc(100vh-65px)]`}>
       {/* Header */}
       <SchemaHeader
-        selectedPreset={selectedPreset}
         isAutoSaveEnabled={isAutoSaveEnabled}
         isGeneratingApp={isGeneratingApp}
+        isSaving={isSaving}
         onPresetChange={onPresetChange}
         onAutoSaveChange={handleAutoSaveChange}
         onSave={updateProject}
-        onExport={() => {}}
-        onDelete={(versionId) => {
-          setVersionToDelete(versionId);
-          setIsDeleteModalOpen(true);
-        }}
-        onGenerateMongoSchema={generateMongoDBSchema}
-        onGenerateTypeScript={generateTypeScriptTypes}
         onNewSchema={() => setIsDialogOpen(true)}
         onAIPrompt={() => setIsAIPromptDialogOpen(true)}
         onGenerateApp={onGenerateApp}
-        selectedNode={selectedNode}
       />
 
       {/* Main Content */}
